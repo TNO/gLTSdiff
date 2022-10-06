@@ -13,6 +13,7 @@ package com.github.tno.gltsdiff.test;
 import java.io.IOException;
 import java.util.Set;
 import java.util.function.BinaryOperator;
+import java.util.stream.Stream;
 
 import org.apache.commons.math3.util.Pair;
 
@@ -35,7 +36,7 @@ import com.github.tno.gltsdiff.writers.AutomatonDotWriter;
 import com.google.common.collect.ImmutableSet;
 
 public class FeatureModelTest {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         // Create the first automaton to compare.
         SimpleAutomaton<Pair<String, Set<Integer>>> first = new SimpleAutomaton<>();
         State<AutomatonStateProperty> f1 = first.addState(false);
@@ -72,15 +73,15 @@ public class FeatureModelTest {
                 new SetCombiner<>(new EqualityCombiner<>()));
 
         // Define a helper function to (more) easily compare the three automata.
-        BinaryOperator<SimpleAutomaton<Pair<String, Set<Integer>>>> compare = (left, right) -> {
-            return new StructureComparator<>(left, right,
-                    new BruteForceMatcher<>(left, right, statePropertyCombiner, transitionPropertyCombiner),
-                    new DefaultMerger<>(left, right, statePropertyCombiner, transitionPropertyCombiner,
-                            SimpleAutomaton::new)).compare();
-        };
+        BinaryOperator<SimpleAutomaton<Pair<String, Set<Integer>>>> compare = (
+                left, right
+        ) -> new StructureComparator<>(left, right,
+                new BruteForceMatcher<>(left, right, statePropertyCombiner, transitionPropertyCombiner),
+                new DefaultMerger<>(left, right, statePropertyCombiner, transitionPropertyCombiner,
+                        SimpleAutomaton::new)).compare();
 
         // Apply structural comparison to the three input automata.
-        SimpleAutomaton<Pair<String, Set<Integer>>> result = compare.apply(compare.apply(first, second), third);
+        SimpleAutomaton<Pair<String, Set<Integer>>> result = Stream.of(first, second, third).reduce(compare).get();
 
         // Prepare DOT (HTML) printers for printing the result.
         HtmlPrinter<Set<Integer>> setPrinter = new SetHtmlPrinter<>(new StringHtmlPrinter<>(), (l, r) -> l + "," + r);
@@ -90,10 +91,6 @@ public class FeatureModelTest {
                 .print(transition.getProperty());
 
         // Print the result to the console, in DOT format.
-        try {
-            new AutomatonDotWriter<>(result, printer).write(System.out);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        new AutomatonDotWriter<>(result, printer).write(System.out);
     }
 }
