@@ -30,7 +30,7 @@ public class SetHtmlPrinter<T> implements HtmlPrinter<Set<T>> {
     /**
      * Instantiates a new property set printer, that separates all printed properties by spaces.
      * 
-     * @param propertyPrinter The printer for properties
+     * @param propertyPrinter The printer for properties.
      */
     public SetHtmlPrinter(HtmlPrinter<T> propertyPrinter) {
         this(propertyPrinter, (left, right) -> left + " " + right);
