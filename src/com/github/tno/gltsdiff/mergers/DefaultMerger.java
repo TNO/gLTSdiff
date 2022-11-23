@@ -13,11 +13,8 @@ package com.github.tno.gltsdiff.mergers;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -26,6 +23,9 @@ import com.github.tno.gltsdiff.lts.LTS;
 import com.github.tno.gltsdiff.lts.State;
 import com.github.tno.gltsdiff.lts.Transition;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
+import com.github.tno.gltsdiff.operators.combiners.SetCombiner;
+import com.github.tno.gltsdiff.operators.combiners.TransitionCombiner;
+import com.google.common.base.Preconditions;
 
 /**
  * A merger for merging two given LTSs (the LHS and RHS) into a single LTS. The merged LTS is constructed by combining
@@ -45,8 +45,8 @@ public class DefaultMerger<S, T, U extends LTS<S, T>> extends AbstractMerger<S, 
     /** The combiner for state properties. */
     private final Combiner<S> statePropertyCombiner;
 
-    /** The combiner for transition properties. */
-    private final Combiner<T> transitionPropertyCombiner;
+    /** The combiner for sets of transitions. */
+    private final Combiner<Set<Transition<S, T>>> transitionCombiner;
 
     /** The supplier for instantiating new LTSs. */
     private final Supplier<U> instantiator;
@@ -67,7 +67,7 @@ public class DefaultMerger<S, T, U extends LTS<S, T>> extends AbstractMerger<S, 
         this.lhs = lhs;
         this.rhs = rhs;
         this.statePropertyCombiner = statePropertyCombiner;
-        this.transitionPropertyCombiner = transitionPropertyCombiner;
+        this.transitionCombiner = new SetCombiner<>(new TransitionCombiner<>(transitionPropertyCombiner));
         this.instantiator = instantiator;
     }
 
@@ -134,78 +134,15 @@ public class DefaultMerger<S, T, U extends LTS<S, T>> extends AbstractMerger<S, 
 
         // 2. Define all transitions of 'diff'.
 
-        // 2.1 First define all combined transitions (as well as uncombined ones depending on circumstances).
-        // Iterate over all state matchings, since these are the starting points of all combined transitions.
-        for (Entry<State<S>, State<S>> assignment: matching.entrySet()) {
-            State<S> leftState = assignment.getKey();
-            State<S> rightState = assignment.getValue();
+        // Get sets of all LHS and RHS transitions, where all source and target states are projected to 'diff' states.
+        Set<Transition<S, T>> leftTransitions = collectAllProjectedTransitionsOf(lhs, leftProjection);
+        Set<Transition<S, T>> rightTransitions = collectAllProjectedTransitionsOf(rhs, rightProjection);
 
-            // Keep track of leftover right transitions that have not yet been used to create a new combined transition.
-            List<Transition<S, T>> rightTransitions = new LinkedList<>(rhs.getOutgoingTransitions(rightState));
+        // Combine all LHS and RHS transitions.
+        Preconditions.checkArgument(transitionCombiner.areCombinable(leftTransitions, rightTransitions),
+                "Expected sets to always be combinable.");
 
-            // Iterate over all transitions out of 'leftState' and try to find corresponding ones in 'rightTransitions'.
-            for (Transition<S, T> leftTransition: lhs.getOutgoingTransitions(leftState)) {
-                T leftProperty = leftTransition.getProperty();
-                State<S> leftSucc = leftTransition.getTarget();
-
-                // Try to find the first available right transition that is combinable with 'leftTransition'.
-                Optional<Transition<S, T>> possibleRightTransition = Optional.empty();
-
-                if (leftMatchedStates.contains(leftSucc)) {
-                    possibleRightTransition = rightTransitions.stream()
-                            .filter(transition -> transition.getSource() == rightState
-                                    && transitionPropertyCombiner.areCombinable(leftProperty, transition.getProperty())
-                                    && transition.getTarget() == matching.get(leftSucc))
-                            .findFirst();
-                }
-
-                // Is such a matching transition still available?
-                if (possibleRightTransition.isPresent()) {
-                    Transition<S, T> rightTransition = possibleRightTransition.get();
-
-                    // If so, then both transitions and turned into a single combined transition in 'diff'.
-                    T combinedProperty = transitionPropertyCombiner.combine(leftProperty,
-                            rightTransition.getProperty());
-                    diff.addTransition(leftProjection.get(leftState), combinedProperty, leftProjection.get(leftSucc));
-
-                    // The RHS transition cannot be combined with any other transition. Mark it as such.
-                    rightTransitions.remove(rightTransition);
-                } else {
-                    // If not, then either (1) 'leftSucc' is not matched to any RHS state, or (2) 'leftSucc' is
-                    // matched to a RHS state but no corresponding transition is available in 'rightTransitions'.
-                    // In both these scenarios, 'leftTransition' will turn into an uncombined transition in 'diff'.
-                    diff.addTransition(leftProjection.get(leftState), leftProperty, leftProjection.get(leftSucc));
-                }
-            }
-
-            // At this point, possibly not all 'rightTransitions' have been part of new combined transitions in 'diff'.
-            // Iterate over all these leftover transitions and add them as uncombined transitions.
-            for (Transition<S, T> rightTransition: rightTransitions) {
-                T property = rightTransition.getProperty();
-                State<S> rightSucc = rightTransition.getTarget();
-                diff.addTransition(rightProjection.get(rightState), property, rightProjection.get(rightSucc));
-            }
-        }
-
-        // 2.2 Add a new (uncombined) transition for every transition that goes out of an unmatched LHS state.
-        for (State<S> leftState: unmatchedLeftStates) {
-            for (Transition<S, T> leftTransition: lhs.getOutgoingTransitions(leftState)) {
-                State<S> newSrc = leftProjection.get(leftState);
-                T property = leftTransition.getProperty();
-                State<S> newDst = leftProjection.get(leftTransition.getTarget());
-                diff.addTransition(newSrc, property, newDst);
-            }
-        }
-
-        // 2.3 Add a new (uncombined) transition for every transition that goes out of an unmatched RHS state.
-        for (State<S> rightState: unmatchedRightStates) {
-            for (Transition<S, T> rightTransition: rhs.getOutgoingTransitions(rightState)) {
-                State<S> newSrc = rightProjection.get(rightState);
-                T property = rightTransition.getProperty();
-                State<S> newDst = rightProjection.get(rightTransition.getTarget());
-                diff.addTransition(newSrc, property, newDst);
-            }
-        }
+        transitionCombiner.combine(leftTransitions, rightTransitions).forEach(diff::addTransition);
 
         return diff;
     }
@@ -221,5 +158,25 @@ public class DefaultMerger<S, T, U extends LTS<S, T>> extends AbstractMerger<S, 
                 .thenComparing(entry -> entry.getKey().getId())
                 // Lastly compare RHS state identifiers.
                 .thenComparing(entry -> entry.getValue().getId());
+    }
+
+    /**
+     * Gives the set of all transitions of {@code lts}, where all source and target states are mapped according to
+     * {@code projection}.
+     * 
+     * @param lts The LTS for which to collect all transitions.
+     * @param projection The projection function that is applied to the source and target states of all transitions.
+     *     This function must contain a mapping for every state of {@code lts}.
+     * @return The set of all transitions of {@code lts}, projected along {@code projection}.
+     */
+    private Set<Transition<S, T>> collectAllProjectedTransitionsOf(U lts, Map<State<S>, State<S>> projection) {
+        return lts.getStates().stream()
+                // Retrieve all transitions of 'lts'.
+                .flatMap(state -> lts.getOutgoingTransitions(state).stream())
+                // Map the source and target states of all transitions of 'lts' along 'projection'.
+                .map(transition -> new Transition<>(projection.get(transition.getSource()), transition.getProperty(),
+                        projection.get(transition.getTarget())))
+                // Collect all projected transitions into a set.
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }
