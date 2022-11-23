@@ -147,6 +147,19 @@ public class DefaultMerger<S, T, U extends LTS<S, T>> extends AbstractMerger<S, 
         return diff;
     }
 
+    /** @return A comparator for state matchings that considers initial state arrows and state identifiers. */
+    private Comparator<Entry<State<S>, State<S>>> matchingComparator() {
+        return Comparator
+                // Firstly compare LHS initial states (descending order: first true, then false).
+                .comparing((Entry<State<S>, State<S>> entry) -> !lhs.isInitialState(entry.getKey()))
+                // Secondly compare RHS initial states (descending order: first true, then false).
+                .thenComparing(entry -> !rhs.isInitialState(entry.getValue()))
+                // Thirdly compare LHS state identifiers.
+                .thenComparing(entry -> entry.getKey().getId())
+                // Lastly compare RHS state identifiers.
+                .thenComparing(entry -> entry.getValue().getId());
+    }
+
     /**
      * Gives the set of all transitions of {@code lts}, where all source and target states are mapped according to
      * {@code projection}.
@@ -165,18 +178,5 @@ public class DefaultMerger<S, T, U extends LTS<S, T>> extends AbstractMerger<S, 
                         projection.get(transition.getTarget())))
                 // Collect all projected transitions into a set.
                 .collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-
-    /** @return A comparator for state matchings that considers initial state arrows and state identifiers. */
-    private Comparator<Entry<State<S>, State<S>>> matchingComparator() {
-        return Comparator
-                // Firstly compare LHS initial states (descending order: first true, then false).
-                .comparing((Entry<State<S>, State<S>> entry) -> !lhs.isInitialState(entry.getKey()))
-                // Secondly compare RHS initial states (descending order: first true, then false).
-                .thenComparing(entry -> !rhs.isInitialState(entry.getValue()))
-                // Thirdly compare LHS state identifiers.
-                .thenComparing(entry -> entry.getKey().getId())
-                // Lastly compare RHS state identifiers.
-                .thenComparing(entry -> entry.getValue().getId());
     }
 }
