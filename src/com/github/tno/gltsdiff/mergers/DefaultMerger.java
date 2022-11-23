@@ -134,11 +134,11 @@ public class DefaultMerger<S, T, U extends LTS<S, T>> extends AbstractMerger<S, 
 
         // 2. Define all transitions of 'diff'.
 
-        // Get sets of all LTS and RHS transitions, where all source and target states are projected to 'diff' states.
+        // Get sets of all LHS and RHS transitions, where all source and target states are projected to 'diff' states.
         Set<Transition<S, T>> leftTransitions = collectAllProjectedTransitionsOf(lhs, leftProjection);
         Set<Transition<S, T>> rightTransitions = collectAllProjectedTransitionsOf(rhs, rightProjection);
 
-        // Combine all LTS and RHS transitions.
+        // Combine all LHS and RHS transitions.
         Preconditions.checkArgument(transitionCombiner.areCombinable(leftTransitions, rightTransitions),
                 "Expected sets to always be combinable.");
 
