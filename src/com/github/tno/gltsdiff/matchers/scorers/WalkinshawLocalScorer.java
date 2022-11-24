@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.function.Function;
 
-import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+import org.apache.commons.math3.linear.OpenMapRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.util.Pair;
 
@@ -77,44 +77,51 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
     }
 
     @Override
-    public RealMatrix compute() {
-        // Define an initial score matrix with score 0 for every (LHS, RHS)-state pair.
-        RealMatrix scores = new Array2DRowRealMatrix(lhs.size(), rhs.size());
+    protected RealMatrix computeForwardSimilarityScores() {
+        return computeScores(pair -> LTSUtils.commonSuccessors(lhs, rhs, transitionPropertyCombiner, pair),
+                lts -> state -> lts.getOutgoingTransitionProperties(state), false);
+    }
 
-        // Refine the scores a number of times. At least one refinement will always be performed.
-        for (int i = 0; i < nrOfRefinements; i++) {
-            scores = refine(scores);
-        }
-
-        return scores;
+    @Override
+    protected RealMatrix computeBackwardSimilarityScores() {
+        return computeScores(pair -> LTSUtils.commonPredecessors(lhs, rhs, transitionPropertyCombiner, pair),
+                lts -> state -> lts.getIncomingTransitionProperties(state), true);
     }
 
     /**
-     * Calculate new (LHS, RHS)-state similarity scores by refining/improving the given score matrix.
+     * Computes local similarity scores for every pair of (LHS, RHS)-state pairs.
      * 
-     * @param scores The current matrix of (LHS, RHS)-state similarity scores.
-     * @return A matrix of (LHS, RHS)-state similarity scores that is at least as good as the given input score matrix.
+     * @param commonNeighbors A function that determines the common neighboring state pairs for a given pair of (LHS,
+     *     RHS)-states, that are relevant for computing local similarity scores.
+     * @param relevantProperties A function that determines the transition properties for a given LTS and a state of
+     *     that LTS, that are relevant for computing local similarity scores.
+     * @param accountForInitialStateArrows Whether the scoring calculation should take initial state arrows into
+     *     account. Note that the original paper does not take initial states into account.
+     * @return A matrix of local state similarity scores, all of which are in the range [-1,1].
      */
-    private RealMatrix refine(RealMatrix scores) {
-        RealMatrix refinedScores = new Array2DRowRealMatrix(lhs.size(), rhs.size());
+    private RealMatrix computeScores(
+            Function<Pair<State<S>, State<S>>, Collection<Pair<State<S>, State<S>>>> commonNeighbors,
+            Function<U, Function<State<S>, Set<T>>> relevantProperties, boolean accountForInitialStateArrows)
+    {
+        // Define an initial similarity score matrix with score 0 for every (LHS, RHS)-state pair.
+        RealMatrix scores = new OpenMapRealMatrix(lhs.size(), rhs.size());
 
-        // Iterate over all pairs of (LHS, RHS)-states.
-        for (State<S> leftState: lhs.getStates()) {
-            for (State<S> rightState: rhs.getStates()) {
-                // Compute the forward and backward similarity scores for the current (LHS, RHS)-pair.
-                double forwardScore = similarityScore(leftState, rightState, scores,
-                        p -> LTSUtils.commonSuccessors(lhs, rhs, transitionPropertyCombiner, p),
-                        lts -> s -> lts.getOutgoingTransitionProperties(s), false);
+        // Refine the scores a number of times. At least one refinement will always be performed.
+        for (int i = 0; i < nrOfRefinements; i++) {
+            // Iterate over all pairs of (LHS, RHS)-states.
+            for (State<S> leftState: lhs.getStates()) {
+                for (State<S> rightState: rhs.getStates()) {
+                    // Refine the similarity score of the current state pair.
+                    double refinedScore = similarityScore(leftState, rightState, scores, commonNeighbors,
+                            relevantProperties, accountForInitialStateArrows);
 
-                double backwardScore = similarityScore(leftState, rightState, scores,
-                        p -> LTSUtils.commonPredecessors(lhs, rhs, transitionPropertyCombiner, p),
-                        lts -> s -> lts.getIncomingTransitionProperties(s), true);
-
-                // Register the average local similarity score out of the forward and backward scores.
-                refinedScores.setEntry(leftState.getId(), rightState.getId(), (forwardScore + backwardScore) / 2.0d);
+                    // Store the refine similarity score in 'scores'.
+                    scores.setEntry(leftState.getId(), rightState.getId(), refinedScore);
+                }
             }
         }
-        return refinedScores;
+
+        return scores;
     }
 
     /**
@@ -135,7 +142,7 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
      *     state.
      * @param accountForInitialStateArrows Whether the scoring calculation should take initial state arrows into
      *     account. Note that the original paper does not take initial states into account.
-     * @return A (refined) similarity score for the given pair of (LHS, RHS)-states.
+     * @return A (refined) similarity score for the given pair of (LHS, RHS)-states, in the range [-1,1].
      */
     private double similarityScore(State<S> leftState, State<S> rightState, RealMatrix scores,
             Function<Pair<State<S>, State<S>>, Collection<Pair<State<S>, State<S>>>> commonNeighbors,

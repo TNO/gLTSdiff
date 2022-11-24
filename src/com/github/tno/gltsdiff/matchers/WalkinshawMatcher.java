@@ -374,7 +374,11 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
 
         for (State<S> leftState: lhs.getStates()) {
             for (State<S> rightState: rhs.getStates()) {
-                pairs.add(Pair.create(Pair.create(leftState, rightState), scores.apply(leftState, rightState)));
+                double score = scores.apply(leftState, rightState);
+
+                if (score > 0) {
+                    pairs.add(Pair.create(Pair.create(leftState, rightState), score));
+                }
             }
         }
 

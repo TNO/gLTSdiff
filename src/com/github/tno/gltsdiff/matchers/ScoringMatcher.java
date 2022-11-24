@@ -61,21 +61,32 @@ public abstract class ScoringMatcher<S, T, U extends LTS<S, T>> implements Match
             return scores;
         }
 
-        // Find the lowest and highest score in 'scores'.
-        double lowest = scores.getEntry(0, 0);
-        double highest = lowest;
+        // Find the lowest and highest finite score in 'scores'.
+        Double lowest = null;
+        Double highest = null;
 
         for (int row = 0; row < scores.getRowDimension(); row++) {
             for (int column = 0; column < scores.getColumnDimension(); column++) {
                 double score = scores.getEntry(row, column);
-                lowest = Math.min(lowest, score);
-                highest = Math.max(highest, score);
+
+                Preconditions.checkArgument(Double.isFinite(score) || score == Double.NEGATIVE_INFINITY,
+                        "Expected a score that is either finite or negative infinity.");
+
+                if (Double.isFinite(score)) {
+                    lowest = lowest == null ? score : Math.min(lowest, score);
+                    highest = highest == null ? score : Math.max(highest, score);
+                }
             }
         }
 
-        // The above loop guarantees that 'lowest <= highest'.
+        // The above loop guarantees that 'lowest <= highest', and that 'lowest' is null iff 'highest' is null.
 
-        // Return 'scores' if all its scores already are within [0,1].
+        // Return early if all scores are negative infinity.
+        if (lowest == null) {
+            return scores;
+        }
+
+        // Return 'scores' if all its finite scores already are within [0,1].
         if (0.0d <= lowest && highest <= 1.0d) {
             return scores;
         }
@@ -87,8 +98,13 @@ public abstract class ScoringMatcher<S, T, U extends LTS<S, T>> implements Match
         for (int row = 0; row < scores.getRowDimension(); row++) {
             for (int column = 0; column < scores.getColumnDimension(); column++) {
                 double score = scores.getEntry(row, column);
-                double newScore = lowest == highest ? 1.0d : (score - lowest) / (highest - lowest);
-                normalizedScores.setEntry(row, column, newScore);
+
+                if (Double.isFinite(score)) {
+                    double newScore = lowest == highest ? 1.0d : (score - lowest) / (highest - lowest);
+                    normalizedScores.setEntry(row, column, newScore);
+                } else {
+                    normalizedScores.setEntry(row, column, Double.NEGATIVE_INFINITY);
+                }
             }
         }
 

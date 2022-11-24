@@ -62,6 +62,18 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
         super(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner);
     }
 
+    @Override
+    protected RealMatrix computeForwardSimilarityScores() {
+        return computeScores(pair -> LTSUtils.commonSuccessors(lhs, rhs, transitionPropertyCombiner, pair),
+                p -> p.getFirst().getOutgoingTransitionProperties(p.getSecond()), false);
+    }
+
+    @Override
+    protected RealMatrix computeBackwardSimilarityScores() {
+        return computeScores(pair -> LTSUtils.commonPredecessors(lhs, rhs, transitionPropertyCombiner, pair),
+                p -> p.getFirst().getIncomingTransitionProperties(p.getSecond()), true);
+    }
+
     /**
      * Computes a (global) similarity score matrix for all pairs of (LHS, RHS)-states, with scores in the range [-1,1].
      * <p>
@@ -80,6 +92,7 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
      *     state.
      * @param accountForInitialStateArrows Whether the scoring calculation should take initial state arrows into
      *     account. Note that the original paper does not take initial states into account.
+     * @return A matrix of state similarity scores, all of which are in the range [-1,1].
      */
     private RealMatrix computeScores(
             Function<Pair<State<S>, State<S>>, Collection<Pair<State<S>, State<S>>>> commonNeighbors,
@@ -203,54 +216,5 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
      */
     private int getEntryIndex(int leftStateIndex, int rightStateIndex) {
         return leftStateIndex * rhs.size() + rightStateIndex;
-    }
-
-    /**
-     * Computes the global backward similarity scores of all combinations of (LHS, RHS)-states.
-     * 
-     * @return The computed backward similarity scores.
-     */
-    private RealMatrix computeBackwardScores() {
-        return computeScores(p -> LTSUtils.commonPredecessors(lhs, rhs, transitionPropertyCombiner, p),
-                p -> p.getFirst().getIncomingTransitionProperties(p.getSecond()), true);
-    }
-
-    /**
-     * Computes the global forward similarity scores of all combinations of (LHS, RHS)-states.
-     * 
-     * @return The computed forward similarity scores.
-     */
-    private RealMatrix computeForwardScores() {
-        return computeScores(p -> LTSUtils.commonSuccessors(lhs, rhs, transitionPropertyCombiner, p),
-                p -> p.getFirst().getOutgoingTransitionProperties(p.getSecond()), false);
-    }
-
-    @Override
-    public RealMatrix compute() {
-        // Obtain forward and backward similarity scores.
-        RealMatrix forwardScores = computeForwardScores();
-        RealMatrix backwardScores = computeBackwardScores();
-
-        // Construct a matrix containing the averages of 'forwardScores' and 'backwardScores'.
-        int lhsStateSize = forwardScores.getRowDimension();
-        int rhsStateSize = forwardScores.getColumnDimension();
-        RealMatrix averageScores = new Array2DRowRealMatrix(lhsStateSize, rhsStateSize);
-
-        for (int lhsIdx = 0; lhsIdx < lhsStateSize; lhsIdx++) {
-            for (int rhsIdx = 0; rhsIdx < rhsStateSize; rhsIdx++) {
-                double forwardScore = forwardScores.getEntry(lhsIdx, rhsIdx);
-                double backwardScore = backwardScores.getEntry(lhsIdx, rhsIdx);
-
-                // If the forward score happens to be negative, then the corresponding state pair is incompatible.
-                // Therefore make sure that their final similarity score remains negative.
-                if (forwardScore < 0) {
-                    averageScores.setEntry(lhsIdx, rhsIdx, Math.min(forwardScore, backwardScore));
-                } else {
-                    averageScores.setEntry(lhsIdx, rhsIdx, (forwardScore + backwardScore) / 2.0d);
-                }
-            }
-        }
-
-        return averageScores;
     }
 }
