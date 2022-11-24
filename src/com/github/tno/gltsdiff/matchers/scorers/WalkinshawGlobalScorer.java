@@ -63,7 +63,7 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
     }
 
     /**
-     * Computes a (global) similarity score matrix for all pairs of (LHS, RHS)-states, with scores in the range [0,1].
+     * Computes a (global) similarity score matrix for all pairs of (LHS, RHS)-states, with scores in the range [-1,1].
      * <p>
      * This computation relies on a function {@code commonNeighbors} that gives a list of all relevant common
      * neighboring state pairs that are possible from the input pair of states. Furthermore, {@code relevantProperties}
@@ -100,11 +100,18 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
         // Iterate over all (LHS, RHS)-state pairs.
         for (State<S> leftState: lhs.getStates()) {
             for (State<S> rightState: rhs.getStates()) {
-                // First we account for all common neighbors that are relevant for ('leftState', 'rightState').
-
                 // Determine the row/column index within 'coefficients' and 'constants' corresponding to the current
                 // state pair.
                 int index = getEntryIndex(leftState.getId(), rightState.getId());
+
+                // If 'leftState' and 'rightState' are uncombinable, encode that their similarity score is -1.
+                if (!statePropertyCombiner.areCombinable(leftState.getProperty(), rightState.getProperty())) {
+                    coefficients.setEntry(index, index, 1d);
+                    constants.setEntry(index, -1d);
+                    continue;
+                }
+
+                // Otherwise, we first account for all common neighbors relevant for ('leftState', 'rightState').
 
                 // Keep track of the number of iterations of the for-loop below. We need this later.
                 int nrOfIteratedTransitions = 0;

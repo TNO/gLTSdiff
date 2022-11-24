@@ -141,6 +141,11 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
             Function<Pair<State<S>, State<S>>, Collection<Pair<State<S>, State<S>>>> commonNeighbors,
             Function<U, Function<State<S>, Set<T>>> relevantProperties, boolean accountForInitialStateArrows)
     {
+        // If 'leftState' and 'rightState' are uncombinable, then their similarity score is -1.
+        if (!statePropertyCombiner.areCombinable(leftState.getProperty(), rightState.getProperty())) {
+            return -1d;
+        }
+
         // Get all relevant neighbors of 'leftState' and 'rightState' for computing the similarity score.
         // The similarity score is a fraction.
         Collection<Pair<State<S>, State<S>>> neighbors = commonNeighbors.apply(Pair.create(leftState, rightState));
