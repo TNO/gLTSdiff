@@ -499,9 +499,9 @@ public class KuhnMunkresMatcher<S, T, U extends LTS<S, T>> extends ScoringMatche
     }
 
     /**
-     * Computes the inversion of {@code scores}, i.e. change every element {@code e} to {@code 1 - e}.
+     * Computes the inversion of {@code scores}, i.e., change every element {@code e} to {@code 1 - e}.
      * 
-     * @param scores The scores that are to be inverted. All its scores are expected to be within the range [0,1].
+     * @param scores The scores that are to be inverted.
      * @return The inverted scores.
      */
     private RealMatrix invert(RealMatrix scores) {

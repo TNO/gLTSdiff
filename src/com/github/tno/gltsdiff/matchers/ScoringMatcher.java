@@ -12,7 +12,7 @@ package com.github.tno.gltsdiff.matchers;
 
 import java.util.Map;
 
-import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+import org.apache.commons.math3.linear.BlockRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 
 import com.github.tno.gltsdiff.lts.LTS;
@@ -50,9 +50,11 @@ public abstract class ScoringMatcher<S, T, U extends LTS<S, T>> implements Match
     }
 
     /**
-     * Normalizes the given matrix of similarity scores, so that every matrix cell is within the interval [0,1].
+     * Normalizes the given matrix of similarity scores, so that every matrix cell with a finite value is within the
+     * interval [0,1].
      * 
-     * @param scores The matrix of state similarity scores that is to be normalized.
+     * @param scores The matrix of state similarity scores that is to be normalized. All cells of this matrix must
+     *     either be finite, or be {@link Double#NEGATIVE_INFINITY}.
      * @return The normalized scoring matrix.
      */
     protected RealMatrix normalize(RealMatrix scores) {
@@ -92,7 +94,7 @@ public abstract class ScoringMatcher<S, T, U extends LTS<S, T>> implements Match
         }
 
         // If not, then new scores will have to be calculated.
-        RealMatrix normalizedScores = new Array2DRowRealMatrix(scores.getRowDimension(), scores.getColumnDimension());
+        RealMatrix normalizedScores = new BlockRealMatrix(scores.getRowDimension(), scores.getColumnDimension());
 
         // Calculate all normalized scores and store them in 'normalizedScores'.
         for (int row = 0; row < scores.getRowDimension(); row++) {
@@ -116,9 +118,10 @@ public abstract class ScoringMatcher<S, T, U extends LTS<S, T>> implements Match
      * should be matched onto which RHS states. The computed matching comes as a mapping from LHS states to RHS states.
      * 
      * @param scores A matrix of (LHS, RHS)-state similarity scores. The rows correspond to LHS states, columns to RHS
-     *     states, and cells to a score within the range [0,1] that expresses how similar the (LHS, RHS)-state pair is.
-     *     The state similarity scores are intended to be monotone: the higher the score, the higher the degree of
-     *     similarity.
+     *     states, and cells to a score that expresses how similar the (LHS, RHS)-state pair is. State similarity scores
+     *     must either be in the range [0,1], or be {@link Double#NEGATIVE_INFINITY}, in which case the state pair is
+     *     truly incompatible and should not be matched. The state similarity scores are intended to be monotone: the
+     *     higher the score, the higher the degree of similarity.
      * @return A matching from LHS to RHS states that satisfies the following properties:
      *     <ul>
      *     <li>All states in the key set of the returned matching are LHS states.</li>
