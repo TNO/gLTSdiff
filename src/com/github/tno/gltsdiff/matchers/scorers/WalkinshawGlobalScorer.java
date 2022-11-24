@@ -18,6 +18,7 @@ import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.DecompositionSolver;
 import org.apache.commons.math3.linear.LUDecomposition;
+import org.apache.commons.math3.linear.OpenMapRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.util.Pair;
@@ -104,7 +105,7 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
         int nrOfStatePairs = lhsStateCount * rhsStateCount;
 
         // Set up the matrix and vector that together shall encode the system of linear equations.
-        RealMatrix coefficients = new Array2DRowRealMatrix(nrOfStatePairs, nrOfStatePairs);
+        RealMatrix coefficients = new OpenMapRealMatrix(nrOfStatePairs, nrOfStatePairs);
         RealVector constants = new ArrayRealVector(nrOfStatePairs);
 
         // Now we encode the system of linear equations as described by Walkinshaw et al. into 'coefficients' and
@@ -117,7 +118,7 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
                 // state pair.
                 int index = getEntryIndex(leftState.getId(), rightState.getId());
 
-                // If 'leftState' and 'rightState' are uncombinable, encode that their similarity score is -1.
+                // If 'leftState' and 'rightState' are uncombinable, then encode that their similarity score is -1.
                 if (!statePropertyCombiner.areCombinable(leftState.getProperty(), rightState.getProperty())) {
                     coefficients.setEntry(index, index, 1d);
                     constants.setEntry(index, -1d);
