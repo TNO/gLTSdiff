@@ -51,12 +51,15 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
     /**
      * Instantiates a new Walkinshaw global scorer.
      * 
-     * @param lhs The left-hand-side LTS.
-     * @param rhs The right-hand-side LTS.
+     * @param lhs The left-hand-side LTS, which has at least one state.
+     * @param rhs The right-hand-side LTS, which has at least one state.
+     * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
-    public WalkinshawGlobalScorer(U lhs, U rhs, Combiner<T> transitionPropertyCombiner) {
-        super(lhs, rhs, transitionPropertyCombiner);
+    public WalkinshawGlobalScorer(U lhs, U rhs, Combiner<S> statePropertyCombiner,
+            Combiner<T> transitionPropertyCombiner)
+    {
+        super(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner);
     }
 
     /**

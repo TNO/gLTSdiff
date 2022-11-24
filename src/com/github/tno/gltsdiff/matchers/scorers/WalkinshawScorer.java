@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import com.github.tno.gltsdiff.lts.LTS;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
+import com.google.common.base.Preconditions;
 
 /**
  * Contains common functionality for the state similarity scoring approaches that are described in the article by
@@ -42,11 +43,14 @@ public abstract class WalkinshawScorer<S, T, U extends LTS<S, T>> implements Sim
      */
     protected final double attenuationFactor = 0.6d;
 
-    /** The left-hand-side LTS. */
+    /** The left-hand-side LTS, which has at least one state. */
     protected final U lhs;
 
-    /** The right-hand-side LTS. */
+    /** The right-hand-side LTS, which has at least one state. */
     protected final U rhs;
+
+    /** The combiner for state properties. */
+    protected final Combiner<S> statePropertyCombiner;
 
     /** The combiner for transition properties. */
     protected final Combiner<T> transitionPropertyCombiner;
@@ -54,13 +58,18 @@ public abstract class WalkinshawScorer<S, T, U extends LTS<S, T>> implements Sim
     /**
      * Instantiates a new Walkinshaw similarity scorer.
      * 
-     * @param lhs The left-hand-side LTS.
-     * @param rhs The right-hand-side LTS.
+     * @param lhs The left-hand-side LTS, which has at least one state.
+     * @param rhs The right-hand-side LTS, which has at least one state.
+     * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
-    public WalkinshawScorer(U lhs, U rhs, Combiner<T> transitionPropertyCombiner) {
+    public WalkinshawScorer(U lhs, U rhs, Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner) {
+        Preconditions.checkArgument(lhs.size() > 0, "Expected the LHS to have at least one state.");
+        Preconditions.checkArgument(rhs.size() > 0, "Expected the RHS to have at least one state.");
+
         this.lhs = lhs;
         this.rhs = rhs;
+        this.statePropertyCombiner = statePropertyCombiner;
         this.transitionPropertyCombiner = transitionPropertyCombiner;
     }
 

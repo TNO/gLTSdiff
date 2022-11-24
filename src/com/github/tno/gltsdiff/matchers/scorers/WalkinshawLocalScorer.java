@@ -45,30 +45,35 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
     private final int nrOfRefinements;
 
     /**
-     * Instantiates a new Walkinshaw local scorer that performs only 1 refinement.
+     * Instantiates a new Walkinshaw local similarity scorer that performs only a single refinement.
      * 
-     * @param lhs The left-hand-side LTS.
-     * @param rhs The right-hand-side LTS.
+     * @param lhs The left-hand-side LTS, which has at least one state.
+     * @param rhs The right-hand-side LTS, which has at least one state.
+     * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
-    public WalkinshawLocalScorer(U lhs, U rhs, Combiner<T> transitionPropertyCombiner) {
-        this(lhs, rhs, transitionPropertyCombiner, 1);
+    public WalkinshawLocalScorer(U lhs, U rhs, Combiner<S> statePropertyCombiner,
+            Combiner<T> transitionPropertyCombiner)
+    {
+        this(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner, 1);
     }
 
     /**
-     * Instantiates a new Walkinshaw local scorer.
+     * Instantiates a new Walkinshaw local similarity scorer.
      * 
-     * @param lhs The left-hand-side LTS.
-     * @param rhs The right-hand-side LTS.
+     * @param lhs The left-hand-side LTS, which has at least one state.
+     * @param rhs The right-hand-side LTS, which has at least one state.
+     * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
-     * @param nrOfRefinements The number of refinements that the scoring algorithm should perform. This number must be
-     *     at least 1.
+     * @param nrOfRefinements The number of refinements to perform, which must be at least 1.
      */
-    public WalkinshawLocalScorer(U lhs, U rhs, Combiner<T> transitionPropertyCombiner, int nrOfRefinements) {
-        super(lhs, rhs, transitionPropertyCombiner);
+    public WalkinshawLocalScorer(U lhs, U rhs, Combiner<S> statePropertyCombiner,
+            Combiner<T> transitionPropertyCombiner, int nrOfRefinements)
+    {
+        super(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner);
         this.nrOfRefinements = nrOfRefinements;
 
-        Preconditions.checkArgument(0 < nrOfRefinements);
+        Preconditions.checkArgument(nrOfRefinements > 0, "Expected a positive number of refinements.");
     }
 
     @Override
