@@ -155,6 +155,7 @@ public abstract class LTS<S, T> {
     public void removeState(State<S> state) {
         Preconditions.checkNotNull(state, "Expected a non-null state.");
         Preconditions.checkArgument(statesSet.contains(state), "Expected an existing state.");
+        Preconditions.checkArgument(statesList.get(state.id) == state, "Expected state identifiers to be consistent.");
 
         // Remove all transitions involving the given state.
         getSuccessorsOf(state).forEach(s -> incomingTransitions.get(s).removeIf(t -> t.getSource() == state));
@@ -170,8 +171,8 @@ public abstract class LTS<S, T> {
                 "Expected a consistent internal representation of states.");
 
         // Re-assign identifiers of leftover states.
-        for (int i = state.getId() + 1; i < statesSet.size(); i++) {
-            statesList.get(i).id = i - 1;
+        for (int i = state.getId(); i < statesSet.size(); i++) {
+            statesList.get(i).id = i;
         }
     }
 
