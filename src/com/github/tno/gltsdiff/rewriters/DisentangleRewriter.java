@@ -3,6 +3,7 @@ package com.github.tno.gltsdiff.rewriters;
 
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,10 +19,10 @@ import com.google.common.collect.Sets;
 /**
  * A rewriter for rewriting tangles in {@link DiffAutomaton difference automata}.
  * <p>
- * A <i>tangle</i> is defined to be an {@link DiffKind#UNCHANGED unchanged} state that has at least one incoming or
- * outgoing transition, and all incoming/outgoing transitions are either {@link DiffKind#ADDED added} or
- * {@link DiffKind#REMOVED removed}. This rewriter splits all tangle states into two states, an added and a removed one,
- * and relocates all transitions accordingly to these new states.
+ * A <i>tangle</i> is defined to be an {@link DiffKind#UNCHANGED unchanged} state that has no unchanged incoming or
+ * outgoing transitions, at least one {@link DiffKind#ADDED added} incoming/outgoing transition, and at least one
+ * {@link DiffKind#REMOVED removed} incoming/outgoing transition. This rewriter splits all tangle states into two
+ * states, an added and a removed one, and relocates all transitions accordingly to these new states.
  * </p>
  *
  * @param <T> The type of transition properties.
@@ -41,17 +42,16 @@ public class DisentangleRewriter<T> implements Rewriter<DiffAutomatonStateProper
             Set<DiffProperty<T>> connectedTransitionProperties = Sets.union(
                     automaton.getIncomingTransitionProperties(state), automaton.getOutgoingTransitionProperties(state));
 
-            // If there are no such "connected" properties, then 'state' cannot be a tangle.
-            if (connectedTransitionProperties.isEmpty()) {
-                continue;
-            }
+            // Count how often the various difference kinds occur in 'connectedTransitionProperties' on the top level.
+            Map<DiffKind, Long> diffKindCounts = connectedTransitionProperties.stream()
+                    .collect(Collectors.groupingBy(DiffProperty::getDiffKind, Collectors.counting()));
 
-            // Otherwise 'state' has at least one "connected" transition property.
-            // Check whether all such properties are either added or removed, to determine whether 'state' is a tangle.
-            boolean isTangleState = connectedTransitionProperties.stream()
-                    .noneMatch(property -> property.getDiffKind() == DiffKind.UNCHANGED);
-
-            if (isTangleState) {
+            // If 'state' does not have any unchanged incoming/outgoing transitions, but has both added and removed
+            // incoming/outgoing transitions, then 'state' is a tangle state.
+            if (diffKindCounts.getOrDefault(DiffKind.UNCHANGED, 0L) == 0
+                    && diffKindCounts.getOrDefault(DiffKind.ADDED, 0L) > 0
+                    && diffKindCounts.getOrDefault(DiffKind.REMOVED, 0L) > 0)
+            {
                 DiffAutomatonStateProperty stateProperty = state.getProperty();
 
                 // We proceed by splitting 'state' into two states, an added and a removed one, and relocating all
