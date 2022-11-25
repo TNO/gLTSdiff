@@ -66,6 +66,7 @@ public class EntanglementRewriter<T>
                         "Expected all outgoing transitions of the tangle state to be relocated.");
 
                 // Remove the tangle state, and remember that 'automaton' has been updated.
+                automaton.removeState(state);
                 updated = true;
             }
         }
