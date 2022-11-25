@@ -27,7 +27,9 @@ import com.google.common.collect.Sets;
  *
  * @param <T> The type of transition properties.
  */
-public class DisentangleRewriter<T> implements Rewriter<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>> {
+public class EntanglementRewriter<T>
+        implements Rewriter<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
+{
     @Override
     public boolean rewrite(DiffAutomaton<T> automaton) {
         boolean updated = false;
