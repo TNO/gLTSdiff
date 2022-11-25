@@ -14,6 +14,7 @@ import com.github.tno.gltsdiff.lts.DiffKind;
 import com.github.tno.gltsdiff.lts.DiffProperty;
 import com.github.tno.gltsdiff.lts.State;
 import com.github.tno.gltsdiff.lts.Transition;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 
 /**
@@ -54,48 +55,60 @@ public class EntanglementRewriter<T>
                     && diffKindCounts.getOrDefault(DiffKind.ADDED, 0L) > 0
                     && diffKindCounts.getOrDefault(DiffKind.REMOVED, 0L) > 0)
             {
-                DiffAutomatonStateProperty stateProperty = state.getProperty();
+                // Split 'state' into an added and a remove state, and relocate all transitions accordingly.
+                split(automaton, state, DiffKind.ADDED);
+                split(automaton, state, DiffKind.REMOVED);
 
-                // We proceed by splitting 'state' into two states, an added and a removed one, and relocating all
-                // incoming/outgoing transitions of 'state' accordingly. First we define the added state.
-                State<DiffAutomatonStateProperty> addedState = automaton
-                        .addState(new DiffAutomatonStateProperty(stateProperty.isAccepting(), DiffKind.ADDED,
-                                stateProperty.isInitial() && stateProperty.getInitDiffKind() != DiffKind.REMOVED
-                                        ? Optional.of(DiffKind.ADDED) : Optional.empty()));
+                // Make sure that all transitions of 'state' have been relocated.
+                Preconditions.checkArgument(automaton.getIncomingTransitions(state).isEmpty(),
+                        "Expected all incoming transitions of the tangle state to be relocated.");
+                Preconditions.checkArgument(automaton.getOutgoingTransitions(state).isEmpty(),
+                        "Expected all outgoing transitions of the tangle state to be relocated.");
 
-                // Relocate all incoming added transitions into 'state'.
-                List<Transition<DiffAutomatonStateProperty, DiffProperty<T>>> incomingTransitions = automaton
-                        .getIncomingTransitions(state).stream()
-                        .filter(transition -> transition.getProperty().getDiffKind() == DiffKind.ADDED)
-                        .collect(Collectors.toList());
-
-                for (Transition<DiffAutomatonStateProperty, DiffProperty<T>> transition: incomingTransitions) {
-                    automaton.removeTransition(transition);
-                    automaton.addTransition(transition.getSource(), transition.getProperty(), addedState);
-                }
-
-                // Relocate all outgoing added transitions out of 'state'.
-                List<Transition<DiffAutomatonStateProperty, DiffProperty<T>>> outgoingTransitions = automaton
-                        .getOutgoingTransitions(state).stream()
-                        .filter(transition -> transition.getProperty().getDiffKind() == DiffKind.ADDED)
-                        .collect(Collectors.toList());
-
-                for (Transition<DiffAutomatonStateProperty, DiffProperty<T>> transition: outgoingTransitions) {
-                    automaton.removeTransition(transition);
-                    automaton.addTransition(addedState, transition.getProperty(), transition.getTarget());
-                }
-
-                // Turn the original tangle state into a removed state.
-                automaton.setStateProperty(state,
-                        new DiffAutomatonStateProperty(stateProperty.isAccepting(), DiffKind.REMOVED,
-                                stateProperty.isInitial() && stateProperty.getInitDiffKind() != DiffKind.ADDED
-                                        ? Optional.of(DiffKind.REMOVED) : Optional.empty()));
-
-                // Remember that 'automaton' has been updated.
+                // Remove the tangle state, and remember that 'automaton' has been updated.
                 updated = true;
             }
         }
 
         return updated;
+    }
+
+    /**
+     * Splits {@code state} by defining a new state with the given difference kind ({@code diffKind}), and relocating
+     * all incoming and outgoing transitions of {@code state} with this difference kind to the new state.
+     * 
+     * @param automaton The difference automaton in which to define the new state.
+     * @param state The state to split.
+     * @param diffKind The difference kind of the new state, and of the transitions to relocate.
+     */
+    private void split(DiffAutomaton<T> automaton, State<DiffAutomatonStateProperty> state, DiffKind diffKind) {
+        DiffAutomatonStateProperty stateProperty = state.getProperty();
+
+        // Define the new state.
+        boolean isInitial = stateProperty.isInitial() && (stateProperty.getInitDiffKind() == DiffKind.UNCHANGED
+                || stateProperty.getInitDiffKind() == diffKind);
+
+        State<DiffAutomatonStateProperty> newState = automaton.addState(new DiffAutomatonStateProperty(
+                stateProperty.isAccepting(), diffKind, isInitial ? Optional.of(diffKind) : Optional.empty()));
+
+        // Relocate all incoming transitions of 'state'.
+        List<Transition<DiffAutomatonStateProperty, DiffProperty<T>>> incomingTransitions = automaton
+                .getIncomingTransitions(state).stream()
+                .filter(transition -> transition.getProperty().getDiffKind() == diffKind).collect(Collectors.toList());
+
+        for (Transition<DiffAutomatonStateProperty, DiffProperty<T>> transition: incomingTransitions) {
+            automaton.removeTransition(transition);
+            automaton.addTransition(transition.getSource(), transition.getProperty(), newState);
+        }
+
+        // Relocate all outgoing transitions of 'state'.
+        List<Transition<DiffAutomatonStateProperty, DiffProperty<T>>> outgoingTransitions = automaton
+                .getOutgoingTransitions(state).stream()
+                .filter(transition -> transition.getProperty().getDiffKind() == diffKind).collect(Collectors.toList());
+
+        for (Transition<DiffAutomatonStateProperty, DiffProperty<T>> transition: outgoingTransitions) {
+            automaton.removeTransition(transition);
+            automaton.addTransition(newState, transition.getProperty(), transition.getTarget());
+        }
     }
 }
