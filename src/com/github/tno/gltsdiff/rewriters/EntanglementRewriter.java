@@ -63,12 +63,6 @@ public class EntanglementRewriter<T>
                                 stateProperty.isInitial() && stateProperty.getInitDiffKind() != DiffKind.REMOVED
                                         ? Optional.of(DiffKind.ADDED) : Optional.empty()));
 
-                // Turn the original tangle state into a removed state.
-                automaton.setStateProperty(state,
-                        new DiffAutomatonStateProperty(stateProperty.isAccepting(), DiffKind.REMOVED,
-                                stateProperty.isInitial() && stateProperty.getInitDiffKind() != DiffKind.ADDED
-                                        ? Optional.of(DiffKind.REMOVED) : Optional.empty()));
-
                 // Relocate all incoming added transitions into 'state'.
                 List<Transition<DiffAutomatonStateProperty, DiffProperty<T>>> incomingTransitions = automaton
                         .getIncomingTransitions(state).stream()
@@ -90,6 +84,12 @@ public class EntanglementRewriter<T>
                     automaton.removeTransition(transition);
                     automaton.addTransition(addedState, transition.getProperty(), transition.getTarget());
                 }
+
+                // Turn the original tangle state into a removed state.
+                automaton.setStateProperty(state,
+                        new DiffAutomatonStateProperty(stateProperty.isAccepting(), DiffKind.REMOVED,
+                                stateProperty.isInitial() && stateProperty.getInitDiffKind() != DiffKind.ADDED
+                                        ? Optional.of(DiffKind.REMOVED) : Optional.empty()));
 
                 // Remember that 'automaton' has been updated.
                 updated = true;
