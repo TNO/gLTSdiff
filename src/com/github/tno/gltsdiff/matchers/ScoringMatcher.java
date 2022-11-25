@@ -72,7 +72,7 @@ public abstract class ScoringMatcher<S, T, U extends LTS<S, T>> implements Match
                 double score = scores.getEntry(row, column);
 
                 Preconditions.checkArgument(Double.isFinite(score) || score == Double.NEGATIVE_INFINITY,
-                        "Expected a score that is either finite or negative infinity.");
+                        "Expected all scores to be either finite or negative infinity.");
 
                 if (Double.isFinite(score)) {
                     lowest = lowest == null ? score : Math.min(lowest, score);

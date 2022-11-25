@@ -367,7 +367,7 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
      * Converts a similarity scoring function into a list of (LHS, RHS)-state pairs, with their similarity scores.
      * 
      * @param scores A similarity scoring function.
-     * @return The conversion result.
+     * @return The converted result, containing only state pairs that have a positive score.
      */
     private List<Pair<Pair<State<S>, State<S>>, Double>> getScorePairs(BiFunction<State<S>, State<S>, Double> scores) {
         List<Pair<Pair<State<S>, State<S>>, Double>> pairs = new ArrayList<>(lhs.size() * rhs.size());
