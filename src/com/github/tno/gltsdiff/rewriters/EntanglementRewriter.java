@@ -21,8 +21,8 @@ import com.google.common.collect.Sets;
  * <p>
  * A <i>tangle</i> is defined to be an {@link DiffKind#UNCHANGED unchanged} state that has no unchanged incoming or
  * outgoing transitions, at least one {@link DiffKind#ADDED added} incoming/outgoing transition, and at least one
- * {@link DiffKind#REMOVED removed} incoming/outgoing transition. This rewriter splits all tangle states into two
- * states, an added and a removed one, and relocates all transitions accordingly to these new states.
+ * {@link DiffKind#REMOVED removed} incoming/outgoing transition. This rewriter splits each tangle state into two
+ * states, an added and a removed one, and relocates all transitions accordingly to these two states.
  * </p>
  *
  * @param <T> The type of transition properties.
