@@ -115,7 +115,7 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
                     double refinedScore = similarityScore(leftState, rightState, scores, commonNeighbors,
                             relevantProperties, accountForInitialStateArrows);
 
-                    // Store the refine similarity score in 'scores'.
+                    // Store the refined similarity score in 'scores'.
                     scores.setEntry(leftState.getId(), rightState.getId(), refinedScore);
                 }
             }

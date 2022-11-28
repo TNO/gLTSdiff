@@ -62,7 +62,7 @@ public class DynamicScorer<S, T, U extends LTS<S, T>> implements SimilarityScore
      * @param rhs The right-hand-side LTS, which has at least one state.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
-     * @param scoringAlgorithmCreator The scoring algorithm creator. Given the input LTSs and a combiner, creates a
+     * @param scoringAlgorithmCreator The scoring algorithm creator. Given the input LTSs and appropriate combiners, creates a
      *     suitable algorithm.
      */
     public DynamicScorer(U lhs, U rhs, Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner,
