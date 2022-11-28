@@ -127,6 +127,7 @@ public abstract class ScoringMatcher<S, T, U extends LTS<S, T>> implements Match
      *     <li>All states in the key set of the returned matching are LHS states.</li>
      *     <li>All states in the value set of the returned matching are RHS states.</li>
      *     <li>All state matchings are disjoint: there is no state that is involved in more than one matching.</li>
+     *     <li>All matched state pairs have a similarity score in the range [0,1].</li>
      *     <li>All matched states have combinable properties.</li>
      *     </ul>
      */
