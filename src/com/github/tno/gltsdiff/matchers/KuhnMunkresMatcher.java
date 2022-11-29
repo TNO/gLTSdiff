@@ -121,6 +121,13 @@ public class KuhnMunkresMatcher<S, T, U extends LTS<S, T>> extends ScoringMatche
             return truncate(matching, getScore);
         }
 
+        // Otherwise perform the steps of the Kuhn-Munkres algorithm.
+
+        // Note that the Kuhn-Munkres matcher will only match state pairs that have a finite score. This is because each
+        // step of the algorithm preserves the finiteness of the cells of 'matrix': all cells that are within the range
+        // [0,1] will stay within that range, and all positive infinite values will stay positive infinite. Furthermore,
+        // 'constructMatching' will only consider state pairs corresponding to cells in 'matrix' with a value of 0.
+
         // Perform the first step of Kuhn-Munkres: the row operations.
         step1(matrix);
 
