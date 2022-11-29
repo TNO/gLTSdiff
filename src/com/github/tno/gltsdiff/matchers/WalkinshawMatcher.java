@@ -146,9 +146,7 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
                 candidateMap.put(leftState, candidates);
             }
 
-            if (statePropertyCombiner.areCombinable(leftState.getProperty(), rightState.getProperty())) {
-                candidates.add(Pair.create(rightState, statePair.getSecond()));
-            }
+            candidates.add(Pair.create(rightState, statePair.getSecond()));
         }
 
         // Try to find landmarks, which will be stored in 'landmarks'.
@@ -364,17 +362,20 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
     }
 
     /**
-     * Converts a similarity scoring function into a list of (LHS, RHS)-state pairs, with their similarity scores.
+     * Converts a similarity scoring function into a list of (LHS, RHS)-state pairs with combinable properties, with
+     * their similarity scores.
      * 
      * @param scores A similarity scoring function.
-     * @return The conversion result.
+     * @return The conversion result, containing only (LHS, RHS)-state pairs with combinable properties.
      */
     private List<Pair<Pair<State<S>, State<S>>, Double>> getScorePairs(BiFunction<State<S>, State<S>, Double> scores) {
         List<Pair<Pair<State<S>, State<S>>, Double>> pairs = new ArrayList<>(lhs.size() * rhs.size());
 
         for (State<S> leftState: lhs.getStates()) {
             for (State<S> rightState: rhs.getStates()) {
-                pairs.add(Pair.create(Pair.create(leftState, rightState), scores.apply(leftState, rightState)));
+                if (statePropertyCombiner.areCombinable(leftState.getProperty(), rightState.getProperty())) {
+                    pairs.add(Pair.create(Pair.create(leftState, rightState), scores.apply(leftState, rightState)));
+                }
             }
         }
 
