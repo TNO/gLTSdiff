@@ -110,6 +110,7 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
      * respect to the given state similarity scoring function.
      * 
      * @param scores A scoring function that expresses for all (LHS, RHS)-state pairs how structurally similar they are.
+     *     All state similarity scores must either be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
      * @return A set of state pairs that are clear matches with respect to {@code scores}.
      *     <p>
      *     It may be that no landmarks can be found, in which case the returned set is empty. This only happens if the
@@ -366,8 +367,9 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
     /**
      * Converts a similarity scoring function into a list of (LHS, RHS)-state pairs, with their similarity scores.
      * 
-     * @param scores A similarity scoring function.
-     * @return The converted result, containing only state pairs that have a positive score.
+     * @param scores A similarity scoring function. All state similarity scores must either be within the range [0,1] or
+     *     be {@link Double#POSITIVE_INFINITY}.
+     * @return The converted result, containing only state pairs that have a finite score.
      */
     private List<Pair<Pair<State<S>, State<S>>, Double>> getScorePairs(BiFunction<State<S>, State<S>, Double> scores) {
         List<Pair<Pair<State<S>, State<S>>, Double>> pairs = new ArrayList<>(lhs.size() * rhs.size());
@@ -376,7 +378,7 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
             for (State<S> rightState: rhs.getStates()) {
                 double score = scores.apply(leftState, rightState);
 
-                if (score > 0) {
+                if (Double.isFinite(score)) {
                     pairs.add(Pair.create(Pair.create(leftState, rightState), score));
                 }
             }
