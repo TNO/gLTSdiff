@@ -362,8 +362,8 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
     }
 
     /**
-     * Converts a similarity scoring function into a list of (LHS, RHS)-state pairs with combinable properties, with
-     * their similarity scores.
+     * Converts a similarity scoring function into a list of (LHS, RHS)-state pairs, with their similarity scores,
+     * thereby including only state pairs that have combinable properties.
      * 
      * @param scores A similarity scoring function.
      * @return The conversion result, containing only (LHS, RHS)-state pairs with combinable properties.
