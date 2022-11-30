@@ -106,12 +106,12 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
     }
 
     /**
-     * Identifies a set of landmarks. A landmark is a pair of (LHS, RHS)-states that make a very clear match, with
-     * respect to the given state similarity scoring function.
+     * Identifies a set of landmarks. A landmark is a pair of (LHS, RHS)-states that are compatible with respect to
+     * {@link #isCompatible}, and make a very clear match with respect to the given state similarity scoring function.
      * 
      * @param scores A scoring function that expresses for all (LHS, RHS)-state pairs how structurally similar they are.
      *     All state similarity scores must either be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
-     * @return A set of state pairs that are clear matches with respect to {@code scores}.
+     * @return A set of compatible state pairs that are clear matches with respect to {@code scores}.
      *     <p>
      *     It may be that no landmarks can be found, in which case the returned set is empty. This only happens if the
      *     LHS and RHS are completely incompatible, meaning that every possible pair of (LHS, RHS)-states are a mismatch
@@ -246,7 +246,7 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
      * definition of 'Surr_{leftState, rightState}' as proposed by Walkinshaw et al. (see page 17), but uses a notion of
      * combinability instead of equality in determining reachable surrounding state pairs.
      * <p>
-     * Intuitively, the set of surrounding (LHS, RHS)-state pairs is the set of all pairs of states that
+     * Intuitively, the set of surrounding (LHS, RHS)-state pairs is the set of all pairs of compatible states that
      * ({@code leftState}, {@code rightState}) can "see" by following an incoming/outgoing edge with combinable
      * properties.
      * </p>
@@ -254,8 +254,8 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
      * @param statePair The state pair for which to collect all surrounding state pairs.
      * @param scores A scoring function that expresses for all (LHS, RHS)-state pairs how structurally similar they are.
      *     All state similarity scores must either be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
-     * @return The set of surrounding state pairs of {@code statePair} that have a finite score and combinable state
-     *     properties.
+     * @return The set of surrounding state pairs of {@code statePair} that are compatible with respect to
+     *     {@link #isCompatible}.
      */
     private Set<Pair<State<S>, State<S>>> surroundingPairs(Pair<State<S>, State<S>> statePair,
             BiFunction<State<S>, State<S>, Double> scores)
@@ -293,8 +293,8 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
      * @param statePairs The set of (LHS, RHS)-state pairs for which relevant neighboring are to be found.
      * @param scores A scoring function that expresses for all (LHS, RHS)-state pairs how structurally similar they are.
      *     All state similarity scores must either be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
-     * @return The set of relevant neighboring state pairs of {@code statePairs} that have a finite score and combinable
-     *     state properties.
+     * @return The set of relevant neighboring state pairs of {@code statePairs} that are compatible with respect to
+     *     {@link #isCompatible}.
      */
     private Set<Pair<State<S>, State<S>>> relevantNeighboringPairs(Set<Pair<State<S>, State<S>>> statePairs,
             BiFunction<State<S>, State<S>, Double> scores)
@@ -349,7 +349,8 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
      * @param landmarks The set of input landmarks, used as the basis for determining state matchings.
      * @param scores A similarity scoring function. All state similarity scores must either be within the range [0,1] or
      *     be {@link Double#POSITIVE_INFINITY}.
-     * @return The set of state pairs to match to one another.
+     * @return The set of state pairs to match to one another, which are all guaranteed to be compatible with respect to
+     *     {@link #isCompatible}.
      */
     private Set<Pair<State<S>, State<S>>> identifyKeyPairs(Set<Pair<State<S>, State<S>>> landmarks,
             BiFunction<State<S>, State<S>, Double> scores)
@@ -378,12 +379,11 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
 
     /**
      * Converts a similarity scoring function into a list of (LHS, RHS)-state pairs, with their similarity scores,
-     * thereby including only state pairs that have combinable properties and finite state similarity scores.
+     * thereby including only state pairs that are compatible with respect to {@link #isCompatible}.
      * 
      * @param scores A similarity scoring function. All state similarity scores must either be within the range [0,1] or
      *     be {@link Double#POSITIVE_INFINITY}.
-     * @return The conversion result, containing only (LHS, RHS)-state pairs with combinable properties and finite state
-     *     similarity scores.
+     * @return The conversion result, containing only (LHS, RHS)-state pairs that are compatible.
      */
     private List<Pair<Pair<State<S>, State<S>>, Double>> getScorePairs(BiFunction<State<S>, State<S>, Double> scores) {
         List<Pair<Pair<State<S>, State<S>>, Double>> pairs = new ArrayList<>(lhs.size() * rhs.size());
