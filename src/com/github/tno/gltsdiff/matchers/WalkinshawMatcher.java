@@ -119,8 +119,8 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
      *     </p>
      *     <p>
      *     All returned landmarks are guaranteed to be non-{@code null}. Furthermore, the returned landmarks are
-     *     guaranteed not to overlap (any LHS/RHS state is involved in at most one landmark), and their state properties
-     *     are combinable according to {@link #statePropertyCombiner}.
+     *     guaranteed not to overlap (any LHS/RHS state is involved in at most one landmark), and be compatible
+     *     according to {@link #isCompatible}.
      *     </p>
      */
     private Set<Pair<State<S>, State<S>>> identifyLandmarks(BiFunction<State<S>, State<S>, Double> scores) {
@@ -212,13 +212,11 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
 
             for (State<S> leftInitialState: lhs.getInitialStates()) {
                 for (State<S> rightInitialState: rhs.getInitialStates()) {
-                    if (!Double.isFinite(scores.apply(leftInitialState, rightInitialState)) || !statePropertyCombiner
-                            .areCombinable(leftInitialState.getProperty(), rightInitialState.getProperty()))
-                    {
+                    Pair<State<S>, State<S>> pair = Pair.create(leftInitialState, rightInitialState);
+
+                    if (!isCompatible(pair, scores)) {
                         continue;
                     }
-
-                    Pair<State<S>, State<S>> pair = Pair.create(leftInitialState, rightInitialState);
 
                     if (bestCurrentPair == null) {
                         bestCurrentPair = pair;
@@ -268,10 +266,7 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
                 .commonSuccessors(lhs, rhs, transitionPropertyCombiner, statePair).stream();
 
         // Return all compatible predecessors and successors.
-        return Stream.concat(predecessors, successors)
-                .filter(pair -> Double.isFinite(scores.apply(pair.getFirst(), pair.getSecond()))
-                        && statePropertyCombiner.areCombinable(pair.getFirst().getProperty(),
-                                pair.getSecond().getProperty()))
+        return Stream.concat(predecessors, successors).filter(pair -> isCompatible(pair, scores))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
@@ -395,17 +390,32 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
 
         for (State<S> leftState: lhs.getStates()) {
             for (State<S> rightState: rhs.getStates()) {
-                double score = scores.apply(leftState, rightState);
+                Pair<State<S>, State<S>> statePair = Pair.create(leftState, rightState);
 
-                if (Double.isFinite(score)
-                        && statePropertyCombiner.areCombinable(leftState.getProperty(), rightState.getProperty()))
-                {
-                    pairs.add(Pair.create(Pair.create(leftState, rightState), score));
+                if (isCompatible(statePair, scores)) {
+                    pairs.add(Pair.create(statePair, scores.apply(leftState, rightState)));
                 }
             }
         }
 
         return pairs;
+    }
+
+    /**
+     * Determines whether a given pair of states is compatible, i.e., allowed to be matched to one another. A state pair
+     * is compatible if it has a finite score, and has combinable state properties.
+     * 
+     * @param statePair The state pair to check.
+     * @param scores A similarity scoring function. All state similarity scores must either be within the range [0,1] or
+     *     be {@link Double#POSITIVE_INFINITY}.
+     * @return {@code true} if the given state pair is compatible, {@code false} otherwise.
+     */
+    private boolean isCompatible(Pair<State<S>, State<S>> statePair, BiFunction<State<S>, State<S>, Double> scores) {
+        State<S> leftState = statePair.getFirst();
+        State<S> rightState = statePair.getSecond();
+
+        return Double.isFinite(scores.apply(leftState, rightState))
+                && statePropertyCombiner.areCombinable(leftState.getProperty(), rightState.getProperty());
     }
 
     @Override
