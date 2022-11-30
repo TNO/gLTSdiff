@@ -28,6 +28,7 @@ import com.github.tno.gltsdiff.lts.State;
 import com.github.tno.gltsdiff.matchers.scorers.SimilarityScorer;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.utils.LTSUtils;
+import com.google.common.base.Preconditions;
 
 /**
  * Functionality for computing (LHS, RHS)-state matchings based on heuristics proposed by Walkinshaw et al. (TOSEM 2014;
@@ -426,6 +427,13 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
         // Construct a matching by using Walkinshaw's approach.
         Set<Pair<State<S>, State<S>>> landmarks = identifyLandmarks(getScore);
         Set<Pair<State<S>, State<S>>> matches = identifyKeyPairs(landmarks, getScore);
+
+        // All matched pairs of states should be compatible.
+        for (Pair<State<S>, State<S>> statePair: matches) {
+            Preconditions.checkArgument(isCompatible(statePair, getScore),
+                    "Expected all matched state pairs to be compatible.");
+        }
+
         return matches.stream().collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
     }
 }
