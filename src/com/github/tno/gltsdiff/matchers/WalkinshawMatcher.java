@@ -212,8 +212,8 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
 
             for (State<S> leftInitialState: lhs.getInitialStates()) {
                 for (State<S> rightInitialState: rhs.getInitialStates()) {
-                    if (!statePropertyCombiner.areCombinable(leftInitialState.getProperty(),
-                            rightInitialState.getProperty()))
+                    if (!Double.isFinite(scores.apply(leftInitialState, rightInitialState)) || !statePropertyCombiner
+                            .areCombinable(leftInitialState.getProperty(), rightInitialState.getProperty()))
                     {
                         continue;
                     }
@@ -252,17 +252,26 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
      * ({@code leftState}, {@code rightState}) can "see" by following an incoming/outgoing edge with combinable
      * properties.
      * </p>
+     *
+     * @param statePair The state pair for which to collect all surrounding state pairs.
+     * @param scores A scoring function that expresses for all (LHS, RHS)-state pairs how structurally similar they are.
+     *     All state similarity scores must either be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
+     * @return The set of surrounding state pairs of {@code statePair} that have a finite score and combinable state
+     *     properties.
      */
-    private Set<Pair<State<S>, State<S>>> surroundingPairs(Pair<State<S>, State<S>> statePair) {
+    private Set<Pair<State<S>, State<S>>> surroundingPairs(Pair<State<S>, State<S>> statePair,
+            BiFunction<State<S>, State<S>, Double> scores)
+    {
         Stream<Pair<State<S>, State<S>>> predecessors = LTSUtils
                 .commonPredecessors(lhs, rhs, transitionPropertyCombiner, statePair).stream();
         Stream<Pair<State<S>, State<S>>> successors = LTSUtils
                 .commonSuccessors(lhs, rhs, transitionPropertyCombiner, statePair).stream();
 
         // Return all compatible predecessors and successors.
-        return Stream
-                .concat(predecessors, successors).filter(pair -> statePropertyCombiner
-                        .areCombinable(pair.getFirst().getProperty(), pair.getSecond().getProperty()))
+        return Stream.concat(predecessors, successors)
+                .filter(pair -> Double.isFinite(scores.apply(pair.getFirst(), pair.getSecond()))
+                        && statePropertyCombiner.areCombinable(pair.getFirst().getProperty(),
+                                pair.getSecond().getProperty()))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
@@ -287,9 +296,14 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
      * disjoint from {@code statePairs}.
      * 
      * @param statePairs The set of (LHS, RHS)-state pairs for which relevant neighboring are to be found.
-     * @return The set of relevant neighboring state pairs of {@code statePairs}.
+     * @param scores A scoring function that expresses for all (LHS, RHS)-state pairs how structurally similar they are.
+     *     All state similarity scores must either be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
+     * @return The set of relevant neighboring state pairs of {@code statePairs} that have a finite score and combinable
+     *     state properties.
      */
-    private Set<Pair<State<S>, State<S>>> relevantNeighboringPairs(Set<Pair<State<S>, State<S>>> statePairs) {
+    private Set<Pair<State<S>, State<S>>> relevantNeighboringPairs(Set<Pair<State<S>, State<S>>> statePairs,
+            BiFunction<State<S>, State<S>, Double> scores)
+    {
         Set<Pair<State<S>, State<S>>> foundPairs = new LinkedHashSet<>();
 
         // Get all LHS and RHS states occurring in 'statePairs'.
@@ -299,7 +313,7 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
 
         for (Pair<State<S>, State<S>> statePair: statePairs) {
             // Find all (LHS, RHS)-state pairs that surround 'statePair'.
-            Set<Pair<State<S>, State<S>>> surrPairs = surroundingPairs(statePair);
+            Set<Pair<State<S>, State<S>>> surrPairs = surroundingPairs(statePair, scores);
 
             // Filter-out any surrounding pairs that have states that already occur in 'statePairs'.
             Set<Pair<State<S>, State<S>>> relevantPairs = surrPairs.stream()
@@ -336,12 +350,17 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
      * More details about the algorithm and its heuristics can be found on page 17 in the article of Walkinshaw et al.,
      * in particular Algorithm 1 and the accompanying explanation.
      * </p>
+     * 
+     * @param landmarks The set of input landmarks, used as the basis for determining state matchings.
+     * @param scores A similarity scoring function. All state similarity scores must either be within the range [0,1] or
+     *     be {@link Double#POSITIVE_INFINITY}.
+     * @return The set of state pairs to match to one another.
      */
     private Set<Pair<State<S>, State<S>>> identifyKeyPairs(Set<Pair<State<S>, State<S>>> landmarks,
             BiFunction<State<S>, State<S>, Double> scores)
     {
         Set<Pair<State<S>, State<S>>> keyPairs = new LinkedHashSet<>(landmarks);
-        Set<Pair<State<S>, State<S>>> neighPairs = relevantNeighboringPairs(keyPairs);
+        Set<Pair<State<S>, State<S>>> neighPairs = relevantNeighboringPairs(keyPairs, scores);
 
         while (!neighPairs.isEmpty()) {
             while (!neighPairs.isEmpty()) {
@@ -356,7 +375,7 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
                 neighPairs = removeConflicts(neighPairs, highestScoringPair);
             }
 
-            neighPairs = relevantNeighboringPairs(keyPairs);
+            neighPairs = relevantNeighboringPairs(keyPairs, scores);
         }
 
         return keyPairs;
