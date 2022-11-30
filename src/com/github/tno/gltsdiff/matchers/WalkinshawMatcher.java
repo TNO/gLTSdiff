@@ -147,10 +147,8 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
                 candidateMap.put(leftState, candidates);
             }
 
-            if (statePropertyCombiner.areCombinable(leftState.getProperty(), rightState.getProperty())) {
                 candidates.add(Pair.create(rightState, statePair.getSecond()));
             }
-        }
 
         // Try to find landmarks, which will be stored in 'landmarks'.
         Set<Pair<State<S>, State<S>>> landmarks = new LinkedHashSet<>();
@@ -365,11 +363,12 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
     }
 
     /**
-     * Converts a similarity scoring function into a list of (LHS, RHS)-state pairs, with their similarity scores.
+     * Converts a similarity scoring function into a list of (LHS, RHS)-state pairs, with their similarity scores,
+     * thereby including only state pairs that have combinable properties and finite state similarity scores.
      * 
      * @param scores A similarity scoring function. All state similarity scores must either be within the range [0,1] or
      *     be {@link Double#POSITIVE_INFINITY}.
-     * @return The converted result, containing only state pairs that have a finite score.
+     * @return The conversion result, containing only (LHS, RHS)-state pairs with combinable properties and finite state similarity scores.
      */
     private List<Pair<Pair<State<S>, State<S>>, Double>> getScorePairs(BiFunction<State<S>, State<S>, Double> scores) {
         List<Pair<Pair<State<S>, State<S>>, Double>> pairs = new ArrayList<>(lhs.size() * rhs.size());
@@ -378,7 +377,7 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
             for (State<S> rightState: rhs.getStates()) {
                 double score = scores.apply(leftState, rightState);
 
-                if (Double.isFinite(score)) {
+                if (Double.isFinite(score) && statePropertyCombiner.areCombinable(leftState.getProperty(), rightState.getProperty())) {
                     pairs.add(Pair.create(Pair.create(leftState, rightState), score));
                 }
             }

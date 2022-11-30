@@ -37,6 +37,7 @@ public class DiffAutomatonPostProcessing {
     public static <T> DiffAutomaton<T> rewrite(DiffAutomaton<T> diff, Combiner<T> combiner, Hider<T> hider) {
         // Instantiate all rewriters to be used for post-processing.
         List<Rewriter<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>> rewriters = new ArrayList<>(3);
+        rewriters.add(new EntanglementRewriter<>());
         rewriters.add(new LocalRedundancyRewriter<>(new DiffPropertyCombiner<>(combiner)));
         rewriters.add(new SkipForkPatternRewriter<>(combiner, hider));
         rewriters.add(new SkipJoinPatternRewriter<>(combiner, hider));
