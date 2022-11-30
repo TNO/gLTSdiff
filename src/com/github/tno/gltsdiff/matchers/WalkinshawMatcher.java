@@ -308,7 +308,7 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
         Set<State<S>> rightStates = unzippedPairs.getSecond();
 
         for (Pair<State<S>, State<S>> statePair: statePairs) {
-            // Find all (LHS, RHS)-state pairs that surround 'statePair'.
+            // Find all compatible (LHS, RHS)-state pairs that surround 'statePair'.
             Set<Pair<State<S>, State<S>>> surrPairs = surroundingPairs(statePair, scores);
 
             // Filter-out any surrounding pairs that have states that already occur in 'statePairs'.
@@ -347,7 +347,7 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
      * in particular Algorithm 1 and the accompanying explanation.
      * </p>
      * 
-     * @param landmarks The set of input landmarks, used as the basis for determining state matchings.
+     * @param landmarks The set of input landmarks.
      * @param scores A similarity scoring function. All state similarity scores must either be within the range [0,1] or
      *     be {@link Double#POSITIVE_INFINITY}.
      * @return The set of state pairs to match to one another, which are all guaranteed to be compatible with respect to

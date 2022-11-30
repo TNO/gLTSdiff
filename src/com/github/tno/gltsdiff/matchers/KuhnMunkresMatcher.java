@@ -381,8 +381,8 @@ public class KuhnMunkresMatcher<S, T, U extends LTS<S, T>> extends ScoringMatche
             rightStates.remove(assignment.getValue());
         }
 
-        // The given matching is complete if all leftover unmatched LHS and RHS state pairs have uncombinable properties
-        // and/or a similarity score that is not finite.
+        // The given matching is complete if all leftover unmatched LHS and RHS state pairs are incompatible, i.e., have
+        // uncombinable properties and/or have a similarity score that is not finite.
         return leftStates.stream().allMatch(leftState -> rightStates.stream()
                 .noneMatch(rightState -> Double.isFinite(scores.apply(leftState, rightState))
                         && statePropertyCombiner.areCombinable(leftState.getProperty(), rightState.getProperty())));
@@ -544,7 +544,7 @@ public class KuhnMunkresMatcher<S, T, U extends LTS<S, T>> extends ScoringMatche
     }
 
     /**
-     * Computes the inversion of {@code scores}, i.e., change every element {@code e} to {@code 1 - e}.
+     * Computes the inversion of {@code scores}, i.e. change every element {@code e} to {@code 1 - e}.
      * 
      * @param scores The scores that are to be inverted.
      * @return The inverted scores.
