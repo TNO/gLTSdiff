@@ -185,7 +185,7 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
                 // select the best match, but only if it's significantly better than all other possible matches, where
                 // the significance is determined by 'this.landmarkRatio'.
 
-                // Filter-out the best two possible matches (i.e., the two with the highest scores).
+                // Collect the best two possible matches (i.e., the two with the highest scores).
                 List<Pair<State<S>, Double>> bestPossibleMatches = potentialMatches.stream()
                         .sorted((m1, m2) -> m2.getSecond().compareTo(m1.getSecond())) // Sort by scores in desc order.
                         .limit(2) // Select the two highest scoring matches.
@@ -312,7 +312,7 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
             // Find all compatible (LHS, RHS)-state pairs that surround 'statePair'.
             Set<Pair<State<S>, State<S>>> surrPairs = surroundingPairs(statePair, scores);
 
-            // Filter-out any surrounding pairs that have states that already occur in 'statePairs'.
+            // Collect any surrounding pairs that have states that already occur in 'statePairs'.
             Set<Pair<State<S>, State<S>>> relevantPairs = surrPairs.stream()
                     .filter(p -> !leftStates.contains(p.getFirst()) && !rightStates.contains(p.getSecond()))
                     .collect(Collectors.toCollection(LinkedHashSet::new));
