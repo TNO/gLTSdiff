@@ -128,10 +128,11 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
         // First determine and filter-out the best so-many scoring state pairs. We will only consider these.
         int nrOfPairsToConsider = (int)Math.ceil(landmarkThreshold * lhs.size() * rhs.size());
 
-        List<Pair<Pair<State<S>, State<S>>, Double>> bestScoringPairs = getScorePairs(scores).stream()
-                .sorted((s1, s2) -> s2.getSecond().compareTo(s1.getSecond())) // Sort on scores in descending order.
-                .limit(nrOfPairsToConsider) // Only take the best so-many scoring pairs.
-                .collect(Collectors.toList());
+        List<Pair<Pair<State<S>, State<S>>, Double>> bestScoringPairs = //
+                getScorePairs(scores).stream() // Get compatible state pairs.
+                        .sorted((s1, s2) -> s2.getSecond().compareTo(s1.getSecond())) // Sort on scores in desc. order.
+                        .limit(nrOfPairsToConsider) // Only take the best so-many scoring pairs.
+                        .collect(Collectors.toList());
 
         // Out of 'bestScoringStatePairs' construct a map from LHS states to the list of compatible RHS states
         // to which they could be matched, paired with their similarity scores.
