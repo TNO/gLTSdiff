@@ -425,7 +425,7 @@ public class KuhnMunkresMatcher<S, T, U extends LTS<S, T>> extends ScoringMatche
     }
 
     /**
-     * Filters-out all assignments from the given matching that have a score at lower than {@code 0.1d} according to the
+     * Filters-out all assignments from the given matching that have a score lower than {@code 0.1d} according to the
      * given similarity scoring function.
      * 
      * @param matching The (LHS, RHS)-state matching that is to be filtered. All matched pairs of states must have
