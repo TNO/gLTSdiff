@@ -21,7 +21,6 @@ import org.apache.commons.math3.util.Pair;
 
 import com.github.tno.gltsdiff.lts.LTS;
 import com.github.tno.gltsdiff.lts.State;
-import com.github.tno.gltsdiff.lts.Transition;
 import com.github.tno.gltsdiff.matchers.BruteForceMatcher;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.utils.LTSUtils;
@@ -253,17 +252,9 @@ public class BruteForceMatcher<S, T, U extends LTS<S, T>> implements Matcher<S, 
         int count = 0;
 
         for (Pair<State<S>, State<S>> pair: fixed) {
-            Set<Pair<Transition<S, T>, Transition<S, T>>> commonTransitions = LTSUtils.commonOutgoingTransitions(lhs,
-                    rhs, transitionPropertyCombiner, pair);
-
-            for (Pair<Transition<S, T>, Transition<S, T>> transition: commonTransitions) {
-                Pair<State<S>, State<S>> successor = Pair.create(transition.getFirst().getTarget(),
-                        transition.getSecond().getTarget());
-
-                if (fixed.contains(successor)) {
-                    count++;
-                }
-            }
+            count += LTSUtils.commonOutgoingTransitions(lhs, rhs, transitionPropertyCombiner, pair)
+                    .map(t -> Pair.create(t.getFirst().getTarget(), t.getSecond().getTarget())).filter(fixed::contains)
+                    .count();
         }
 
         return count;
@@ -289,8 +280,8 @@ public class BruteForceMatcher<S, T, U extends LTS<S, T>> implements Matcher<S, 
 
         Pair<State<S>, State<S>> statePair = Pair.create(lhsState, rhsState);
 
-        return !LTSUtils.commonIncomingTransitions(lhs, rhs, transitionPropertyCombiner, statePair).isEmpty()
-                || !LTSUtils.commonOutgoingTransitions(lhs, rhs, transitionPropertyCombiner, statePair).isEmpty();
+        return LTSUtils.hasCommonIncomingTransitions(lhs, rhs, transitionPropertyCombiner, statePair)
+                || LTSUtils.hasCommonOutgoingTransitions(lhs, rhs, transitionPropertyCombiner, statePair);
     }
 
     /** @return The set of all (LHS, RHS)-state pairs with potential according to {@link #hasPotential(S, S)}. */

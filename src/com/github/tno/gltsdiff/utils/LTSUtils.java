@@ -10,9 +10,12 @@
 
 package com.github.tno.gltsdiff.utils;
 
+import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.math3.util.Pair;
 
@@ -27,59 +30,117 @@ public class LTSUtils {
     }
 
     /**
-     * Determines the set of all pairs of combinable ({@code left}, {@code right})-transitions that go into
-     * {@code statePair}, which is a pair of ({@code left}, {@code right})-states.
+     * Gives a stream of all pairs of common combinable incoming transitions that go into {@code statePair}.
      * 
      * @param <S> The type of state properties.
      * @param <T> The type of transition properties.
      * @param left The left LTS.
      * @param right The right LTS.
      * @param combiner The combiner for transition properties.
-     * @param statePair The state pair for which all common combinable incoming transitions are to be found.
-     * @return The set of all pairs of combinable incoming transitions into {@code statePair}.
+     * @param statePair The pair of ({@code left}, {@code right})-states to consider.
+     * @return The stream containing all pairs of combinable incoming transitions into {@code statePair}.
      */
-    public static <S, T> Set<Pair<Transition<S, T>, Transition<S, T>>> commonIncomingTransitions(LTS<S, T> left,
+    public static <S, T> Stream<Pair<Transition<S, T>, Transition<S, T>>> commonIncomingTransitions(LTS<S, T> left,
             LTS<S, T> right, Combiner<T> combiner, Pair<State<S>, State<S>> statePair)
     {
-        Set<Pair<Transition<S, T>, Transition<S, T>>> transitions = new LinkedHashSet<>();
+        List<Transition<S, T>> leftTransitions = left.getIncomingTransitions(statePair.getFirst());
+        List<Transition<S, T>> rightTransitions = right.getIncomingTransitions(statePair.getSecond());
 
-        for (Transition<S, T> leftTransition: left.getIncomingTransitions(statePair.getFirst())) {
-            for (Transition<S, T> rightTransition: right.getIncomingTransitions(statePair.getSecond())) {
-                if (combiner.areCombinable(leftTransition.getProperty(), rightTransition.getProperty())) {
-                    transitions.add(Pair.create(leftTransition, rightTransition));
-                }
-            }
-        }
-
-        return transitions;
+        return leftTransitions.stream().flatMap(l -> rightTransitions.stream()
+                .filter(r -> combiner.areCombinable(l.getProperty(), r.getProperty())).map(r -> Pair.create(l, r)));
     }
 
     /**
-     * Determines the set of all pairs of combinable ({@code left}, {@code right})-transitions that go out of
-     * {@code statePair}, which is a pair of ({@code left}, {@code right})-states.
+     * Collects all pairs of common combinable incoming transitions that go into {@code statePair}.
      * 
      * @param <S> The type of state properties.
      * @param <T> The type of transition properties.
      * @param left The left LTS.
      * @param right The right LTS.
      * @param combiner The combiner for transition properties.
-     * @param statePair The state pair for which all common combinable outgoing transitions are to be found.
-     * @return The set of all pairs of combinable outgoing transitions out of {@code statePair}.
+     * @param statePair The pair of ({@code left}, {@code right})-states to consider.
+     * @param collection The collection to which all common combinable incoming transitions should be added.
+     * @return A reference to {@code collection}, to which all common combinable incoming transitions are added.
      */
-    public static <S, T> Set<Pair<Transition<S, T>, Transition<S, T>>> commonOutgoingTransitions(LTS<S, T> left,
+    public static <S, T, C extends Collection<Pair<Transition<S, T>, Transition<S, T>>>> C commonIncomingTransitions(
+            LTS<S, T> left, LTS<S, T> right, Combiner<T> combiner, Pair<State<S>, State<S>> statePair, C collection)
+    {
+        return commonIncomingTransitions(left, right, combiner, statePair)
+                .collect(Collectors.toCollection(() -> collection));
+    }
+
+    /**
+     * Determines whether {@code statePair} has any common incoming transitions with combinable properties.
+     * 
+     * @param <S> The type of state properties.
+     * @param <T> The type of transition properties.
+     * @param left The left LTS.
+     * @param right The right LTS.
+     * @param combiner The combiner for transition properties.
+     * @param statePair The pair of ({@code left}, {@code right})-states to consider.
+     * @return {@code true} if the given state pair has common combinable incoming transitions, {@code false} otherwise.
+     */
+    public static <S, T> boolean hasCommonIncomingTransitions(LTS<S, T> left, LTS<S, T> right, Combiner<T> combiner,
+            Pair<State<S>, State<S>> statePair)
+    {
+        return commonIncomingTransitions(left, right, combiner, statePair).findAny().isPresent();
+    }
+
+    /**
+     * Gives a stream of all pairs of common combinable outgoing transitions that go out of {@code statePair}.
+     * 
+     * @param <S> The type of state properties.
+     * @param <T> The type of transition properties.
+     * @param left The left LTS.
+     * @param right The right LTS.
+     * @param combiner The combiner for transition properties.
+     * @param statePair The pair of ({@code left}, {@code right})-states to consider.
+     * @return The stream containing all pairs of combinable outgoing transitions out of {@code statePair}.
+     */
+    public static <S, T> Stream<Pair<Transition<S, T>, Transition<S, T>>> commonOutgoingTransitions(LTS<S, T> left,
             LTS<S, T> right, Combiner<T> combiner, Pair<State<S>, State<S>> statePair)
     {
-        Set<Pair<Transition<S, T>, Transition<S, T>>> transitions = new LinkedHashSet<>();
+        List<Transition<S, T>> leftTransitions = left.getOutgoingTransitions(statePair.getFirst());
+        List<Transition<S, T>> rightTransitions = right.getOutgoingTransitions(statePair.getSecond());
 
-        for (Transition<S, T> leftTransition: left.getOutgoingTransitions(statePair.getFirst())) {
-            for (Transition<S, T> rightTransition: right.getOutgoingTransitions(statePair.getSecond())) {
-                if (combiner.areCombinable(leftTransition.getProperty(), rightTransition.getProperty())) {
-                    transitions.add(Pair.create(leftTransition, rightTransition));
-                }
-            }
-        }
+        return leftTransitions.stream().flatMap(l -> rightTransitions.stream()
+                .filter(r -> combiner.areCombinable(l.getProperty(), r.getProperty())).map(r -> Pair.create(l, r)));
+    }
 
-        return transitions;
+    /**
+     * Collects all pairs of common combinable outgoing transitions that go out of {@code statePair}.
+     * 
+     * @param <S> The type of state properties.
+     * @param <T> The type of transition properties.
+     * @param left The left LTS.
+     * @param right The right LTS.
+     * @param combiner The combiner for transition properties.
+     * @param statePair The pair of ({@code left}, {@code right})-states to consider.
+     * @param collection The collection to which all common combinable outgoing transitions should be added.
+     * @return A reference to {@code collection}, to which all common combinable outgoing transitions are added.
+     */
+    public static <S, T, C extends Collection<Pair<Transition<S, T>, Transition<S, T>>>> C commonOutgoingTransitions(
+            LTS<S, T> left, LTS<S, T> right, Combiner<T> combiner, Pair<State<S>, State<S>> statePair, C collection)
+    {
+        return commonOutgoingTransitions(left, right, combiner, statePair)
+                .collect(Collectors.toCollection(() -> collection));
+    }
+
+    /**
+     * Determines whether {@code statePair} has any common outgoing transitions with combinable properties.
+     * 
+     * @param <S> The type of state properties.
+     * @param <T> The type of transition properties.
+     * @param left The left LTS.
+     * @param right The right LTS.
+     * @param combiner The combiner for transition properties.
+     * @param statePair The pair of ({@code left}, {@code right})-states to consider.
+     * @return {@code true} if the given state pair has common combinable outgoing transitions, {@code false} otherwise.
+     */
+    public static <S, T> boolean hasCommonOutgoingTransitions(LTS<S, T> left, LTS<S, T> right, Combiner<T> combiner,
+            Pair<State<S>, State<S>> statePair)
+    {
+        return commonOutgoingTransitions(left, right, combiner, statePair).findAny().isPresent();
     }
 
     /**
@@ -97,7 +158,7 @@ public class LTSUtils {
     public static <S, T> Set<Pair<State<S>, State<S>>> commonPredecessors(LTS<S, T> left, LTS<S, T> right,
             Combiner<T> combiner, Pair<State<S>, State<S>> statePair)
     {
-        return commonIncomingTransitions(left, right, combiner, statePair).stream()
+        return commonIncomingTransitions(left, right, combiner, statePair)
                 .map(pair -> Pair.create(pair.getFirst().getSource(), pair.getSecond().getSource()))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
@@ -117,7 +178,7 @@ public class LTSUtils {
     public static <S, T> Set<Pair<State<S>, State<S>>> commonSuccessors(LTS<S, T> left, LTS<S, T> right,
             Combiner<T> combiner, Pair<State<S>, State<S>> statePair)
     {
-        return commonOutgoingTransitions(left, right, combiner, statePair).stream()
+        return commonOutgoingTransitions(left, right, combiner, statePair)
                 .map(pair -> Pair.create(pair.getFirst().getTarget(), pair.getSecond().getTarget()))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
