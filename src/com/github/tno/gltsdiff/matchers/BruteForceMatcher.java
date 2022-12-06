@@ -21,7 +21,6 @@ import org.apache.commons.math3.util.Pair;
 
 import com.github.tno.gltsdiff.lts.LTS;
 import com.github.tno.gltsdiff.lts.State;
-import com.github.tno.gltsdiff.lts.Transition;
 import com.github.tno.gltsdiff.matchers.BruteForceMatcher;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.utils.LTSUtils;
@@ -34,8 +33,8 @@ import com.google.common.collect.Sets;
 /**
  * A brute force matching algorithm that calculates a best possible maximal (LHS, RHS)-state matching. The results are
  * <i>best possible</i> (or optimal) in the sense that matchings are computed with the objective to maximize the number
- * of combined transitions in the final merged LTS. Or, equivalently, it minimizes the number of uncombined transitions.
- * Moreover, the computed matching is guaranteed not to introduce any tangles.
+ * of transitions that would be combined in the final merged LTS. Or, equivalently, it minimizes the number of
+ * uncombined transitions. Moreover, the computed matching is guaranteed not to introduce any tangles.
  * <p>
  * This algorithm explores all the possible choices of relevant state matchings, making it brute force. The worst case
  * time complexity is therefore O(N!) with N = min{|LHS|, |RHS|}, where |LHS| and |RHS| are the number of states in the
@@ -122,7 +121,7 @@ public class BruteForceMatcher<S, T, U extends LTS<S, T>> implements Matcher<S, 
 
         // If there are no more candidate matchings left to consider, then return the current matching.
         if (candidateMatches.isEmpty()) {
-            return Pair.create(countNumberOfCombinedTransitions(fixedMatches), fixedMatches);
+            return Pair.create(countNumberOfProspectivelyCombinedTransitions(fixedMatches), fixedMatches);
         }
 
         // Otherwise, recursively explore all possible matchings that can be obtained from 'candidateMatches', to search
@@ -238,8 +237,8 @@ public class BruteForceMatcher<S, T, U extends LTS<S, T>> implements Matcher<S, 
     }
 
     /**
-     * Determines the number of combined transitions that the final merged LTS of {@link #getLhs()} and
-     * {@link #getRhs()} would have if all (LHS, RHS)-state pairs in {@code fixed} were matched and merged.
+     * Determines the number of transitions that would be combined in the final merged LTS of {@link #getLhs()} and
+     * {@link #getRhs()}, in which all (LHS, RHS)-state pairs in {@code fixed} were matched and merged.
      * <p>
      * The time complexity of this operation is O(|V1|*|V2|*|{@code fixed}|), with |V1| the number of states in
      * {@link #getLhs()} and |V2| the number of states in {@link #getRhs()}.
@@ -249,21 +248,13 @@ public class BruteForceMatcher<S, T, U extends LTS<S, T>> implements Matcher<S, 
      * @return The number of transitions in the LHS and RHS that would collapse into a combined transition if all state
      *     pairs in {@code fixed} were matched and merged.
      */
-    private int countNumberOfCombinedTransitions(Set<Pair<State<S>, State<S>>> fixed) {
+    private int countNumberOfProspectivelyCombinedTransitions(Set<Pair<State<S>, State<S>>> fixed) {
         int count = 0;
 
         for (Pair<State<S>, State<S>> pair: fixed) {
-            Set<Pair<Transition<S, T>, Transition<S, T>>> commonTransitions = LTSUtils.commonOutgoingTransitions(lhs,
-                    rhs, transitionPropertyCombiner, pair);
-
-            for (Pair<Transition<S, T>, Transition<S, T>> transition: commonTransitions) {
-                Pair<State<S>, State<S>> successor = Pair.create(transition.getFirst().getTarget(),
-                        transition.getSecond().getTarget());
-
-                if (fixed.contains(successor)) {
-                    count++;
-                }
-            }
+            count += LTSUtils.commonOutgoingTransitions(lhs, rhs, transitionPropertyCombiner, pair)
+                    .map(t -> Pair.create(t.getFirst().getTarget(), t.getSecond().getTarget())).filter(fixed::contains)
+                    .count();
         }
 
         return count;
@@ -289,8 +280,8 @@ public class BruteForceMatcher<S, T, U extends LTS<S, T>> implements Matcher<S, 
 
         Pair<State<S>, State<S>> statePair = Pair.create(lhsState, rhsState);
 
-        return !LTSUtils.commonIncomingTransitions(lhs, rhs, transitionPropertyCombiner, statePair).isEmpty()
-                || !LTSUtils.commonOutgoingTransitions(lhs, rhs, transitionPropertyCombiner, statePair).isEmpty();
+        return LTSUtils.hasCommonIncomingTransitions(lhs, rhs, transitionPropertyCombiner, statePair)
+                || LTSUtils.hasCommonOutgoingTransitions(lhs, rhs, transitionPropertyCombiner, statePair);
     }
 
     /** @return The set of all (LHS, RHS)-state pairs with potential according to {@link #hasPotential(S, S)}. */
