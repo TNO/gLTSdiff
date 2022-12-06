@@ -31,9 +31,12 @@ public interface SimilarityScorer<S, T, U extends LTS<S, T>> {
 
     /**
      * Computes a matrix of (LHS, RHS)-state similarity scores. The rows correspond to LHS states, columns to RHS
-     * states, and cells to a score that expresses how similar the (LHS, RHS)-state pair is. The computed similarity
-     * scores are allowed to be of any range (i.e., they do not necessarily have to be within the range [0,1]), as long
-     * as they are monotone: the higher the score, the higher the degree of similarity.
+     * states, and cells to a score that expresses how similar the (LHS, RHS)-state pair is.
+     * <p>
+     * Similarity scores are allowed to be any finite double, or {@link Double#NEGATIVE_INFINITY} to indicate that the
+     * corresponding state pair is truly incompatible and should not be merged. Moreover, similarity scores are intended
+     * to be monotone: the higher the score, the higher the degree of similarity.
+     * </p>
      * 
      * @return The computed matrix of similarity scores for every pair of (LHS, RHS)-states.
      */
