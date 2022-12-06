@@ -121,7 +121,7 @@ public abstract class WalkinshawScorer<S, T, U extends LTS<S, T>> implements Sim
                 // Any negative score indicates an incompatible state pair. This is not explicit in the TOSEM 2014
                 // article, but it is (to some extend) in the implementation of StateChum
                 // (e.g., see statechum.analysis.learning.linear.GDLearnerGraph, line 498, on
-                // https://github.com/kirilluk/statechum/commit/056163f301f27862d44f6eaa84ffbc30efb4bd48).
+                // https://github.com/kirilluk/statechum/blob/056163f301f27862d44f6eaa84ffbc30efb4bd48/src/statechum/analysis/learning/linear/GDLearnerGraph.java#L498).
                 // Therefore any such score is marked as minus infinity.
                 if (forwardScore < 0.0d || backwardScore < 0.0d) {
                     averageScores.setEntry(leftIndex, rightIndex, Double.NEGATIVE_INFINITY);
