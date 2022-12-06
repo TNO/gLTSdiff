@@ -125,7 +125,7 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
      *     </p>
      */
     private Set<Pair<State<S>, State<S>>> identifyLandmarks(BiFunction<State<S>, State<S>, Double> scores) {
-        // First determine and filter-out the best so-many scoring state pairs. We will only consider these.
+        // First determine and collect the best so-many scoring state pairs. We will only consider these.
         int nrOfPairsToConsider = (int)Math.ceil(landmarkThreshold * lhs.size() * rhs.size());
 
         List<Pair<Pair<State<S>, State<S>>, Double>> bestScoringPairs = //
