@@ -58,4 +58,9 @@ public class State<S> {
         Preconditions.checkNotNull(property, "Expected a non-null state property.");
         this.property = property;
     }
+
+    @Override
+    public String toString() {
+        return Integer.toString(id);
+    }
 }
