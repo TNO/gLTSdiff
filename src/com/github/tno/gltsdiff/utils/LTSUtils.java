@@ -10,7 +10,6 @@
 
 package com.github.tno.gltsdiff.utils;
 
-import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -51,25 +50,6 @@ public class LTSUtils {
     }
 
     /**
-     * Collects all pairs of common combinable incoming transitions that go into {@code statePair}.
-     * 
-     * @param <S> The type of state properties.
-     * @param <T> The type of transition properties.
-     * @param left The left LTS.
-     * @param right The right LTS.
-     * @param combiner The combiner for transition properties.
-     * @param statePair The pair of ({@code left}, {@code right})-states to consider.
-     * @param collection The collection to which all common combinable incoming transitions should be added.
-     * @return A reference to {@code collection}, to which all common combinable incoming transitions are added.
-     */
-    public static <S, T, C extends Collection<Pair<Transition<S, T>, Transition<S, T>>>> C commonIncomingTransitions(
-            LTS<S, T> left, LTS<S, T> right, Combiner<T> combiner, Pair<State<S>, State<S>> statePair, C collection)
-    {
-        return commonIncomingTransitions(left, right, combiner, statePair)
-                .collect(Collectors.toCollection(() -> collection));
-    }
-
-    /**
      * Determines whether {@code statePair} has any common incoming transitions with combinable properties.
      * 
      * @param <S> The type of state properties.
@@ -105,25 +85,6 @@ public class LTSUtils {
 
         return leftTransitions.stream().flatMap(l -> rightTransitions.stream()
                 .filter(r -> combiner.areCombinable(l.getProperty(), r.getProperty())).map(r -> Pair.create(l, r)));
-    }
-
-    /**
-     * Collects all pairs of common combinable outgoing transitions that go out of {@code statePair}.
-     * 
-     * @param <S> The type of state properties.
-     * @param <T> The type of transition properties.
-     * @param left The left LTS.
-     * @param right The right LTS.
-     * @param combiner The combiner for transition properties.
-     * @param statePair The pair of ({@code left}, {@code right})-states to consider.
-     * @param collection The collection to which all common combinable outgoing transitions should be added.
-     * @return A reference to {@code collection}, to which all common combinable outgoing transitions are added.
-     */
-    public static <S, T, C extends Collection<Pair<Transition<S, T>, Transition<S, T>>>> C commonOutgoingTransitions(
-            LTS<S, T> left, LTS<S, T> right, Combiner<T> combiner, Pair<State<S>, State<S>> statePair, C collection)
-    {
-        return commonOutgoingTransitions(left, right, combiner, statePair)
-                .collect(Collectors.toCollection(() -> collection));
     }
 
     /**
