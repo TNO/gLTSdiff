@@ -112,21 +112,28 @@ public class KuhnMunkresMatcher<S, T, U extends LTS<S, T>> extends ScoringMatche
             }
         }
 
-        // Define a function for obtaining the similarity score of any pair of (LHS, RHS)-states.
+        // Define a function for obtaining the (original) similarity score of any pair of (LHS, RHS)-states.
         BiFunction<State<S>, State<S>, Double> getScore = (l, r) -> scores.getEntry(l.getId(), r.getId());
 
         // Check whether a solution already exists before executing the algorithm.
-        Map<State<S>, State<S>> matching = convert(constructMatching(matrix));
-        if (isComplete(matching)) {
+        Map<State<S>, State<S>> matching = convert(constructMatching(matrix), getScore);
+        if (isComplete(matching, getScore)) {
             return truncate(matching, getScore);
         }
+
+        // Otherwise perform the steps of the Kuhn-Munkres algorithm.
+
+        // Note that the Kuhn-Munkres matcher will only match state pairs that have a finite score. This is because each
+        // step of the algorithm preserves the finiteness of the cells of 'matrix': all cells that are within the range
+        // [0,1] will stay within that range, and all positive infinite values will stay positive infinite. Furthermore,
+        // 'constructMatching' will only consider state pairs corresponding to cells in 'matrix' with a value of 0.
 
         // Perform the first step of Kuhn-Munkres: the row operations.
         step1(matrix);
 
         // Check whether the first step revealed a minimal matching.
-        matching = convert(constructMatching(matrix));
-        if (isComplete(matching)) {
+        matching = convert(constructMatching(matrix), getScore);
+        if (isComplete(matching, getScore)) {
             return truncate(matching, getScore);
         }
 
@@ -134,8 +141,8 @@ public class KuhnMunkresMatcher<S, T, U extends LTS<S, T>> extends ScoringMatche
         step2(matrix);
 
         // Check whether the second step revealed a minimal matching.
-        matching = convert(constructMatching(matrix));
-        if (isComplete(matching)) {
+        matching = convert(constructMatching(matrix), getScore);
+        if (isComplete(matching, getScore)) {
             return truncate(matching, getScore);
         }
 
@@ -145,8 +152,8 @@ public class KuhnMunkresMatcher<S, T, U extends LTS<S, T>> extends ScoringMatche
             step4(matrix, lines.getFirst(), lines.getSecond());
 
             // Check whether the 3rd and 4th step revealed a minimal matching, which is guaranteed to happen eventually.
-            matching = convert(constructMatching(matrix));
-            if (isComplete(matching)) {
+            matching = convert(constructMatching(matrix), getScore);
+            if (isComplete(matching, getScore)) {
                 break;
             }
         }
@@ -156,7 +163,12 @@ public class KuhnMunkresMatcher<S, T, U extends LTS<S, T>> extends ScoringMatche
 
     /**
      * Performs the first step of the Kuhn-Munkres algorithm: for each row in the given matrix, find the smallest entry
-     * in that row, and subtract it from every entry in the row.
+     * in that row, and if that entry is finite, subtract it from every entry in the row. This step ensures that all
+     * entries of {@code matrix} within the range [0,1] stay within that range, and that all
+     * {@link Double#POSITIVE_INFINITY} entries are preserved.
+     * 
+     * @param matrix The matrix of score assignments, whose entries are either within the range [0,1] or are
+     *     {@link Double#POSITIVE_INFINITY}.
      */
     private void step1(RealMatrix matrix) {
         // Iterate over every row.
@@ -181,7 +193,12 @@ public class KuhnMunkresMatcher<S, T, U extends LTS<S, T>> extends ScoringMatche
 
     /**
      * Performs the second step of the Kuhn-Munkres algorithm: for each column in the given matrix, find the smallest
-     * entry in that column, and subtract it from every entry in the column.
+     * finite entry in that column, and subtract it from every entry in the column. This step ensures that all entries
+     * of {@code matrix} within the range [0,1] stay within that range, and that all {@link Double#POSITIVE_INFINITY}
+     * entries are preserved.
+     * 
+     * @param matrix The matrix of score assignments, whose entries are either within the range [0,1] or are
+     *     {@link Double#POSITIVE_INFINITY}.
      */
     private void step2(RealMatrix matrix) {
         // Iterate over every column.
@@ -206,9 +223,10 @@ public class KuhnMunkresMatcher<S, T, U extends LTS<S, T>> extends ScoringMatche
 
     /**
      * Finds a minimal number of horizontal and vertical lines over the given matrix that together cover all the entries
-     * in the matrix that are {@code 0.0d}.
+     * in the matrix that are {@code 0.0d}. This operation does not modify {@code matrix}.
      * 
-     * @param matrix The matrix for which the line covering is to be determined.
+     * @param matrix The matrix of score assignments, whose entries are either within the range [0,1] or are
+     *     {@link Double#POSITIVE_INFINITY}.
      * @return The horizontal (row) and vertical (column) lines, that each come as a set of integers representing the
      *     row/column index. So the returned structure is a pair of sets of integers, where the first set contains the
      *     row lines and the second set contains the column lines.
@@ -291,8 +309,11 @@ public class KuhnMunkresMatcher<S, T, U extends LTS<S, T>> extends ScoringMatche
      * <li>Subtracts this value from every entry that is not covered by a line, and</li>
      * <li>Adds it to all entries that are covered by two lines.</li>
      * </ul>
+     * This step ensures that all entries of {@code matrix} within the range [0,1] stay within that range, and that all
+     * {@link Double#POSITIVE_INFINITY} entries are preserved.
      * 
-     * @param matrix The input matrix.
+     * @param matrix The matrix of score assignments, whose entries are either within the range [0,1] or are
+     *     {@link Double#POSITIVE_INFINITY}.
      * @param horizontalLines A set of horizontal lines: the elements of this set are row indices in the matrix.
      * @param verticalLines A set of vertical lines: the elements of this set are column indices in the matrix.
      */
@@ -320,9 +341,10 @@ public class KuhnMunkresMatcher<S, T, U extends LTS<S, T>> extends ScoringMatche
         // minimal number of lines needed to cover all zeroes. That should be the case, since otherwise all entries are
         // covered by a line, in which case a matching would have already been found before calling 'step4'.
 
-        // Moreover, 'minValue' must be finite, since otherwise all values that are not covered by a line are infinite,
-        // meaning that a best possible matching must already have been found before calling 'step4',
-        // since all values that are not covered by a line correspond to matchings of uncombinable states.
+        // Moreover, 'minValue' must be finite (and therefore be within the range [0,1]) since otherwise all values that
+        // are not covered by a line are infinite, meaning that a best possible matching must already have been found
+        // before calling 'step4', since all values that are not covered by a line correspond to matchings of
+        // uncombinable states.
         Preconditions.checkArgument(Double.isFinite(minValue), "Expected the lowest value to be finite.");
 
         // Subtract the lowest value from all entries not covered by a line.
@@ -344,8 +366,13 @@ public class KuhnMunkresMatcher<S, T, U extends LTS<S, T>> extends ScoringMatche
 
     /**
      * Determines whether the given matching is a complete (LHS, RHS)-matching, in the sense that it cannot be extended.
+     * 
+     * @param matching The (LHS, RHS)-state matching to check.
+     * @param scores The similarity scoring function for (LHS, RHS)-state pairs. All state similarity scores must either
+     *     be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
+     * @return {@code true} if {@code matching} is complete and cannot be extended further, {@code false} otherwise.
      */
-    private boolean isComplete(Map<State<S>, State<S>> matching) {
+    private boolean isComplete(Map<State<S>, State<S>> matching, BiFunction<State<S>, State<S>, Double> scores) {
         Set<State<S>> leftStates = new LinkedHashSet<>(lhs.getStates());
         Set<State<S>> rightStates = new LinkedHashSet<>(rhs.getStates());
 
@@ -354,15 +381,26 @@ public class KuhnMunkresMatcher<S, T, U extends LTS<S, T>> extends ScoringMatche
             rightStates.remove(assignment.getValue());
         }
 
-        // The given matching is complete if all leftover unmatched LHS and RHS states have uncombinable properties.
-        return leftStates.stream().allMatch(leftState -> rightStates.stream().noneMatch(
-                rightState -> statePropertyCombiner.areCombinable(leftState.getProperty(), rightState.getProperty())));
+        // The given matching is complete if all leftover unmatched LHS and RHS state pairs are incompatible, i.e., have
+        // uncombinable properties and/or have a similarity score that is not finite.
+        return leftStates.stream().allMatch(leftState -> rightStates.stream()
+                .noneMatch(rightState -> Double.isFinite(scores.apply(leftState, rightState))
+                        && statePropertyCombiner.areCombinable(leftState.getProperty(), rightState.getProperty())));
     }
 
     /**
      * Converts a given matching that is constructed for the Kuhn-Munkres matrix, to a matching on (LHS, RHS)-states.
+     * 
+     * @param matching The (LHS, RHS)-state matching to convert, where all states are represented by their identifiers.
+     *     All matched pairs of states must have combinable state properties, as well as a finite similarity score with
+     *     respect to {@code scores}.
+     * @param scores The similarity scoring function for (LHS, RHS)-state pairs. All state similarity scores must either
+     *     be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
+     * @return The converted (LHS, RHS)-state matching.
      */
-    private Map<State<S>, State<S>> convert(Map<Integer, Integer> matching) {
+    private Map<State<S>, State<S>> convert(Map<Integer, Integer> matching,
+            BiFunction<State<S>, State<S>, Double> scores)
+    {
         Map<State<S>, State<S>> stateMatching = new LinkedHashMap<>();
 
         for (Entry<Integer, Integer> entry: matching.entrySet()) {
@@ -376,6 +414,8 @@ public class KuhnMunkresMatcher<S, T, U extends LTS<S, T>> extends ScoringMatche
                 Preconditions.checkArgument(
                         statePropertyCombiner.areCombinable(leftState.getProperty(), rightState.getProperty()),
                         "Expected matched states to have combinable state properties.");
+                Preconditions.checkArgument(Double.isFinite(scores.apply(leftState, rightState)),
+                        "Expected matched states to have finite scores.");
 
                 stateMatching.put(leftState, rightState);
             }
@@ -385,11 +425,13 @@ public class KuhnMunkresMatcher<S, T, U extends LTS<S, T>> extends ScoringMatche
     }
 
     /**
-     * Filters-out all assignments from the given matching that have a score at least {@code 0.1d} according to the
+     * Filters-out all assignments from the given matching that have a score lower than {@code 0.1d} according to the
      * given similarity scoring function.
      * 
-     * @param matching The (LHS, RHS)-state matching that is to be filtered.
-     * @param scores The state pair similarity scores that form the basis for filtering.
+     * @param matching The (LHS, RHS)-state matching that is to be filtered. All matched pairs of states must have
+     *     combinable state properties, as well as a finite similarity score with respect to {@code scores}.
+     * @param scores The similarity scoring function for (LHS, RHS)-state pairs that forms the basis for filtering. All
+     *     state similarity scores must either be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
      * @return A subset of matchings, containing only the assignments with a similarity score at least {@code 0.1d}.
      */
     private Map<State<S>, State<S>> truncate(Map<State<S>, State<S>> matching,
@@ -401,7 +443,10 @@ public class KuhnMunkresMatcher<S, T, U extends LTS<S, T>> extends ScoringMatche
             State<S> leftState = entry.getKey();
             State<S> rightState = entry.getValue();
 
-            if (0.1d <= scores.apply(leftState, rightState)) {
+            double score = scores.apply(leftState, rightState);
+            Preconditions.checkArgument(Double.isFinite(score), "Expected matched states to have finite scores.");
+
+            if (0.1d <= score) {
                 reducedMatching.put(leftState, rightState);
             }
         }
@@ -501,7 +546,7 @@ public class KuhnMunkresMatcher<S, T, U extends LTS<S, T>> extends ScoringMatche
     /**
      * Computes the inversion of {@code scores}, i.e. change every element {@code e} to {@code 1 - e}.
      * 
-     * @param scores The scores that are to be inverted. All its scores are expected to be within the range [0,1].
+     * @param scores The scores that are to be inverted.
      * @return The inverted scores.
      */
     private RealMatrix invert(RealMatrix scores) {
