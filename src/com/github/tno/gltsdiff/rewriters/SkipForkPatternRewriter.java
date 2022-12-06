@@ -38,7 +38,7 @@ public class SkipForkPatternRewriter<T>
     private final Combiner<DiffAutomatonStateProperty> statePropertyCombiner = new DiffAutomatonStatePropertyCombiner();
 
     /** The combiner for transition properties. */
-    protected final Combiner<DiffProperty<T>> transitionPropertyCombiner;
+    private final Combiner<DiffProperty<T>> transitionPropertyCombiner;
 
     /** The hider for transition properties. */
     private final Hider<DiffProperty<T>> transitionPropertyHider;

@@ -38,7 +38,7 @@ public class SkipJoinPatternRewriter<T>
     private final Combiner<DiffAutomatonStateProperty> statePropertyCombiner = new DiffAutomatonStatePropertyCombiner();
 
     /** The combiner for transition properties. */
-    protected final Combiner<DiffProperty<T>> transitionPropertyCombiner;
+    private final Combiner<DiffProperty<T>> transitionPropertyCombiner;
 
     /** The hider for transition properties. */
     private final Hider<DiffProperty<T>> transitionPropertyHider;
@@ -62,9 +62,10 @@ public class SkipJoinPatternRewriter<T>
      * </p>
      * 
      * @param transitionPropertyCombiner The combiner for transition properties.
-     * @param transitionPropertyHider The hider for transition properties. * @param isIncludedIn A property inclusion
-     *     relation, that determines whether all combinable information of the first argument is contained in the second
-     *     argument. This predicate will only be invoked on combinable non-{@code null} properties.
+     * @param transitionPropertyHider The hider for transition properties.
+     * @param isIncludedIn A property inclusion relation, that determines whether all combinable information of the
+     *     first argument is contained in the second argument. This predicate will only be invoked on combinable
+     *     non-{@code null} properties.
      */
     public SkipJoinPatternRewriter(Combiner<DiffProperty<T>> transitionPropertyCombiner,
             Hider<DiffProperty<T>> transitionPropertyHider, BiPredicate<DiffProperty<T>, DiffProperty<T>> isIncludedIn)
