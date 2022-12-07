@@ -45,7 +45,7 @@ public class DiffAutomatonPostProcessing {
         BiPredicate<DiffProperty<T>, DiffProperty<T>> isIncludedIn = (l, r) -> r.equals(diffCombiner.combine(l, r));
 
         // Instantiate all rewriters to be used for post-processing.
-        List<Rewriter<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>> rewriters = new ArrayList<>(3);
+        List<Rewriter<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>> rewriters = new ArrayList<>();
         rewriters.add(new EntanglementRewriter<>());
         rewriters.add(new LocalRedundancyRewriter<>(diffCombiner));
         rewriters.add(new SkipForkPatternRewriter<>(diffCombiner, diffHider, isIncludedIn));
