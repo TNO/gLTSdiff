@@ -11,7 +11,11 @@
 package com.github.tno.gltsdiff.matchers.scorers;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.apache.commons.math3.linear.OpenMapRealMatrix;
@@ -79,45 +83,63 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
     @Override
     protected RealMatrix computeForwardSimilarityScores() {
         return computeScores(pair -> LTSUtils.commonSuccessors(lhs, rhs, transitionPropertyCombiner, pair),
-                lts -> state -> lts.getOutgoingTransitionProperties(state), false);
+                (lts, state) -> lts.getOutgoingTransitionProperties(state), false);
     }
 
     @Override
     protected RealMatrix computeBackwardSimilarityScores() {
         return computeScores(pair -> LTSUtils.commonPredecessors(lhs, rhs, transitionPropertyCombiner, pair),
-                lts -> state -> lts.getIncomingTransitionProperties(state), true);
+                (lts, state) -> lts.getIncomingTransitionProperties(state), true);
     }
 
     /**
-     * Computes local similarity scores for every pair of (LHS, RHS)-state pairs.
+     * Computes local similarity scores for every pair of (LHS, RHS)-state pairs. Details of this computation are in the
+     * TOSEM 2014 article of Walkinshaw et al.; see Section 4.1 (Equations 2 and 4) and Section 4.2 (Equation 5).
+     * However, this implementation has been generalized by a notion of combinability (see {@link Combiner}) to
+     * determine the amount of overlap between transition properties, and takes initial state information into account.
      * 
-     * @param commonNeighbors A function that determines the common neighboring state pairs for a given pair of (LHS,
-     *     RHS)-states, that are relevant for computing local similarity scores.
-     * @param relevantProperties A function that determines the transition properties for a given LTS and a state of
-     *     that LTS, that are relevant for computing local similarity scores.
+     * @param commonNeighbors A function from (LHS, RHS)-state pairs to their common neighboring state pairs.
+     * @param relevantProperties A function that determines the relevant transition properties for an LTS and a state.
      * @param accountForInitialStateArrows Whether the scoring calculation should take initial state arrows into
      *     account. Note that the original paper does not take initial states into account.
      * @return A matrix of local state similarity scores, all of which are in the range [-1,1].
      */
     private RealMatrix computeScores(
             Function<Pair<State<S>, State<S>>, Collection<Pair<State<S>, State<S>>>> commonNeighbors,
-            Function<U, Function<State<S>, Set<T>>> relevantProperties, boolean accountForInitialStateArrows)
+            BiFunction<U, State<S>, Set<T>> relevantProperties, boolean accountForInitialStateArrows)
     {
+        // Collect all statically known similarity scores, as well as all state pairs with statically unknown scores.
+        Map<Pair<State<S>, State<S>>, Double> staticallyKnownScores = new LinkedHashMap<>();
+        Set<Pair<State<S>, State<S>>> statePairsWithUnknownScores = collectStaticallyKnownScores(staticallyKnownScores,
+                commonNeighbors, relevantProperties, accountForInitialStateArrows);
+
         // Define an initial similarity score matrix with score 0 for every (LHS, RHS)-state pair.
         RealMatrix scores = new OpenMapRealMatrix(lhs.size(), rhs.size());
 
-        // Refine the scores a number of times. At least one refinement will always be performed.
-        for (int i = 0; i < nrOfRefinements; i++) {
-            // Iterate over all pairs of (LHS, RHS)-states.
-            for (State<S> leftState: lhs.getStates()) {
-                for (State<S> rightState: rhs.getStates()) {
-                    // Refine the similarity score of the current state pair.
-                    double refinedScore = similarityScore(leftState, rightState, scores, commonNeighbors,
-                            relevantProperties, accountForInitialStateArrows);
+        // Fill in all statically known similarity scores into 'scores'.
+        for (Entry<Pair<State<S>, State<S>>, Double> entry: staticallyKnownScores.entrySet()) {
+            State<S> leftState = entry.getKey().getFirst();
+            State<S> rightState = entry.getKey().getSecond();
+            scores.setEntry(leftState.getId(), rightState.getId(), entry.getValue());
+        }
 
-                    // Store the refined similarity score in 'scores'.
-                    scores.setEntry(leftState.getId(), rightState.getId(), refinedScore);
-                }
+        // If all scores happen to already be statically known then we are trivially done.
+        if (statePairsWithUnknownScores.isEmpty()) {
+            return scores;
+        }
+
+        // Otherwise we refine all the statically unknown scores 'nrOfRefinements' times.
+        for (int i = 0; i < nrOfRefinements; i++) {
+            for (Pair<State<S>, State<S>> statePair: statePairsWithUnknownScores) {
+                State<S> leftState = statePair.getFirst();
+                State<S> rightState = statePair.getSecond();
+
+                // Refine the similarity score of the current state pair.
+                double refinedScore = similarityScore(leftState, rightState, scores, commonNeighbors,
+                        relevantProperties, accountForInitialStateArrows);
+
+                // Store the refined similarity score in 'scores'.
+                scores.setEntry(leftState.getId(), rightState.getId(), refinedScore);
             }
         }
 
@@ -134,8 +156,8 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
      * amount of overlap between transition properties.
      * </p>
      * 
-     * @param leftState A LHS state.
-     * @param rightState A RHS state.
+     * @param leftState A LHS state, which together with {@code rightState} must have an unknown state similarity score.
+     * @param rightState A RHS state, which together with {@code leftState} must have an unknown state similarity score.
      * @param scores The current matrix of similarity scores that is to be refined.
      * @param commonNeighbors A function giving the relevant neighboring state pairs for a pair of (LHS, RHS)-states.
      * @param relevantProperties A function that determines the relevant transition properties based on an LTS and a
@@ -146,25 +168,16 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
      */
     private double similarityScore(State<S> leftState, State<S> rightState, RealMatrix scores,
             Function<Pair<State<S>, State<S>>, Collection<Pair<State<S>, State<S>>>> commonNeighbors,
-            Function<U, Function<State<S>, Set<T>>> relevantProperties, boolean accountForInitialStateArrows)
+            BiFunction<U, State<S>, Set<T>> relevantProperties, boolean accountForInitialStateArrows)
     {
-        // If 'leftState' and 'rightState' are uncombinable, then their similarity score is -1.
-        if (!statePropertyCombiner.areCombinable(leftState.getProperty(), rightState.getProperty())) {
-            return -1d;
-        }
-
         // Get all relevant neighbors of 'leftState' and 'rightState' for computing the similarity score.
         // The similarity score is a fraction.
         Collection<Pair<State<S>, State<S>>> neighbors = commonNeighbors.apply(Pair.create(leftState, rightState));
-
-        // Shortcut to improve performance (having no neighbors means that the numerator will always be zero).
-        if (neighbors.isEmpty()) {
-            return 0d;
-        }
+        Preconditions.checkArgument(!neighbors.isEmpty(), "Expected a non-empty collection of neighbors.");
 
         // First calculate its denominator. Details are in the paper.
-        Set<T> propertiesLeft = relevantProperties.apply(lhs).apply(leftState);
-        Set<T> propertiesRight = relevantProperties.apply(rhs).apply(rightState);
+        Set<T> propertiesLeft = relevantProperties.apply(lhs, leftState);
+        Set<T> propertiesRight = relevantProperties.apply(rhs, rightState);
 
         // If 'leftState' and/or 'rightState' is initial and if initial state arrows should be accounted for,
         // then adjust the denominator by 'initialStateAdjustment' to indicate that there are initial states.
@@ -182,10 +195,8 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
                 + uncombinableTransitionProperties(propertiesRight, propertiesLeft).size() + neighbors.size()
                 + initialStateAdjustment);
 
-        // Shortcut to improve performance.
-        if (denominator == 0) {
-            return 0d;
-        }
+        // Note that the denominator must be positive, since 'neighbors' cannot be empty.
+        Preconditions.checkArgument(denominator > 0, "Expected the denominator to be positive.");
 
         // Second, calculate its numerator. Details are in the paper.
         double numerator = 0;
@@ -193,13 +204,13 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
         for (Pair<State<S>, State<S>> neighbor: neighbors) {
             int lhsIdx = neighbor.getFirst().getId();
             int rhsIdx = neighbor.getSecond().getId();
-            numerator += 1 + attenuationFactor * scores.getEntry(lhsIdx, rhsIdx);
+            numerator += 1d + attenuationFactor * scores.getEntry(lhsIdx, rhsIdx);
         }
 
         // If initial state arrows should be accounted for and if 'leftState' and 'rightState' are both initial,
         // then increase the numerator by 1 to increase the similarity score for this state pair.
         if (accountForInitialStateArrows && isLeftStateInitial && isRightStateInitial) {
-            numerator += 1.0d;
+            numerator += 1d;
         }
 
         // Calculate the new score.

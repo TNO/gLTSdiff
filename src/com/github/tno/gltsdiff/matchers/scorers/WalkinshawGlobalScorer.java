@@ -11,10 +11,14 @@
 package com.github.tno.gltsdiff.matchers.scorers;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.DecompositionSolver;
 import org.apache.commons.math3.linear.LUDecomposition;
@@ -27,6 +31,9 @@ import com.github.tno.gltsdiff.lts.LTS;
 import com.github.tno.gltsdiff.lts.State;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.utils.LTSUtils;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 
 /**
  * Contains functionality for computing global similarity scores for pairs of (LHS, RHS)-states. These scores are
@@ -66,13 +73,13 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
     @Override
     protected RealMatrix computeForwardSimilarityScores() {
         return computeScores(pair -> LTSUtils.commonSuccessors(lhs, rhs, transitionPropertyCombiner, pair),
-                p -> p.getFirst().getOutgoingTransitionProperties(p.getSecond()), false);
+                (lts, state) -> lts.getOutgoingTransitionProperties(state), false);
     }
 
     @Override
     protected RealMatrix computeBackwardSimilarityScores() {
         return computeScores(pair -> LTSUtils.commonPredecessors(lhs, rhs, transitionPropertyCombiner, pair),
-                p -> p.getFirst().getIncomingTransitionProperties(p.getSecond()), true);
+                (lts, state) -> lts.getIncomingTransitionProperties(state), true);
     }
 
     /**
@@ -89,108 +96,122 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
      * </p>
      * 
      * @param commonNeighbors A function from (LHS, RHS)-state pairs to their common neighboring state pairs.
-     * @param relevantProperties A function that determines the relevant transition properties based on an LTS and a
-     *     state.
+     * @param relevantProperties A function that determines the relevant transition properties for an LTS and a state.
      * @param accountForInitialStateArrows Whether the scoring calculation should take initial state arrows into
      *     account. Note that the original paper does not take initial states into account.
      * @return A matrix of state similarity scores, all of which are in the range [-1,1].
      */
     private RealMatrix computeScores(
             Function<Pair<State<S>, State<S>>, Collection<Pair<State<S>, State<S>>>> commonNeighbors,
-            Function<Pair<U, State<S>>, Set<T>> relevantProperties, boolean accountForInitialStateArrows)
+            BiFunction<U, State<S>, Set<T>> relevantProperties, boolean accountForInitialStateArrows)
     {
-        // How many state pairs do we have to account for?
-        int lhsStateCount = lhs.size();
-        int rhsStateCount = rhs.size();
-        int nrOfStatePairs = lhsStateCount * rhsStateCount;
+        // Collect all statically known similarity scores, as well as all state pairs with statically unknown scores.
+        Map<Pair<State<S>, State<S>>, Double> staticallyKnownScores = new LinkedHashMap<>();
+        Set<Pair<State<S>, State<S>>> statePairsWithUnknownScores = collectStaticallyKnownScores(staticallyKnownScores,
+                commonNeighbors, relevantProperties, accountForInitialStateArrows);
+
+        // Here it holds that the set of 'statePairsWithUnknownScores' plus the key set of 'staticallyKnownScores'
+        // equals the set of all possible (LHS, RHS)-state pairs. Moreover, both these sets are disjoint.
+
+        // If we already know the similarity scores of all state pairs, then we can terminate early.
+        if (statePairsWithUnknownScores.isEmpty()) {
+            RealMatrix scores = new OpenMapRealMatrix(lhs.size(), rhs.size());
+
+            for (Entry<Pair<State<S>, State<S>>, Double> entry: staticallyKnownScores.entrySet()) {
+                int row = entry.getKey().getFirst().getId();
+                int column = entry.getKey().getSecond().getId();
+                double score = entry.getValue();
+                scores.setEntry(row, column, score);
+            }
+
+            return scores;
+        }
+
+        // Otherwise we need to construct and solve a linear equation system, to find all missing similarity scores.
+        // We construct this linear system as proposed by Walkinshaw et al. in their TOSEM 2014 article.
+
+        // We start by indexing 'statePairsWithUnknownScores' to get fast indexOf functionality, which would otherwise
+        // take at least O(log n) time. This indexing is needed for encoding/locating state pairs in the linear system.
+        BiMap<Pair<State<S>, State<S>>, Integer> statePairsToEncode = indexate(statePairsWithUnknownScores);
 
         // Set up the matrix and vector that together shall encode the system of linear equations.
-        RealMatrix coefficients = new OpenMapRealMatrix(nrOfStatePairs, nrOfStatePairs);
-        RealVector constants = new ArrayRealVector(nrOfStatePairs);
+        RealMatrix coefficients = new OpenMapRealMatrix(statePairsToEncode.size(), statePairsToEncode.size());
+        RealVector constants = new ArrayRealVector(statePairsToEncode.size());
 
-        // Now we encode the system of linear equations as described by Walkinshaw et al. into 'coefficients' and
-        // 'constants'. The encoding is a bit technical. Details are explained in the paper.
+        // We iterate over all state pairs with unknown scores to encode their corresponding rows in the linear system.
+        for (Entry<Pair<State<S>, State<S>>, Integer> entry: statePairsToEncode.entrySet()) {
+            Pair<State<S>, State<S>> statePair = entry.getKey();
+            State<S> leftState = statePair.getFirst();
+            State<S> rightState = statePair.getSecond();
+            int statePairIndex = entry.getValue();
 
-        // Iterate over all (LHS, RHS)-state pairs.
-        for (State<S> leftState: lhs.getStates()) {
-            for (State<S> rightState: rhs.getStates()) {
-                // Determine the row/column index within 'coefficients' and 'constants' corresponding to the current
-                // state pair.
-                int index = getEntryIndex(leftState.getId(), rightState.getId());
+            // Firstly determine the coefficients for all neighboring state pairs with statically unknown scores.
+            Collection<Pair<State<S>, State<S>>> neighborStatePairs = commonNeighbors.apply(statePair);
 
-                // If 'leftState' and 'rightState' are uncombinable, then encode that their similarity score is -1.
-                if (!statePropertyCombiner.areCombinable(leftState.getProperty(), rightState.getProperty())) {
-                    coefficients.setEntry(index, index, 1d);
-                    constants.setEntry(index, -1d);
-                    continue;
-                }
+            for (Pair<State<S>, State<S>> neighborStatePair: neighborStatePairs) {
+                Integer neighborStatePairIndex = statePairsToEncode.get(neighborStatePair);
 
-                // Otherwise, we first account for all common neighbors relevant for ('leftState', 'rightState').
-
-                // Keep track of the number of iterations of the for-loop below. We need this later.
-                int nrOfIteratedTransitions = 0;
-
-                // Iterate over all relevant common neighbors for the current state pair.
-                for (Pair<State<S>, State<S>> neighbor: commonNeighbors.apply(Pair.create(leftState, rightState))) {
-                    // Determine the row/column within 'coefficients' and 'constants' of the neighbor we found.
-                    int commonIndex = getEntryIndex(neighbor.getFirst().getId(), neighbor.getSecond().getId());
-
-                    // Update the matrix to account for the common transition.
-                    coefficients.addToEntry(index, commonIndex, -attenuationFactor);
-                    nrOfIteratedTransitions++;
-                }
-
-                // Next we calculate the diagonal of the matrix. Details are in the paper.
-
-                Set<T> propertiesLeft = relevantProperties.apply(Pair.create(lhs, leftState));
-                Set<T> propertiesRight = relevantProperties.apply(Pair.create(rhs, rightState));
-
-                // If 'leftState' and/or 'rightState' is initial and if initial state arrows should be accounted for,
-                // then adjust the diagonal by 'initialStateAdjustment' to indicate that there are initial states.
-                boolean isLeftStateInitial = lhs.getInitialStates().contains(leftState);
-                boolean isRightStateInitial = rhs.getInitialStates().contains(rightState);
-                int initialStateAdjustment = 0;
-
-                if (accountForInitialStateArrows && (isLeftStateInitial || isRightStateInitial)) {
-                    initialStateAdjustment = 1;
-                }
-
-                // Note that, with respect to the original paper we change the notion of transition properties
-                // "that do not match each other" to be properties "that do not combine with each other".
-                double diagonal = coefficients.getEntry(index, index)
-                        + 2 * (uncombinableTransitionProperties(propertiesLeft, propertiesRight).size()
-                                + uncombinableTransitionProperties(propertiesRight, propertiesLeft).size()
-                                + nrOfIteratedTransitions + initialStateAdjustment);
-
-                if (diagonal == 0.0d && nrOfIteratedTransitions == 0) {
-                    diagonal = 1.0d;
-                }
-
-                coefficients.setEntry(index, index, diagonal);
-                constants.setEntry(index, nrOfIteratedTransitions);
-
-                // If initial state arrows should be accounted for and if 'leftState' and 'rightState' are both initial,
-                // then increase the constant of 'index' by 1 to increase the similarity score.
-                if (accountForInitialStateArrows && isLeftStateInitial && isRightStateInitial) {
-                    constants.addToEntry(index, 1.0d);
+                if (neighborStatePairIndex != null) {
+                    coefficients.addToEntry(statePairIndex, neighborStatePairIndex, -attenuationFactor);
                 }
             }
+
+            // Next we calculate the diagonal of the matrix. Details are in the paper.
+
+            Set<T> leftProperties = relevantProperties.apply(lhs, leftState);
+            Set<T> rightProperties = relevantProperties.apply(rhs, rightState);
+
+            // If 'leftState' and/or 'rightState' is initial and if initial state arrows should be accounted for,
+            // then adjust the diagonal by 'initialStateAdjustment' to indicate that there are initial states.
+            boolean isLeftStateInitial = lhs.getInitialStates().contains(leftState);
+            boolean isRightStateInitial = rhs.getInitialStates().contains(rightState);
+            int initialStateAdjustment = 0;
+
+            if (accountForInitialStateArrows && (isLeftStateInitial || isRightStateInitial)) {
+                initialStateAdjustment = 1;
+            }
+
+            double diagonal = 2 * (uncombinableTransitionProperties(leftProperties, rightProperties).size()
+                    + uncombinableTransitionProperties(rightProperties, leftProperties).size()
+                    + neighborStatePairs.size() + initialStateAdjustment);
+
+            // Note that the diagonal must be positive, since 'statePair' must have neighbors.
+            Preconditions.checkArgument(diagonal > 0, "Expected the diagonal to be positive.");
+
+            coefficients.addToEntry(statePairIndex, statePairIndex, diagonal);
+
+            // Lastly determine the constant term in the linear system for the current state pair.
+            double constant = neighborStatePairs.size() + neighborStatePairs.stream().map(staticallyKnownScores::get)
+                    .filter(score -> score != null).mapToDouble(score -> attenuationFactor * score).sum();
+
+            // If initial state arrows should be accounted for and if 'leftState' and 'rightState' are both initial,
+            // then increase the constant of 'index' by 1 to increase the similarity score.
+            if (accountForInitialStateArrows && isLeftStateInitial && isRightStateInitial) {
+                constant += 1.0d;
+            }
+
+            constants.setEntry(statePairIndex, constant);
         }
 
         // Next step is solving the system of linear equations.
         RealVector solution = createSolver(coefficients).solve(constants);
 
         // Finally, convert 'solution' to a scores matrix.
-        RealMatrix scores = new Array2DRowRealMatrix(lhsStateCount, rhsStateCount);
+        RealMatrix scores = new OpenMapRealMatrix(lhs.size(), rhs.size());
 
-        for (State<S> leftState: lhs.getStates()) {
-            for (State<S> rightState: rhs.getStates()) {
-                int lhsIdx = leftState.getId();
-                int rhsIdx = rightState.getId();
-                int index = getEntryIndex(lhsIdx, rhsIdx);
-                double score = solution.getEntry(index);
-                scores.setEntry(lhsIdx, rhsIdx, score);
-            }
+        for (Entry<Pair<State<S>, State<S>>, Double> entry: staticallyKnownScores.entrySet()) {
+            State<S> leftState = entry.getKey().getFirst();
+            State<S> rightState = entry.getKey().getSecond();
+            double score = entry.getValue();
+            scores.setEntry(leftState.getId(), rightState.getId(), score);
+        }
+
+        for (Entry<Pair<State<S>, State<S>>, Integer> entry: statePairsToEncode.entrySet()) {
+            State<S> leftState = entry.getKey().getFirst();
+            State<S> rightState = entry.getKey().getSecond();
+            int statePairIndex = entry.getValue();
+            double score = solution.getEntry(statePairIndex);
+            scores.setEntry(leftState.getId(), rightState.getId(), score);
         }
 
         return scores;
@@ -208,14 +229,23 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
     }
 
     /**
-     * Helper function for computing the row/column index of the (LHS, RHS)-state pair ({@code leftStateIndex},
-     * {@code rightStateIndex}) in the matrix and vector that together encode the system of linear equations.
+     * Indexates a given collection, by associating a unique index between {@code 0} and {@code collection.size() - 1}
+     * to every element.
      * <p>
-     * Note that, since the matrix is squared, the returned index is both a valid row and column index of the matrix. It
-     * is also a valid index for the vector, since it has the same dimension as the matrix.
+     * Note that, as an alternative to using this method, one could also simply convert {@code collection} to a list and
+     * use list indices instead. However, {@link List#indexOf} is (typically) not a constant operation, whereas the
+     * returned map can give indices of elements effectively in constant time. And since the number of possible state
+     * pairs to consider may be huge, this improvement may well pay off.
      * </p>
+     * 
+     * @param <E> The type of elements in the collection.
+     * @param collection The collection to indexate.
+     * @return A bidirectional map from the elements of {@code collection} to their unique indices.
      */
-    private int getEntryIndex(int leftStateIndex, int rightStateIndex) {
-        return leftStateIndex * rhs.size() + rightStateIndex;
+    private static <E> BiMap<E, Integer> indexate(Collection<E> collection) {
+        Preconditions.checkNotNull(collection, "Expected a non-null collection.");
+        BiMap<E, Integer> map = HashBiMap.create(collection.size());
+        collection.forEach(element -> map.put(element, map.size()));
+        return map;
     }
 }
