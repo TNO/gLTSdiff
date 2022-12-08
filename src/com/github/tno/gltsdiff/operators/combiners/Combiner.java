@@ -145,27 +145,4 @@ public abstract class Combiner<T> {
         Preconditions.checkArgument(combination.isPresent(), "Expected a non-empty stream.");
         return combination.get();
     }
-
-    /**
-     * Determines whether all combinable information of {@code left} is contained in {@code right}, where {@code left}
-     * and {@code right} are required to be combinable with respect to {@link #areCombinable(T, T)}.
-     * <p>
-     * Some useful properties of this relation are:
-     * <ul>
-     * <li>It is a <u>partial order</u>, meaning that it is reflexive, antisymmetric and transitive.</li>
-     * <li>It is <u>consistent with combining</u>: for every two combinable properties <i>e1</i> and <i>e2</i> it holds
-     * that <i>includes(e1, combine(e1, e2))</i>.</li>
-     * <li>For every four combinable properties <i>e1</i>, <i>e2</i>, <i>e3</i> and <i>e4</i> it holds that, if
-     * <i>includes(e1, e3)</i> and <i>includes(e2, e4)</i>, then <i>includes(combine(e1, e2), combine(e3, e4))</i>.</li>
-     * </ul>
-     * </p>
-     * 
-     * @param left The first input property, which must be non-{@code null}.
-     * @param right The second input property, which must be non-{@code null}.
-     * @return {@code true} if all combinable information of {@code left} is contained in {@code right}, {@code false}
-     *     otherwise.
-     */
-    public final boolean includes(T left, T right) {
-        return right.equals(combine(left, right));
-    }
 }

@@ -13,6 +13,7 @@ package com.github.tno.gltsdiff.rewriters;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiPredicate;
 
 import com.github.tno.gltsdiff.lts.DiffAutomaton;
 import com.github.tno.gltsdiff.lts.DiffAutomatonStateProperty;
@@ -21,8 +22,6 @@ import com.github.tno.gltsdiff.lts.State;
 import com.github.tno.gltsdiff.lts.Transition;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.operators.combiners.DiffAutomatonStatePropertyCombiner;
-import com.github.tno.gltsdiff.operators.combiners.DiffPropertyCombiner;
-import com.github.tno.gltsdiff.operators.hiders.DiffPropertyHider;
 import com.github.tno.gltsdiff.operators.hiders.Hider;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
@@ -45,6 +44,12 @@ public class SkipForkPatternRewriter<T>
     private final Hider<DiffProperty<T>> transitionPropertyHider;
 
     /**
+     * A property inclusion relation, that determines whether all combinable information of the first argument is
+     * contained in the second argument. This predicate will only be invoked on combinable non-{@code null} properties.
+     */
+    private final BiPredicate<DiffProperty<T>, DiffProperty<T>> isIncludedIn;
+
+    /**
      * Instantiates a new rewriter for rewriting skip fork patterns in difference automata. The specified
      * {@code transitionPropertyCombiner} and {@code transitionPropertyHider} are <u>required to interact</u> in the
      * following ways:
@@ -58,10 +63,16 @@ public class SkipForkPatternRewriter<T>
      * 
      * @param transitionPropertyCombiner The combiner for transition properties.
      * @param transitionPropertyHider The hider for transition properties.
+     * @param isIncludedIn A property inclusion relation, that determines whether all combinable information of the
+     *     first argument is contained in the second argument. This predicate will only be invoked on combinable
+     *     non-{@code null} properties.
      */
-    public SkipForkPatternRewriter(Combiner<T> transitionPropertyCombiner, Hider<T> transitionPropertyHider) {
-        this.transitionPropertyCombiner = new DiffPropertyCombiner<>(transitionPropertyCombiner);
-        this.transitionPropertyHider = new DiffPropertyHider<>(transitionPropertyHider);
+    public SkipForkPatternRewriter(Combiner<DiffProperty<T>> transitionPropertyCombiner,
+            Hider<DiffProperty<T>> transitionPropertyHider, BiPredicate<DiffProperty<T>, DiffProperty<T>> isIncludedIn)
+    {
+        this.transitionPropertyCombiner = transitionPropertyCombiner;
+        this.transitionPropertyHider = transitionPropertyHider;
+        this.isIncludedIn = isIncludedIn;
     }
 
     @Override
@@ -166,8 +177,8 @@ public class SkipForkPatternRewriter<T>
 
         // The difference kinds of all outgoing transitions out of 'rightTarget' must be included in the difference kind
         // of 'right', modulo non-hidable properties. Otherwise upgrading 'right' may be incorrect.
-        if (!diff.getOutgoingTransitionProperties(rightTarget).stream().allMatch(property -> transitionPropertyCombiner
-                .includes(transitionPropertyHider.hide(property), transitionPropertyHider.hide(right.getProperty()))))
+        if (!diff.getOutgoingTransitionProperties(rightTarget).stream().allMatch(property -> isIncludedIn
+                .test(transitionPropertyHider.hide(property), transitionPropertyHider.hide(right.getProperty()))))
         {
             return false;
         }
