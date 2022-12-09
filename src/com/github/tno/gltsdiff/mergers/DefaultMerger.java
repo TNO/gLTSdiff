@@ -10,7 +10,6 @@
 
 package com.github.tno.gltsdiff.mergers;
 
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -95,10 +94,7 @@ public class DefaultMerger<S, T, U extends LTS<S, T>> extends AbstractMerger<S, 
         Set<State<S>> rightMatchedStates = new LinkedHashSet<>();
 
         // 1.1 A combined state is added for every match in 'matching'.
-        // Note: Additional sorting is applied to get the state ordering more consistent with earlier implementations.
-        for (Entry<State<S>, State<S>> assignment: matching.entrySet().stream().sorted(matchingComparator())
-                .collect(Collectors.toList()))
-        {
+        for (Entry<State<S>, State<S>> assignment: matching.entrySet()) {
             State<S> leftState = assignment.getKey();
             State<S> rightState = assignment.getValue();
             leftMatchedStates.add(leftState);
@@ -145,19 +141,6 @@ public class DefaultMerger<S, T, U extends LTS<S, T>> extends AbstractMerger<S, 
         transitionCombiner.combine(leftTransitions, rightTransitions).forEach(diff::addTransition);
 
         return diff;
-    }
-
-    /** @return A comparator for state matchings that considers initial state arrows and state identifiers. */
-    private Comparator<Entry<State<S>, State<S>>> matchingComparator() {
-        return Comparator
-                // Firstly compare LHS initial states (descending order: first true, then false).
-                .comparing((Entry<State<S>, State<S>> entry) -> !lhs.isInitialState(entry.getKey()))
-                // Secondly compare RHS initial states (descending order: first true, then false).
-                .thenComparing(entry -> !rhs.isInitialState(entry.getValue()))
-                // Thirdly compare LHS state identifiers.
-                .thenComparing(entry -> entry.getKey().getId())
-                // Lastly compare RHS state identifiers.
-                .thenComparing(entry -> entry.getValue().getId());
     }
 
     /**

@@ -171,6 +171,15 @@ public abstract class LTSDotWriter<S, T, U extends LTS<S, T>> {
         return DEFAULT_COLOR;
     }
 
+    /** @return A comparator that imposes a deterministic and total order on states. */
+    protected Comparator<State<S>> getStateComparator() {
+        return Comparator
+                // First compare initial state information (descending order: first true, then false).
+                .comparing((State<S> state) -> !lts.isInitialState(state))
+                // Then compare state identifiers.
+                .thenComparing(State::getId);
+    }
+
     private void writeState(Writer writer, State<S> state) throws IOException {
         String stateId = stateId(state);
         writer.write("\t");
@@ -227,6 +236,6 @@ public abstract class LTSDotWriter<S, T, U extends LTS<S, T>> {
      * @return A list of deterministically ordered states.
      */
     private List<State<S>> sortStates(Collection<State<S>> states) {
-        return states.stream().sorted(Comparator.comparing(State::getId)).collect(Collectors.toList());
+        return states.stream().sorted(getStateComparator()).collect(Collectors.toList());
     }
 }
