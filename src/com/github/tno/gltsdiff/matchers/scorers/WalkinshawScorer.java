@@ -134,10 +134,10 @@ public abstract class WalkinshawScorer<S, T, U extends LTS<S, T>> implements Sim
                 // (e.g., see statechum.analysis.learning.linear.GDLearnerGraph, line 498, on
                 // https://github.com/kirilluk/statechum/blob/056163f301f27862d44f6eaa84ffbc30efb4bd48/src/statechum/analysis/learning/linear/GDLearnerGraph.java#L498).
                 // Therefore any such score is marked as minus infinity.
-                if (forwardScore < 0.0d || backwardScore < 0.0d) {
+                if (forwardScore < 0d || backwardScore < 0d) {
                     averageScores.setEntry(leftIndex, rightIndex, Double.NEGATIVE_INFINITY);
                 } else {
-                    averageScores.setEntry(leftIndex, rightIndex, (forwardScore + backwardScore) / 2.0d);
+                    averageScores.setEntry(leftIndex, rightIndex, (forwardScore + backwardScore) / 2d);
                 }
             }
         }
@@ -279,7 +279,7 @@ public abstract class WalkinshawScorer<S, T, U extends LTS<S, T>> implements Sim
 
             // The similarity score is a fraction. First we determine its numerator. Details are in the paper.
             double numerator = neighborStatePairs.stream()
-                    .mapToDouble(pair -> 1.0d + attenuationFactor * staticallyKnownScores.get(pair)).sum();
+                    .mapToDouble(pair -> 1d + attenuationFactor * staticallyKnownScores.get(pair)).sum();
 
             // If initial state arrows should be accounted for and if 'leftState' and 'rightState' are both
             // initial, then increase the numerator by 1 to increase the similarity score for this state pair.
@@ -287,7 +287,7 @@ public abstract class WalkinshawScorer<S, T, U extends LTS<S, T>> implements Sim
             boolean isRightStateInitial = rhs.isInitialState(rightState);
 
             if (accountForInitialStateArrows && isLeftStateInitial && isRightStateInitial) {
-                numerator += 1.0d;
+                numerator += 1d;
             }
 
             // Then we determine the denominator of the similarity score.
@@ -302,7 +302,7 @@ public abstract class WalkinshawScorer<S, T, U extends LTS<S, T>> implements Sim
                 initialStateAdjustment = 1;
             }
 
-            double denominator = 2.0d * (uncombinableTransitionProperties(leftProperties, rightProperties).size()
+            double denominator = 2d * (uncombinableTransitionProperties(leftProperties, rightProperties).size()
                     + uncombinableTransitionProperties(rightProperties, leftProperties).size()
                     + neighborStatePairs.size() + initialStateAdjustment);
 

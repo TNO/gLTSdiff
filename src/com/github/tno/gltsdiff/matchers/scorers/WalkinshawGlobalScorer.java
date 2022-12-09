@@ -188,7 +188,7 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
             // If initial state arrows should be accounted for and if 'leftState' and 'rightState' are both initial,
             // then increase the constant of 'index' by 1 to increase the similarity score.
             if (accountForInitialStateArrows && isLeftStateInitial && isRightStateInitial) {
-                constant += 1.0d;
+                constant += 1d;
             }
 
             constants.setEntry(statePairIndex, constant);
