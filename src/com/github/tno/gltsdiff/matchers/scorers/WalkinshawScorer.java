@@ -171,7 +171,7 @@ public abstract class WalkinshawScorer<S, T, U extends LTS<S, T>> implements Sim
      * @param accountForInitialStateArrows Whether the scoring calculation should take initial state arrows into
      *     account. Note that the original paper does not take initial states into account.
      * @return A set of all state pairs with statically unknown scores. This method guarantees that this returned set,
-     *     union the key set of {@code staticallyKnownScores}, equals the set of all possible state pairs.
+     *     unioned with the key set of {@code staticallyKnownScores}, equals the set of all possible state pairs.
      */
     protected Set<Pair<State<S>, State<S>>> collectStaticallyKnownScores(
             Map<Pair<State<S>, State<S>>, Double> staticallyKnownScores,

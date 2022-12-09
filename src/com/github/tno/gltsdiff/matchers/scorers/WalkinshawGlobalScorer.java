@@ -110,7 +110,7 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
         Set<Pair<State<S>, State<S>>> statePairsWithUnknownScores = collectStaticallyKnownScores(staticallyKnownScores,
                 commonNeighbors, relevantProperties, accountForInitialStateArrows);
 
-        // Here it holds that the set of 'statePairsWithUnknownScores' plus the key set of 'staticallyKnownScores'
+        // Here it holds that the set of 'statePairsWithUnknownScores' unioned with the key set of 'staticallyKnownScores'
         // equals the set of all possible (LHS, RHS)-state pairs. Moreover, both these sets are disjoint.
 
         // If we already know the similarity scores of all state pairs, then we can terminate early.
@@ -130,7 +130,7 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
         // Otherwise we need to construct and solve a linear equation system, to find all missing similarity scores.
         // We construct this linear system as proposed by Walkinshaw et al. in their TOSEM 2014 article.
 
-        // We start by indexing 'statePairsWithUnknownScores' to get fast indexOf functionality, which would otherwise
+        // We start by indexing 'statePairsWithUnknownScores' to get fast 'indexOf' functionality, which would otherwise
         // take at least O(log n) time. This indexing is needed for encoding/locating state pairs in the linear system.
         BiMap<Pair<State<S>, State<S>>, Integer> statePairsToEncode = indexate(statePairsWithUnknownScores);
 
