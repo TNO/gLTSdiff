@@ -11,16 +11,18 @@
 package com.github.tno.gltsdiff.matchers;
 
 import java.util.Map;
+import java.util.function.BiFunction;
 
 import com.github.tno.gltsdiff.lts.LTS;
 import com.github.tno.gltsdiff.lts.State;
+import com.github.tno.gltsdiff.matchers.scorers.DynamicScorer;
 import com.github.tno.gltsdiff.matchers.scorers.SimilarityScorer;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 
 /**
- * Contains functionality for computing state matchings that makes a trade-off between computational complexity and the
- * quality of the results. A heavyweight matcher is used on relatively small input LTSs, whereas a lightweight matcher
- * is used on large LTSs.
+ * Contains functionality for computing state matchings that makes a trade-off between computational intensity and the
+ * quality of the computed matchings. Different matching algorithms can be used for different input LTSs, e.g. based on
+ * their sizes (numbers of states) from "heavyweight" (for smaller LTSs) to "lightweight" (for larger LTSs).
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
@@ -33,54 +35,46 @@ public class DynamicMatcher<S, T, U extends LTS<S, T>> implements Matcher<S, T, 
     /** The right-hand-side LTS. */
     private final U rhs;
 
-    /** Matcher to compute state matchings for input LTSs larger than {@link #threshold}. */
-    private final Matcher<S, T, U> lightweightMatcher;
+    /** The combiner for state properties. */
+    protected final Combiner<S> statePropertyCombiner;
 
-    /** Matcher to compute state matchings for input LTSs smaller than or equal to {@link #threshold}. */
-    private final Matcher<S, T, U> heavyweightMatcher;
+    /** The combiner for transition properties. */
+    protected final Combiner<T> transitionPropertyCombiner;
 
-    /**
-     * Threshold on the number of states that are handled by the heavyweight matcher. Any input LTS with more states is
-     * handled by the lightweight matcher.
-     */
-    private final int threshold;
+    /** The matching algorithm creator. Given the input LTSs and appropriate combiners, creates a suitable algorithm. */
+    private final BiFunction<U, U, BiFunction<Combiner<S>, Combiner<T>, Matcher<S, T, U>>> matchingAlgorithmCreator;
 
     /**
-     * Instantiates a new (LHS, RHS)-state matcher that dynamically determines whether to use a lightweight
-     * {@link WalkinshawMatcher} or a heavyweight {@link KuhnMunkresMatcher} algorithm for computing state matchings,
-     * based on the sizes of the two given input LTSs compared to a threshold of 45.
+     * Instantiates a new dynamic matching algorithm, that uses a default configuration of matching algorithms.
      * 
      * @param lhs The left-hand-side LTS.
      * @param rhs The right-hand-side LTS.
-     * @param scoring The similarity scoring algorithm to be used by the lightweight and heavyweight matchers.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
-    public DynamicMatcher(U lhs, U rhs, SimilarityScorer<S, T, U> scoring, Combiner<S> statePropertyCombiner,
-            Combiner<T> transitionPropertyCombiner)
-    {
-        this(lhs, rhs, new WalkinshawMatcher<>(lhs, rhs, scoring, statePropertyCombiner, transitionPropertyCombiner),
-                new KuhnMunkresMatcher<>(lhs, rhs, scoring, statePropertyCombiner), 45);
+    public DynamicMatcher(U lhs, U rhs, Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner) {
+        this(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner,
+                (l, r) -> (s, t) -> defaultMatchingAlgorithmCreator(l, r, s, t));
     }
 
     /**
-     * Instantiates a new dynamic matcher.
+     * Instantiates a new dynamic matching algorithm.
      * 
      * @param lhs The left-hand-side LTS.
      * @param rhs The right-hand-side LTS.
-     * @param lightweightMatcher Matcher to compute state matchings for input LTSs larger than {@code threshold}.
-     * @param heavyweightMatcher Matcher to compute state matchings for input LTSs smaller than or equal to
-     *     {@code threshold}.
-     * @param threshold Threshold on LTS size used to select matcher.
+     * @param statePropertyCombiner The combiner for state properties.
+     * @param transitionPropertyCombiner The combiner for transition properties.
+     * @param matchingAlgorithmCreator The matching algorithm creator. Given the input LTSs and appropriate combiners,
+     *     creates a suitable algorithm.
      */
-    public DynamicMatcher(U lhs, U rhs, Matcher<S, T, U> lightweightMatcher, Matcher<S, T, U> heavyweightMatcher,
-            int threshold)
+    public DynamicMatcher(U lhs, U rhs, Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner,
+            BiFunction<U, U, BiFunction<Combiner<S>, Combiner<T>, Matcher<S, T, U>>> matchingAlgorithmCreator)
     {
         this.lhs = lhs;
         this.rhs = rhs;
-        this.lightweightMatcher = lightweightMatcher;
-        this.heavyweightMatcher = heavyweightMatcher;
-        this.threshold = threshold;
+        this.statePropertyCombiner = statePropertyCombiner;
+        this.transitionPropertyCombiner = transitionPropertyCombiner;
+        this.matchingAlgorithmCreator = matchingAlgorithmCreator;
     }
 
     @Override
@@ -93,12 +87,23 @@ public class DynamicMatcher<S, T, U extends LTS<S, T>> implements Matcher<S, T, 
         return rhs;
     }
 
+    private static final <S, T, U extends LTS<S, T>> Matcher<S, T, U> defaultMatchingAlgorithmCreator(U lhs, U rhs,
+            Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner)
+    {
+        SimilarityScorer<S, T, U> scorer = new DynamicScorer<>(lhs, rhs, statePropertyCombiner,
+                transitionPropertyCombiner);
+
+        if (lhs.size() > 45 || rhs.size() > 45) {
+            return new WalkinshawMatcher<>(lhs, rhs, scorer, statePropertyCombiner, transitionPropertyCombiner);
+        } else {
+            return new KuhnMunkresMatcher<>(lhs, rhs, scorer, statePropertyCombiner);
+        }
+    }
+
     @Override
     public Map<State<S>, State<S>> compute() {
-        if (getLhs().size() > threshold || getRhs().size() > threshold) {
-            return lightweightMatcher.compute();
-        } else {
-            return heavyweightMatcher.compute();
-        }
+        Matcher<S, T, U> algorithm = matchingAlgorithmCreator.apply(lhs, rhs).apply(statePropertyCombiner,
+                transitionPropertyCombiner);
+        return algorithm.compute();
     }
 }
