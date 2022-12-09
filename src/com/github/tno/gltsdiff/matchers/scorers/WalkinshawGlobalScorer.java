@@ -110,8 +110,9 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
         Set<Pair<State<S>, State<S>>> statePairsWithUnknownScores = collectStaticallyKnownScores(staticallyKnownScores,
                 commonNeighbors, relevantProperties, accountForInitialStateArrows);
 
-        // Here it holds that the set of 'statePairsWithUnknownScores' unioned with the key set of 'staticallyKnownScores'
-        // equals the set of all possible (LHS, RHS)-state pairs. Moreover, both these sets are disjoint.
+        // Here it holds that the set of 'statePairsWithUnknownScores' unioned with the key set of
+        // 'staticallyKnownScores' equals the set of all possible (LHS, RHS)-state pairs. Moreover, both these sets are
+        // disjoint.
 
         // If we already know the similarity scores of all state pairs, then we can terminate early.
         if (statePairsWithUnknownScores.isEmpty()) {
