@@ -34,7 +34,7 @@ import com.google.common.collect.Sets;
 
 /**
  * Contains common functionality for the state similarity scoring approaches that are described in the article by
- * Walkinshaw et al. (TOSEM 2014). However, this implementation generalizes the approaches described in the article by a
+ * Walkinshaw et al. (TOSEM 2013). However, this implementation generalizes the approaches described in the article by a
  * more general concept of combinability (see {@link Combiner}).
  *
  * @param <S> The type of state properties.
@@ -123,13 +123,13 @@ public abstract class WalkinshawScorer<S, T, U extends LTS<S, T>> implements Sim
                 double backwardScore = backwardScores.getEntry(leftIndex, rightIndex);
 
                 // Walkinshaw et al. guarantee that the computed state similarity scores are within the range [-1,1].
-                // (see the small paragraph right after Equation 6 on page 14 in their TOSEM 2014 article.)
+                // (see the small paragraph right after Equation 6 on page 14 in their TOSEM 2013 article.)
                 Preconditions.checkArgument(-1 <= forwardScore && forwardScore <= 1,
                         "Expected all forward state similarity scores to be within the range [-1,1].");
                 Preconditions.checkArgument(-1 <= backwardScore && backwardScore <= 1,
                         "Expected all backward state similarity scores to be within the range [-1,1].");
 
-                // Any negative score indicates an incompatible state pair. This is not explicit in the TOSEM 2014
+                // Any negative score indicates an incompatible state pair. This is not explicit in the TOSEM 2013
                 // article, but it is (to some extend) in the implementation of StateChum
                 // (e.g., see statechum.analysis.learning.linear.GDLearnerGraph, line 498, on
                 // https://github.com/kirilluk/statechum/blob/056163f301f27862d44f6eaa84ffbc30efb4bd48/src/statechum/analysis/learning/linear/GDLearnerGraph.java#L498).

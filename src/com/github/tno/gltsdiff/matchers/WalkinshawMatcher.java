@@ -31,7 +31,7 @@ import com.github.tno.gltsdiff.utils.LTSUtils;
 import com.google.common.base.Preconditions;
 
 /**
- * Functionality for computing (LHS, RHS)-state matchings based on heuristics proposed by Walkinshaw et al. (TOSEM 2014;
+ * Functionality for computing (LHS, RHS)-state matchings based on heuristics proposed by Walkinshaw et al. (TOSEM 2013;
  * see Section 4.3.1). However, this implementation has been generalized with respect to the approach of Walkinshaw et
  * al. by a more general notion of combinability (see {@link Combiner}). Transitions are now considered to be "common"
  * if they have combinable properties, rather than the stronger condition that they must be equal.

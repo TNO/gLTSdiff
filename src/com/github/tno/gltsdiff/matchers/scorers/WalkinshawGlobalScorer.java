@@ -38,7 +38,7 @@ import com.google.common.collect.HashBiMap;
 /**
  * Contains functionality for computing global similarity scores for pairs of (LHS, RHS)-states. These scores are
  * computed by transforming the problem of finding global similarity scores to a problem of solving a system of linear
- * equations, as proposed by Walkinshaw et al. in their TOSEM 2014 article. However, this implementation generalizes the
+ * equations, as proposed by Walkinshaw et al. in their TOSEM 2013 article. However, this implementation generalizes the
  * approach of Walkinshaw et al. by a more general concept of combinability (see {@link Combiner}).
  * <p>
  * Note that, since computing global similarity scores requires solving systems of linear equations, the complexity of
@@ -129,7 +129,7 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
         }
 
         // Otherwise we need to construct and solve a linear equation system, to find all missing similarity scores.
-        // We construct this linear system as proposed by Walkinshaw et al. in their TOSEM 2014 article.
+        // We construct this linear system as proposed by Walkinshaw et al. in their TOSEM 2013 article.
 
         // We start by indexing 'statePairsWithUnknownScores' to get fast 'indexOf' functionality, which would otherwise
         // take at least O(log n) time. This indexing is needed for encoding/locating state pairs in the linear system.

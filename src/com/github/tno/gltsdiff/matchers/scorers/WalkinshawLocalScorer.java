@@ -94,7 +94,7 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
 
     /**
      * Computes local similarity scores for every pair of (LHS, RHS)-state pairs. Details of this computation are in the
-     * TOSEM 2014 article of Walkinshaw et al.; see Section 4.1 (Equations 2 and 4) and Section 4.2 (Equation 5).
+     * TOSEM 2013 article of Walkinshaw et al.; see Section 4.1 (Equations 2 and 4) and Section 4.2 (Equation 5).
      * However, this implementation has been generalized by a notion of combinability (see {@link Combiner}) to
      * determine the amount of overlap between transition properties, and takes initial state information into account.
      * 
