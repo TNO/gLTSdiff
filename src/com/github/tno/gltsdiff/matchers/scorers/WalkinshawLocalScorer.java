@@ -94,9 +94,18 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
 
     /**
      * Computes local similarity scores for every pair of (LHS, RHS)-state pairs. Details of this computation are in the
-     * TOSEM 2013 article of Walkinshaw et al.; see Section 4.1 (Equations 2 and 4) and Section 4.2 (Equation 5).
-     * However, this implementation has been generalized by a notion of combinability (see {@link Combiner}) to
-     * determine the amount of overlap between transition properties, and takes initial state information into account.
+     * TOSEM 2013 article of Walkinshaw et al. However, this implementation has been generalized by a notion of
+     * combinability (see {@link Combiner}) to determine the amount of overlap between transition properties, and takes
+     * initial state information into account.
+     * <p>
+     * More specifically, this function implements Equation (6) of the article of Walkinshaw et al. (and its "Prev"
+     * counterpart, depending on how {@code commonNeighbors} and {@code relevantProperties} are specified), as a
+     * refinement operation. The equation system as presented in the paper is recursive, and this implementation limits
+     * the recursion depth to be {@code nrOfRefinements} (which must be positive). If only a single refinement is
+     * performed, then the computed similarity scores should be the same as come out of Equations (2) and (4) in the
+     * article. However, by increasing the number of refinements further, the scores as computed by
+     * {@link WalkinshawGlobalScorer} can be approximated more closely.
+     * </p>
      * 
      * @param commonNeighbors A function from (LHS, RHS)-state pairs to their common neighboring state pairs. This
      *     function should be unidirectional, i.e., should give all common predecessors or successors of the input pair.
@@ -148,14 +157,9 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
     }
 
     /**
-     * Given a pair ({@code leftState}, {@code rightState}) of (LHS, RHS)-states, calculate a (local) similarity score
-     * between them by only considering the transitions that are relevant. Moreover, the similarity score calculation is
-     * based on refinement, in the sense that it refines (improves) a given matrix of current scores.
-     * <p>
-     * Details are in the paper. In particular Section 4.1 (Equations 2 and 4) and Section 4.2 (Equation 5). However,
-     * this implementation has been generalized by a notion of combinability (see {@link Combiner}) to determine the
-     * amount of overlap between transition properties.
-     * </p>
+     * Given a pair ({@code leftState}, {@code rightState}) of (LHS, RHS)-states, calculate a similarity score between
+     * them as indicated by Equation (6) in the TOSEM 2013 article of Walkinshaw et al., where the similarity scores of
+     * all state pairs on the right-hand side of this equation are resolved using {@code scores}.
      * 
      * @param leftState A LHS state, which together with {@code rightState} must have an unknown state similarity score.
      * @param rightState A RHS state, which together with {@code leftState} must have an unknown state similarity score.
@@ -166,7 +170,7 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
      *     state.
      * @param accountForInitialStateArrows Whether the scoring calculation should take initial state arrows into
      *     account. Note that the original paper does not take initial states into account.
-     * @return A (refined) similarity score for the given pair of (LHS, RHS)-states, in the range [-1,1].
+     * @return A state similarity score for the given pair of (LHS, RHS)-states, in the range [-1,1].
      */
     private double similarityScore(State<S> leftState, State<S> rightState, RealMatrix scores,
             Function<Pair<State<S>, State<S>>, Collection<Pair<State<S>, State<S>>>> commonNeighbors,
