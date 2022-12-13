@@ -163,7 +163,8 @@ public abstract class WalkinshawScorer<S, T, U extends LTS<S, T>> implements Sim
      * 
      * @param staticallyKnownScores A mutable map from state pairs to statically known similarity scores, which will be
      *     updated by this method.
-     * @param commonNeighbors A function from (LHS, RHS)-state pairs to their common neighboring state pairs.
+     * @param commonNeighbors A function from (LHS, RHS)-state pairs to their common neighboring state pairs. This
+     *     function should be unidirectional, i.e., should give all common predecessors or successors of the input pair.
      * @param relevantProperties A function that determines the relevant transition properties for an LTS and a state.
      * @param accountForInitialStateArrows Whether the scoring calculation should take initial state arrows into
      *     account. Note that the original paper does not take initial states into account.
@@ -249,7 +250,8 @@ public abstract class WalkinshawScorer<S, T, U extends LTS<S, T>> implements Sim
      * @param statePair The state pair for which to attempt to statically determine the similarity score.
      * @param staticallyKnownScores A map from state pairs to statically known similarity scores, which will be updated
      *     by this method.
-     * @param commonNeighbors A function from (LHS, RHS)-state pairs to their common neighboring state pairs.
+     * @param commonNeighbors A function from (LHS, RHS)-state pairs to their common neighboring state pairs. This
+     *     function should be unidirectional, i.e., should give all common predecessors or successors of the input pair.
      * @param relevantProperties A function that determines the relevant transition properties for an LTS and a state.
      * @param accountForInitialStateArrows Whether the scoring calculation should take initial state arrows into
      *     account. Note that the original paper does not take initial states into account.

@@ -98,7 +98,8 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
      * However, this implementation has been generalized by a notion of combinability (see {@link Combiner}) to
      * determine the amount of overlap between transition properties, and takes initial state information into account.
      * 
-     * @param commonNeighbors A function from (LHS, RHS)-state pairs to their common neighboring state pairs.
+     * @param commonNeighbors A function from (LHS, RHS)-state pairs to their common neighboring state pairs. This
+     *     function should be unidirectional, i.e., should give all common predecessors or successors of the input pair.
      * @param relevantProperties A function that determines the relevant transition properties for an LTS and a state.
      * @param accountForInitialStateArrows Whether the scoring calculation should take initial state arrows into
      *     account. Note that the original paper does not take initial states into account.
@@ -159,7 +160,8 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
      * @param leftState A LHS state, which together with {@code rightState} must have an unknown state similarity score.
      * @param rightState A RHS state, which together with {@code leftState} must have an unknown state similarity score.
      * @param scores The current matrix of similarity scores that is to be refined.
-     * @param commonNeighbors A function giving the relevant neighboring state pairs for a pair of (LHS, RHS)-states.
+     * @param commonNeighbors A function from (LHS, RHS)-state pairs to their common neighboring state pairs. This
+     *     function should be unidirectional, i.e., should give all common predecessors or successors of the input pair.
      * @param relevantProperties A function that determines the relevant transition properties based on an LTS and a
      *     state.
      * @param accountForInitialStateArrows Whether the scoring calculation should take initial state arrows into
