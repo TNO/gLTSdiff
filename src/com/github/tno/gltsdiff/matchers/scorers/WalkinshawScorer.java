@@ -11,6 +11,7 @@
 package com.github.tno.gltsdiff.matchers.scorers;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
@@ -178,60 +179,63 @@ public abstract class WalkinshawScorer<S, T, U extends LTS<S, T>> implements Sim
             Function<Pair<State<S>, State<S>>, Collection<Pair<State<S>, State<S>>>> commonNeighbors,
             BiFunction<U, State<S>, Set<T>> relevantProperties, boolean accountForInitialStateArrows)
     {
-        // Iterate over all state pairs and try to statically determine their similarity scores. Every newly found score
-        // will be stored in 'staticallyKnownScores'. All other state pairs for which no similarity score could (yet)
-        // statically be determined will be stored in 'statePairsWithUnknownScores' instead.
+        // Compute the set of all state pairs with unknown similarity scores.
         Set<Pair<State<S>, State<S>>> statePairsWithUnknownScores = new LinkedHashSet<>();
 
+        // Also compute a mapping that is the inverse of 'commonNeighbors', with respect to all (LHS, RHS)-state pairs.
+        // This mapping essentially maps state pairs to the set of state pairs whose similarity score depend on the
+        // mapped (key) state pair.
+        Map<Pair<State<S>, State<S>>, Set<Pair<State<S>, State<S>>>> commonNeighborsInverse = new LinkedHashMap<>();
+
+        // Populate both 'statePairsWithUnknownScores' and 'commonNeighborsInverse'.
         for (State<S> leftState: lhs.getStates()) {
             for (State<S> rightState: rhs.getStates()) {
                 Pair<State<S>, State<S>> statePair = Pair.create(leftState, rightState);
 
-                // If the similarity score for 'statePair' is already known then we can skip it.
-                if (staticallyKnownScores.containsKey(statePair)) {
-                    continue;
-                }
-
-                // Otherwise we try to statically determine its similarity score.
-                Optional<Double> possibleScore = tryToStaticallyDetermineSimilarityScore(statePair,
-                        staticallyKnownScores, commonNeighbors, relevantProperties, accountForInitialStateArrows);
-
-                if (possibleScore.isPresent()) {
-                    staticallyKnownScores.put(statePair, possibleScore.get());
-                } else {
+                // If the similarity score of 'statePair' is not yet statically known, then mark it as such.
+                if (!staticallyKnownScores.containsKey(statePair)) {
                     statePairsWithUnknownScores.add(statePair);
                 }
+
+                // Record that the similarity scores of all common neighbors of 'statePair' depend on the similarity
+                // score of 'statePair'.
+                for (Pair<State<S>, State<S>> commonNeighbor: commonNeighbors.apply(statePair)) {
+                    commonNeighborsInverse.computeIfAbsent(commonNeighbor, p -> new LinkedHashSet<>()).add(statePair);
+                }
+
+                // Make sure that 'commonNeighborsInverse' holds a mapping for every (LHS, RHS)-state pair.
+                commonNeighborsInverse.computeIfAbsent(statePair, p -> new LinkedHashSet<>());
             }
         }
 
-        // Here it holds that the set 'statePairsWithUnknownScores' union the key set of 'staticallyKnownScores' equals
-        // the set of all possible (LHS, RHS)-state pairs. The while-loop below will maintain this as an invariant.
+        // Next we try to determine the similarity scores of all state pairs whose scores are not (yet) known. Whenever
+        // a new score has statically been found, all state pairs whose score depend on this newly found score are
+        // considered again, in case they were already considered. Therefore this exploration is performed as a fixpoint
+        // operation, which is guaranteed to terminate eventually since only a finite number of similarity scores can
+        // ever statically be found.
+        Set<Pair<State<S>, State<S>>> pairsToExplore = new LinkedHashSet<>(statePairsWithUnknownScores);
 
-        // Now that we have an initial set of 'staticallyKnownScores', we'll try to expand it further by computing its
-        // fixpoint, thereby taking 'staticallyKnownScores' as the basis and exploring outward in BFS style.
-        Queue<Pair<State<S>, State<S>>> pairsToFurtherExplore = new LinkedList<>(staticallyKnownScores.keySet());
+        // This loop maintains the invariant that 'pairsToExplore' only contains state pairs with unknown scores.
+        while (!pairsToExplore.isEmpty()) {
+            Pair<State<S>, State<S>> statePair = pairsToExplore.iterator().next();
+            pairsToExplore.remove(statePair);
 
-        while (!pairsToFurtherExplore.isEmpty()) {
-            Pair<State<S>, State<S>> statePair = pairsToFurtherExplore.remove();
+            // Try to statically determine the similarity score of 'statePair'.
+            Optional<Double> possibleScore = tryToStaticallyDetermineSimilarityScore(statePair, staticallyKnownScores,
+                    commonNeighbors, relevantProperties, accountForInitialStateArrows);
 
-            // Iterate over all common predecessors and successors of 'statePair' for which a score is not yet known,
-            // to try to statically determine their similarity scores.
-            Set<Pair<State<S>, State<S>>> surroundingStatePairs = Sets.union(
-                    LTSUtils.commonPredecessors(lhs, rhs, transitionPropertyCombiner, statePair),
-                    LTSUtils.commonSuccessors(lhs, rhs, transitionPropertyCombiner, statePair));
+            if (possibleScore.isPresent()) {
+                // Register that 'statePair' is now a state pair with a statically known score.
+                staticallyKnownScores.put(statePair, possibleScore.get());
+                statePairsWithUnknownScores.remove(statePair);
+                pairsToExplore.remove(statePair);
 
-            for (Pair<State<S>, State<S>> surroundingStatePair: surroundingStatePairs) {
-                if (staticallyKnownScores.containsKey(surroundingStatePair)) {
-                    continue;
-                }
-
-                Optional<Double> possibleScore = tryToStaticallyDetermineSimilarityScore(surroundingStatePair,
-                        staticallyKnownScores, commonNeighbors, relevantProperties, accountForInitialStateArrows);
-
-                if (possibleScore.isPresent()) {
-                    staticallyKnownScores.put(surroundingStatePair, possibleScore.get());
-                    statePairsWithUnknownScores.remove(surroundingStatePair);
-                    pairsToFurtherExplore.add(surroundingStatePair);
+                // Make sure that all state pairs with unknown similarity scores, whose score depends on the score of
+                // 'statePair', are considered again in this exploration.
+                for (Pair<State<S>, State<S>> dependentStatePair: commonNeighborsInverse.get(statePair)) {
+                    if (!staticallyKnownScores.containsKey(dependentStatePair)) {
+                        pairsToExplore.add(dependentStatePair);
+                    }
                 }
             }
         }
