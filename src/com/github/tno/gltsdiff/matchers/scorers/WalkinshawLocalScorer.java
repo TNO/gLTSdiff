@@ -126,20 +126,23 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
         // Define an initial similarity score matrix with score 0 for every (LHS, RHS)-state pair.
         RealMatrix scores = new OpenMapRealMatrix(lhs.size(), rhs.size());
 
-        // Fill in all statically known similarity scores into 'scores'.
-        for (Entry<Pair<State<S>, State<S>>, Double> entry: staticallyKnownScores.entrySet()) {
-            State<S> leftState = entry.getKey().getFirst();
-            State<S> rightState = entry.getKey().getSecond();
-            scores.setEntry(leftState.getId(), rightState.getId(), entry.getValue());
-        }
-
-        // If all scores happen to already be statically known then we are trivially done.
-        if (statePairsWithUnknownScores.isEmpty()) {
-            return scores;
-        }
-
-        // Otherwise we refine all the statically unknown scores 'nrOfRefinements' times.
+        // Refine 'scores' a specified number of times.
         for (int i = 0; i < nrOfRefinements; i++) {
+            RealMatrix refinedScores = new OpenMapRealMatrix(lhs.size(), rhs.size());
+
+            // Fill in all statically known similarity scores into 'refinedScores'.
+            for (Entry<Pair<State<S>, State<S>>, Double> entry: staticallyKnownScores.entrySet()) {
+                State<S> leftState = entry.getKey().getFirst();
+                State<S> rightState = entry.getKey().getSecond();
+                refinedScores.setEntry(leftState.getId(), rightState.getId(), entry.getValue());
+            }
+
+            // If all scores happen to already be statically known then we are trivially done.
+            if (statePairsWithUnknownScores.isEmpty()) {
+                return refinedScores;
+            }
+
+            // Otherwise refine all statically unknown scores, and update 'refinedScores' accordingly.
             for (Pair<State<S>, State<S>> statePair: statePairsWithUnknownScores) {
                 State<S> leftState = statePair.getFirst();
                 State<S> rightState = statePair.getSecond();
@@ -149,8 +152,10 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
                         relevantProperties, accountForInitialStateArrows);
 
                 // Store the refined similarity score in 'scores'.
-                scores.setEntry(leftState.getId(), rightState.getId(), refinedScore);
+                refinedScores.setEntry(leftState.getId(), rightState.getId(), refinedScore);
             }
+
+            scores = refinedScores;
         }
 
         return scores;
