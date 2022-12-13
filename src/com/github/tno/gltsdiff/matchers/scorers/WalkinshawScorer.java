@@ -13,10 +13,8 @@ package com.github.tno.gltsdiff.matchers.scorers;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Queue;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -29,9 +27,7 @@ import org.apache.commons.math3.util.Pair;
 import com.github.tno.gltsdiff.lts.LTS;
 import com.github.tno.gltsdiff.lts.State;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
-import com.github.tno.gltsdiff.utils.LTSUtils;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Sets;
 
 /**
  * Contains common functionality for the state similarity scoring approaches that are described in the article by
