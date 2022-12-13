@@ -121,7 +121,7 @@ public class BruteForceMatcher<S, T, U extends LTS<S, T>> implements Matcher<S, 
 
         // If there are no more candidate matchings left to consider, then return the current matching.
         if (candidateMatches.isEmpty()) {
-            return Pair.create(countNumberOfProspectivelyCombinedTransitions(fixedMatches), fixedMatches);
+            return Pair.create(optimizationObjective(fixedMatches), fixedMatches);
         }
 
         // Otherwise, recursively explore all possible matchings that can be obtained from 'candidateMatches', to search
@@ -237,7 +237,8 @@ public class BruteForceMatcher<S, T, U extends LTS<S, T>> implements Matcher<S, 
     }
 
     /**
-     * Determines the number of transitions that would be combined in the final merged LTS of {@link #getLhs()} and
+     * The objective function that is to be maximized by the brute force matcher. This function determines the number of
+     * initial state arrows and transitions that would be combined in the final merged LTS of {@link #getLhs()} and
      * {@link #getRhs()}, in which all (LHS, RHS)-state pairs in {@code fixed} were matched and merged.
      * <p>
      * The time complexity of this operation is O(|V1|*|V2|*|{@code fixed}|), with |V1| the number of states in
@@ -245,13 +246,19 @@ public class BruteForceMatcher<S, T, U extends LTS<S, T>> implements Matcher<S, 
      * </p>
      * 
      * @param fixed The input set of fixed (LHS, RHS)-state matchings.
-     * @return The number of transitions in the LHS and RHS that would collapse into a combined transition if all state
-     *     pairs in {@code fixed} were matched and merged.
+     * @return The number of initial state arrows and transitions in the LHS and RHS that would collapse into a combined
+     *     transition if all state pairs in {@code fixed} were matched and merged.
      */
-    private int countNumberOfProspectivelyCombinedTransitions(Set<Pair<State<S>, State<S>>> fixed) {
+    private int optimizationObjective(Set<Pair<State<S>, State<S>>> fixed) {
         int count = 0;
 
         for (Pair<State<S>, State<S>> pair: fixed) {
+            // Account for combinable initial state arrows.
+            if (lhs.isInitialState(pair.getFirst()) && rhs.isInitialState(pair.getSecond())) {
+                count += 1;
+            }
+
+            // Account for combinable transitions.
             count += LTSUtils.commonOutgoingTransitions(lhs, rhs, transitionPropertyCombiner, pair)
                     .map(t -> Pair.create(t.getFirst().getTarget(), t.getSecond().getTarget())).filter(fixed::contains)
                     .count();
