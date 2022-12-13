@@ -91,7 +91,7 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
      * </p>
      * <p>
      * The similarity scores are computed by constructing and solving a system of linear equations. Details on this can
-     * be found in the TOSEM'14 article by Walkinshaw et al. However, this implementation generalizes the approach
+     * be found in the TOSEM'13 article by Walkinshaw et al. However, this implementation generalizes the approach
      * described in that article by a more general concept of combinability (see {@link Combiner}).
      * </p>
      * 
