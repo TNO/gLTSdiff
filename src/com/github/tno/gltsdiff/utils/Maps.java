@@ -3,7 +3,7 @@ package com.github.tno.gltsdiff.utils;
 
 import java.util.function.BinaryOperator;
 
-public class PredictableCollectors {
+public class Maps {
     /**
      * A merger for values of a map that can be used by {@link Collector collectors}, which always returns a
      * {@link IllegalStateException}.
