@@ -10,22 +10,14 @@
 
 package com.github.tno.gltsdiff.matchers.scorers;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.math3.linear.BlockRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
-import org.apache.commons.math3.util.Pair;
 
 import com.github.tno.gltsdiff.lts.LTS;
-import com.github.tno.gltsdiff.lts.State;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.google.common.base.Preconditions;
 
@@ -155,165 +147,6 @@ public abstract class WalkinshawScorer<S, T, U extends LTS<S, T>> implements Sim
      *     of which are in the range [-1,1], where any negative score indicates an incompatible state pair.
      */
     protected abstract RealMatrix computeBackwardSimilarityScores();
-
-    /**
-     * Collects all (LHS, RHS)-state pairs with a state similarity score that can statically (efficiently) be computed,
-     * without having to solve expensive linear equation systems (i.e., {@link WalkinshawGlobalScorer}) or perform
-     * refinement operations that may be expensive (i.e., {@link WalkinshawLocalScorer}).
-     * 
-     * @param staticallyKnownScores A mutable map from state pairs to statically known similarity scores, which will be
-     *     updated by this method.
-     * @param commonNeighbors A function from (LHS, RHS)-state pairs to their common neighboring state pairs. This
-     *     function should be unidirectional, i.e., should give all common predecessors or successors of the input pair.
-     * @param relevantProperties A function that determines the relevant transition properties for an LTS and a state.
-     * @param accountForInitialStateArrows Whether the scoring calculation should take initial state arrows into
-     *     account. Note that the original paper does not take initial states into account.
-     * @return A set of all state pairs with statically unknown scores. This method guarantees that this returned set,
-     *     unioned with the key set of {@code staticallyKnownScores}, equals the set of all possible state pairs.
-     */
-    protected Set<Pair<State<S>, State<S>>> collectStaticallyKnownScores(
-            Map<Pair<State<S>, State<S>>, Double> staticallyKnownScores,
-            Function<Pair<State<S>, State<S>>, Collection<Pair<State<S>, State<S>>>> commonNeighbors,
-            BiFunction<U, State<S>, Set<T>> relevantProperties, boolean accountForInitialStateArrows)
-    {
-        // Compute the set of all state pairs with unknown similarity scores.
-        Set<Pair<State<S>, State<S>>> statePairsWithUnknownScores = new LinkedHashSet<>();
-
-        // Also compute a mapping that is the inverse of 'commonNeighbors', with respect to all (LHS, RHS)-state pairs.
-        // This mapping essentially maps state pairs to the set of state pairs whose similarity score depend on the
-        // mapped (key) state pair.
-        Map<Pair<State<S>, State<S>>, Set<Pair<State<S>, State<S>>>> commonNeighborsInverse = new LinkedHashMap<>();
-
-        // Populate both 'statePairsWithUnknownScores' and 'commonNeighborsInverse'.
-        for (State<S> leftState: lhs.getStates()) {
-            for (State<S> rightState: rhs.getStates()) {
-                Pair<State<S>, State<S>> statePair = Pair.create(leftState, rightState);
-
-                // If the similarity score of 'statePair' is not yet statically known, then mark it as such.
-                if (!staticallyKnownScores.containsKey(statePair)) {
-                    statePairsWithUnknownScores.add(statePair);
-                }
-
-                // Record that the similarity scores of all common neighbors of 'statePair' depend on the similarity
-                // score of 'statePair'.
-                for (Pair<State<S>, State<S>> commonNeighbor: commonNeighbors.apply(statePair)) {
-                    commonNeighborsInverse.computeIfAbsent(commonNeighbor, p -> new LinkedHashSet<>()).add(statePair);
-                }
-
-                // Make sure that 'commonNeighborsInverse' holds a mapping for every (LHS, RHS)-state pair.
-                commonNeighborsInverse.computeIfAbsent(statePair, p -> new LinkedHashSet<>());
-            }
-        }
-
-        // Next we try to determine the similarity scores of all state pairs whose scores are not (yet) known. Whenever
-        // a new score has statically been found, all state pairs whose score depend on this newly found score are
-        // considered again, in case they were already considered. Therefore this exploration is performed as a fixpoint
-        // operation, which is guaranteed to terminate eventually since only a finite number of similarity scores can
-        // ever statically be found.
-        Set<Pair<State<S>, State<S>>> pairsToExplore = new LinkedHashSet<>(statePairsWithUnknownScores);
-
-        // This loop maintains the invariant that 'pairsToExplore' only contains state pairs with unknown scores.
-        while (!pairsToExplore.isEmpty()) {
-            Pair<State<S>, State<S>> statePair = pairsToExplore.iterator().next();
-            pairsToExplore.remove(statePair);
-
-            // Try to statically determine the similarity score of 'statePair'.
-            Optional<Double> possibleScore = tryToStaticallyDetermineSimilarityScore(statePair, staticallyKnownScores,
-                    commonNeighbors, relevantProperties, accountForInitialStateArrows);
-
-            if (possibleScore.isPresent()) {
-                // Register that 'statePair' is now a state pair with a statically known score.
-                staticallyKnownScores.put(statePair, possibleScore.get());
-                statePairsWithUnknownScores.remove(statePair);
-                pairsToExplore.remove(statePair);
-
-                // Make sure that all state pairs with unknown similarity scores, whose score depends on the score of
-                // 'statePair', are considered again in this exploration.
-                for (Pair<State<S>, State<S>> dependentStatePair: commonNeighborsInverse.get(statePair)) {
-                    if (!staticallyKnownScores.containsKey(dependentStatePair)) {
-                        pairsToExplore.add(dependentStatePair);
-                    }
-                }
-            }
-        }
-
-        return statePairsWithUnknownScores;
-    }
-
-    /**
-     * Attempts to statically determine the similarity score of {@code statePair}. In particular:
-     * <ul>
-     * <li>Any state pair with uncombinable state properties has a statically known score of {@code -1d}.</li>
-     * <li>Any state pair has a statically known score, if all its common neighbors have statically known scores.</li>
-     * </ul>
-     * 
-     * @param statePair The state pair for which to attempt to statically determine the similarity score.
-     * @param staticallyKnownScores A map from state pairs to statically known similarity scores, which will be updated
-     *     by this method.
-     * @param commonNeighbors A function from (LHS, RHS)-state pairs to their common neighboring state pairs. This
-     *     function should be unidirectional, i.e., should give all common predecessors or successors of the input pair.
-     * @param relevantProperties A function that determines the relevant transition properties for an LTS and a state.
-     * @param accountForInitialStateArrows Whether the scoring calculation should take initial state arrows into
-     *     account. Note that the original paper does not take initial states into account.
-     * @return A similarity score in the range [-1,1] in case it was statically determined, or {@link Optional#empty}
-     *     otherwise.
-     */
-    private Optional<Double> tryToStaticallyDetermineSimilarityScore(Pair<State<S>, State<S>> statePair,
-            Map<Pair<State<S>, State<S>>, Double> staticallyKnownScores,
-            Function<Pair<State<S>, State<S>>, Collection<Pair<State<S>, State<S>>>> commonNeighbors,
-            BiFunction<U, State<S>, Set<T>> relevantProperties, boolean accountForInitialStateArrows)
-    {
-        State<S> leftState = statePair.getFirst();
-        State<S> rightState = statePair.getSecond();
-
-        // If 'leftState' and 'rightState' have uncombinable state properties, then they have a similarity score of -1.
-        if (!statePropertyCombiner.areCombinable(leftState.getProperty(), rightState.getProperty())) {
-            return Optional.of(-1d);
-        }
-
-        // Otherwise, get all relevant neighbors of 'statePair' to attempt to statically compute the similarity score.
-        Collection<Pair<State<S>, State<S>>> neighborStatePairs = commonNeighbors.apply(statePair);
-
-        // We can statically determine the similarity score of 'statePair' if the similarity scores of all its common
-        // neighbors are statically known.
-        if (neighborStatePairs.stream().allMatch(staticallyKnownScores::containsKey)) {
-            // We calculate the similarity score for 'statePair' as proposed by Walkinshaw et al.
-
-            // The similarity score is a fraction. First we determine its numerator. Details are in the paper.
-            double numerator = neighborStatePairs.stream()
-                    .mapToDouble(pair -> 1d + attenuationFactor * staticallyKnownScores.get(pair)).sum();
-
-            // If initial state arrows should be accounted for and if 'leftState' and 'rightState' are both
-            // initial, then increase the numerator by 1 to increase the similarity score for this state pair.
-            boolean isLeftStateInitial = lhs.isInitialState(leftState);
-            boolean isRightStateInitial = rhs.isInitialState(rightState);
-
-            if (accountForInitialStateArrows && isLeftStateInitial && isRightStateInitial) {
-                numerator += 1d;
-            }
-
-            // Then we determine the denominator of the similarity score.
-            Set<T> leftProperties = relevantProperties.apply(lhs, leftState);
-            Set<T> rightProperties = relevantProperties.apply(rhs, rightState);
-
-            // If 'leftState' and/or 'rightState' is initial and if initial state arrows should be accounted
-            // for, then adjust the denominator by 'initialStateAdjustment' accordingly.
-            int initialStateAdjustment = 0;
-
-            if (accountForInitialStateArrows && (isLeftStateInitial || isRightStateInitial)) {
-                initialStateAdjustment = 1;
-            }
-
-            double denominator = 2d * (uncombinableTransitionProperties(leftProperties, rightProperties).size()
-                    + uncombinableTransitionProperties(rightProperties, leftProperties).size()
-                    + neighborStatePairs.size() + initialStateAdjustment);
-
-            // Determine and return the similarity score of 'statePair'.
-            return denominator == 0d ? Optional.of(0d) : Optional.of(numerator / denominator);
-        }
-
-        return Optional.empty();
-    }
 
     /**
      * Computes the set of all transition properties of {@code left} that cannot be combined with any property from
