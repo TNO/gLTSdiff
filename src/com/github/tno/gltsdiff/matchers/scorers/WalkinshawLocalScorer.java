@@ -11,9 +11,6 @@
 package com.github.tno.gltsdiff.matchers.scorers;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -118,41 +115,23 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
             Function<Pair<State<S>, State<S>>, Collection<Pair<State<S>, State<S>>>> commonNeighbors,
             BiFunction<U, State<S>, Set<T>> relevantProperties, boolean accountForInitialStateArrows)
     {
-        // Collect all statically known similarity scores, as well as all state pairs with statically unknown scores.
-        Map<Pair<State<S>, State<S>>, Double> staticallyKnownScores = new LinkedHashMap<>();
-        Set<Pair<State<S>, State<S>>> statePairsWithUnknownScores = collectStaticallyKnownScores(staticallyKnownScores,
-                commonNeighbors, relevantProperties, accountForInitialStateArrows);
-
         // Define an initial similarity score matrix with score 0 for every (LHS, RHS)-state pair.
         RealMatrix scores = new OpenMapRealMatrix(lhs.size(), rhs.size());
 
-        // Refine 'scores' a specified number of times.
+        // Refine the scores a number of times. At least one refinement will always be performed.
         for (int i = 0; i < nrOfRefinements; i++) {
             RealMatrix refinedScores = new OpenMapRealMatrix(lhs.size(), rhs.size());
 
-            // Fill in all statically known similarity scores into 'refinedScores'.
-            for (Entry<Pair<State<S>, State<S>>, Double> entry: staticallyKnownScores.entrySet()) {
-                State<S> leftState = entry.getKey().getFirst();
-                State<S> rightState = entry.getKey().getSecond();
-                refinedScores.setEntry(leftState.getId(), rightState.getId(), entry.getValue());
-            }
+            // Iterate over all pairs of (LHS, RHS)-states.
+            for (State<S> leftState: lhs.getStates()) {
+                for (State<S> rightState: rhs.getStates()) {
+                    // Refine the similarity score of the current state pair.
+                    double refinedScore = similarityScore(leftState, rightState, scores, commonNeighbors,
+                            relevantProperties, accountForInitialStateArrows);
 
-            // If all scores happen to already be statically known then we are trivially done.
-            if (statePairsWithUnknownScores.isEmpty()) {
-                return refinedScores;
-            }
-
-            // Otherwise refine all statically unknown scores, and update 'refinedScores' accordingly.
-            for (Pair<State<S>, State<S>> statePair: statePairsWithUnknownScores) {
-                State<S> leftState = statePair.getFirst();
-                State<S> rightState = statePair.getSecond();
-
-                // Refine the similarity score of the current state pair.
-                double refinedScore = similarityScore(leftState, rightState, scores, commonNeighbors,
-                        relevantProperties, accountForInitialStateArrows);
-
-                // Store the refined similarity score in 'scores'.
-                refinedScores.setEntry(leftState.getId(), rightState.getId(), refinedScore);
+                    // Store the refined similarity score in 'refinedScores'.
+                    refinedScores.setEntry(leftState.getId(), rightState.getId(), refinedScore);
+                }
             }
 
             scores = refinedScores;
@@ -166,8 +145,8 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
      * them as indicated by Equation (6) in the TOSEM 2013 article of Walkinshaw et al., where the similarity scores of
      * all state pairs on the right-hand side of this equation are resolved using {@code scores}.
      * 
-     * @param leftState A LHS state, which together with {@code rightState} must have an unknown state similarity score.
-     * @param rightState A RHS state, which together with {@code leftState} must have an unknown state similarity score.
+     * @param leftState A LHS state.
+     * @param rightState A RHS state.
      * @param scores The current matrix of similarity scores that is to be refined.
      * @param commonNeighbors A function from (LHS, RHS)-state pairs to their common neighboring state pairs. This
      *     function should be unidirectional, i.e., should give all common predecessors or successors of the input pair.
@@ -181,10 +160,19 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
             Function<Pair<State<S>, State<S>>, Collection<Pair<State<S>, State<S>>>> commonNeighbors,
             BiFunction<U, State<S>, Set<T>> relevantProperties, boolean accountForInitialStateArrows)
     {
+        // If 'leftState' and 'rightState' are uncombinable, then their similarity score is -1.
+        if (!statePropertyCombiner.areCombinable(leftState.getProperty(), rightState.getProperty())) {
+            return -1d;
+        }
+
         // Get all relevant neighbors of 'leftState' and 'rightState' for computing the similarity score.
         // The similarity score is a fraction.
         Collection<Pair<State<S>, State<S>>> neighbors = commonNeighbors.apply(Pair.create(leftState, rightState));
-        Preconditions.checkArgument(!neighbors.isEmpty(), "Expected a non-empty collection of neighbors.");
+
+        // Shortcut to improve performance (having no neighbors means that the numerator will always be zero).
+        if (neighbors.isEmpty()) {
+            return 0d;
+        }
 
         // First calculate its denominator. Details are in the paper.
         Set<T> propertiesLeft = relevantProperties.apply(lhs, leftState);
@@ -206,8 +194,10 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
                 + uncombinableTransitionProperties(propertiesRight, propertiesLeft).size() + neighbors.size()
                 + initialStateAdjustment);
 
-        // Note that the denominator must be positive, since 'neighbors' cannot be empty.
-        Preconditions.checkArgument(denominator > 0, "Expected the denominator to be positive.");
+        // Shortcut to improve performance.
+        if (denominator == 0) {
+            return 0d;
+        }
 
         // Second, calculate its numerator. Details are in the paper.
         double numerator = 0;
