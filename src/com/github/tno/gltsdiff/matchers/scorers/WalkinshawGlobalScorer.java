@@ -99,7 +99,11 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
      * 
      * @param commonNeighbors A function from (LHS, RHS)-state pairs to their common neighboring state pairs. This
      *     function should be unidirectional, i.e., should give all common predecessors or successors of the input pair.
-     * @param relevantProperties A function that determines the relevant transition properties for an LTS and a state.
+     * @param relevantProperties A function that, given an LTS and a state, determines the properties of the relevant
+     *     (forward or backward) transitions. This function should be consistent with {@code commonNeighbors}, in the
+     *     sense that, if {@code commonNeighbors} gives common predecessors, then this function should give the
+     *     properties of all incoming transitions of the given state pair (and likewise for common successors and
+     *     outgoing transitions).
      * @param accountForInitialStateArrows Whether the scoring calculation should take initial state arrows into
      *     account. Note that the original paper does not take initial states into account.
      * @return A matrix of state similarity scores, all of which are in the range [-1,1].
@@ -239,7 +243,11 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
      *     updated by this method.
      * @param commonNeighbors A function from (LHS, RHS)-state pairs to their common neighboring state pairs. This
      *     function should be unidirectional, i.e., should give all common predecessors or successors of the input pair.
-     * @param relevantProperties A function that determines the relevant transition properties for an LTS and a state.
+     * @param relevantProperties A function that, given an LTS and a state, determines the properties of the relevant
+     *     (forward or backward) transitions. This function should be consistent with {@code commonNeighbors}, in the
+     *     sense that, if {@code commonNeighbors} gives common predecessors, then this function should give the
+     *     properties of all incoming transitions of the given state pair (and likewise for common successors and
+     *     outgoing transitions).
      * @param accountForInitialStateArrows Whether the scoring calculation should take initial state arrows into
      *     account. Note that the original paper does not take initial states into account.
      * @return A set of all state pairs with statically unknown scores. This method guarantees that this returned set,
@@ -326,7 +334,11 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
      *     by this method.
      * @param commonNeighbors A function from (LHS, RHS)-state pairs to their common neighboring state pairs. This
      *     function should be unidirectional, i.e., should give all common predecessors or successors of the input pair.
-     * @param relevantProperties A function that determines the relevant transition properties for an LTS and a state.
+     * @param relevantProperties A function that, given an LTS and a state, determines the properties of the relevant
+     *     (forward or backward) transitions. This function should be consistent with {@code commonNeighbors}, in the
+     *     sense that, if {@code commonNeighbors} gives common predecessors, then this function should give the
+     *     properties of all incoming transitions of the given state pair (and likewise for common successors and
+     *     outgoing transitions).
      * @param accountForInitialStateArrows Whether the scoring calculation should take initial state arrows into
      *     account. Note that the original paper does not take initial states into account.
      * @return A similarity score in the range [-1,1] in case it was statically determined, or {@link Optional#empty}
