@@ -24,7 +24,7 @@ import com.github.tno.gltsdiff.lts.State;
 import com.github.tno.gltsdiff.matchers.BruteForceMatcher;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.utils.LTSUtils;
-import com.github.tno.gltsdiff.utils.PredictableCollectors;
+import com.github.tno.gltsdiff.utils.Maps;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.LinkedHashMultimap;
@@ -176,7 +176,8 @@ public class BruteForceMatcher<S, T, U extends LTS<S, T>> implements Matcher<S, 
     @Override
     public Map<State<S>, State<S>> compute() {
         Set<Pair<State<S>, State<S>>> matching = findAnOptimalMatching(allStatePairsWithPotential());
-        return matching.stream().collect(PredictableCollectors.toMap(Pair::getFirst, Pair::getSecond));
+        return matching.stream()
+                .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond, Maps.throwingMerger(), LinkedHashMap::new));
     }
 
     /**
