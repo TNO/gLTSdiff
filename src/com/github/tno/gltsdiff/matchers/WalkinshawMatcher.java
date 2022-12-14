@@ -28,6 +28,7 @@ import com.github.tno.gltsdiff.lts.State;
 import com.github.tno.gltsdiff.matchers.scorers.SimilarityScorer;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.utils.LTSUtils;
+import com.github.tno.gltsdiff.utils.PredictableCollectors;
 import com.google.common.base.Preconditions;
 
 /**
@@ -435,6 +436,6 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
                     "Expected all matched state pairs to be compatible.");
         }
 
-        return matches.stream().collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
+        return matches.stream().collect(PredictableCollectors.toMap(Pair::getFirst, Pair::getSecond));
     }
 }
