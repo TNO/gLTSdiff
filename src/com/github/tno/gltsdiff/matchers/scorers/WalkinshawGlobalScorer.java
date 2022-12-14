@@ -149,7 +149,14 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
             State<S> rightState = statePair.getSecond();
             int statePairIndex = entry.getValue();
 
-            // Firstly determine the coefficients for all neighboring state pairs with statically unknown scores.
+            // If 'leftState' and 'rightState' are uncombinable, then encode that their similarity score is -1.
+            if (!statePropertyCombiner.areCombinable(leftState.getProperty(), rightState.getProperty())) {
+                coefficients.setEntry(statePairIndex, statePairIndex, 1d);
+                constants.setEntry(statePairIndex, -1d);
+                continue;
+            }
+
+            // Otherwise we first determine the coefficients for all neighboring state pairs with unknown scores.
             Collection<Pair<State<S>, State<S>>> neighborStatePairs = commonNeighbors.apply(statePair);
 
             for (Pair<State<S>, State<S>> neighborStatePair: neighborStatePairs) {
@@ -175,14 +182,16 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
                 initialStateAdjustment = 1;
             }
 
-            double diagonal = 2 * (uncombinableTransitionProperties(leftProperties, rightProperties).size()
-                    + uncombinableTransitionProperties(rightProperties, leftProperties).size()
-                    + neighborStatePairs.size() + initialStateAdjustment);
+            double diagonal = coefficients.getEntry(statePairIndex, statePairIndex)
+                    + 2 * (uncombinableTransitionProperties(leftProperties, rightProperties).size()
+                            + uncombinableTransitionProperties(rightProperties, leftProperties).size()
+                            + neighborStatePairs.size() + initialStateAdjustment);
 
-            // Note that the diagonal must be positive, since 'statePair' must have neighbors.
-            Preconditions.checkArgument(diagonal > 0, "Expected the diagonal to be positive.");
+            if (diagonal == 0.0d && neighborStatePairs.size() == 0) {
+                diagonal = 1.0d;
+            }
 
-            coefficients.addToEntry(statePairIndex, statePairIndex, diagonal);
+            coefficients.setEntry(statePairIndex, statePairIndex, diagonal);
 
             // Lastly determine the constant term in the linear system for the current state pair.
             double constant = neighborStatePairs.size() + neighborStatePairs.stream().map(staticallyKnownScores::get)
