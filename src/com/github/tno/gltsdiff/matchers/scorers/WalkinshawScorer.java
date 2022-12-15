@@ -18,6 +18,7 @@ import org.apache.commons.math3.linear.BlockRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 
 import com.github.tno.gltsdiff.lts.LTS;
+import com.github.tno.gltsdiff.matchers.Matcher;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.google.common.base.Preconditions;
 
@@ -25,6 +26,13 @@ import com.google.common.base.Preconditions;
  * Contains common functionality for the state similarity scoring approaches that are described in the article by
  * Walkinshaw et al. (TOSEM 2013). However, this implementation generalizes the approaches described in the article by a
  * more general concept of combinability (see {@link Combiner}).
+ * <p>
+ * The equation system as described by Walkinshaw et al. produces similarity scores guaranteed to be in the range
+ * [-1,1]. This implementation converts all negative similarity scores to {@link Double#NEGATIVE_INFINITY} instead after
+ * having solved the equation systems, indicating to the {@link Matcher matchers} that the corresponding state pair is
+ * incompatible and should never be merged (which is in line with StateChum). So the scores computed by this
+ * implementation are guaranteed to be either {@link Double#NEGATIVE_INFINITY} or be in the range [0,1].
+ * </p>
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
