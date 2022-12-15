@@ -260,8 +260,6 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
         Set<Pair<State<S>, State<S>>> statePairsWithUnknownScores = new LinkedHashSet<>();
 
         // Also compute a mapping that is the inverse of 'commonNeighbors', with respect to all (LHS, RHS)-state pairs.
-        // This mapping essentially maps state pairs to the set of state pairs whose similarity score depend on the
-        // mapped (key) state pair.
         Map<Pair<State<S>, State<S>>, Set<Pair<State<S>, State<S>>>> commonNeighborsInverse = new LinkedHashMap<>();
 
         // Populate both 'statePairsWithUnknownScores' and 'commonNeighborsInverse'.
