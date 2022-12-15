@@ -303,7 +303,6 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
                 // Register that 'statePair' is now a state pair with a statically known score.
                 staticallyKnownScores.put(statePair, possibleScore.get());
                 statePairsWithUnknownScores.remove(statePair);
-                pairsToExplore.remove(statePair);
 
                 // Make sure that all state pairs with unknown similarity scores, whose score depends on the score of
                 // 'statePair', are considered again in this exploration.
