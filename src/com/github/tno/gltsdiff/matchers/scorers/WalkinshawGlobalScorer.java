@@ -235,9 +235,7 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
     }
 
     /**
-     * Collects all (LHS, RHS)-state pairs with a state similarity score that can statically (efficiently) be computed,
-     * without having to solve expensive linear equation systems (i.e., {@link WalkinshawGlobalScorer}) or perform
-     * refinement operations that may be expensive (i.e., {@link WalkinshawLocalScorer}).
+     * Collects all (LHS, RHS)-state pairs with a state similarity score that can statically (efficiently) be computed.
      * 
      * @param staticallyKnownScores A mutable map from state pairs to statically known similarity scores, which will be
      *     updated by this method.
