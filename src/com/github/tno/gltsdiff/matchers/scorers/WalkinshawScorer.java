@@ -18,13 +18,21 @@ import org.apache.commons.math3.linear.BlockRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 
 import com.github.tno.gltsdiff.lts.LTS;
+import com.github.tno.gltsdiff.matchers.Matcher;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.google.common.base.Preconditions;
 
 /**
  * Contains common functionality for the state similarity scoring approaches that are described in the article by
- * Walkinshaw et al. (TOSEM 2014). However, this implementation generalizes the approaches described in the article by a
+ * Walkinshaw et al. (TOSEM 2013). However, this implementation generalizes the approaches described in the article by a
  * more general concept of combinability (see {@link Combiner}).
+ * <p>
+ * The equation system as described by Walkinshaw et al. produces similarity scores guaranteed to be in the range
+ * [-1,1]. This implementation converts all negative similarity scores to {@link Double#NEGATIVE_INFINITY} instead after
+ * having solved the equation systems, indicating to the {@link Matcher matchers} that the corresponding state pair is
+ * incompatible and should never be merged (which is in line with StateChum). So the scores computed by this
+ * implementation are guaranteed to be either {@link Double#NEGATIVE_INFINITY} or be in the range [0,1].
+ * </p>
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
@@ -112,21 +120,21 @@ public abstract class WalkinshawScorer<S, T, U extends LTS<S, T>> implements Sim
                 double backwardScore = backwardScores.getEntry(leftIndex, rightIndex);
 
                 // Walkinshaw et al. guarantee that the computed state similarity scores are within the range [-1,1].
-                // (see the small paragraph right after Equation 6 on page 14 in their TOSEM 2014 article.)
+                // (see the small paragraph right after Equation 6 on page 14 in their TOSEM 2013 article.)
                 Preconditions.checkArgument(-1 <= forwardScore && forwardScore <= 1,
                         "Expected all forward state similarity scores to be within the range [-1,1].");
                 Preconditions.checkArgument(-1 <= backwardScore && backwardScore <= 1,
                         "Expected all backward state similarity scores to be within the range [-1,1].");
 
-                // Any negative score indicates an incompatible state pair. This is not explicit in the TOSEM 2014
+                // Any negative score indicates an incompatible state pair. This is not explicit in the TOSEM 2013
                 // article, but it is (to some extend) in the implementation of StateChum
                 // (e.g., see statechum.analysis.learning.linear.GDLearnerGraph, line 498, on
                 // https://github.com/kirilluk/statechum/blob/056163f301f27862d44f6eaa84ffbc30efb4bd48/src/statechum/analysis/learning/linear/GDLearnerGraph.java#L498).
                 // Therefore any such score is marked as minus infinity.
-                if (forwardScore < 0.0d || backwardScore < 0.0d) {
+                if (forwardScore < 0d || backwardScore < 0d) {
                     averageScores.setEntry(leftIndex, rightIndex, Double.NEGATIVE_INFINITY);
                 } else {
-                    averageScores.setEntry(leftIndex, rightIndex, (forwardScore + backwardScore) / 2.0d);
+                    averageScores.setEntry(leftIndex, rightIndex, (forwardScore + backwardScore) / 2d);
                 }
             }
         }

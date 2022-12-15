@@ -12,6 +12,7 @@ package com.github.tno.gltsdiff.matchers.scorers;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.apache.commons.math3.linear.OpenMapRealMatrix;
@@ -79,35 +80,52 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
     @Override
     protected RealMatrix computeForwardSimilarityScores() {
         return computeScores(pair -> LTSUtils.commonSuccessors(lhs, rhs, transitionPropertyCombiner, pair),
-                lts -> state -> lts.getOutgoingTransitionProperties(state), false);
+                (lts, state) -> lts.getOutgoingTransitionProperties(state), false);
     }
 
     @Override
     protected RealMatrix computeBackwardSimilarityScores() {
         return computeScores(pair -> LTSUtils.commonPredecessors(lhs, rhs, transitionPropertyCombiner, pair),
-                lts -> state -> lts.getIncomingTransitionProperties(state), true);
+                (lts, state) -> lts.getIncomingTransitionProperties(state), true);
     }
 
     /**
-     * Computes local similarity scores for every pair of (LHS, RHS)-state pairs.
+     * Computes local similarity scores for every pair of (LHS, RHS)-state pairs. Details of this computation are in the
+     * TOSEM 2013 article of Walkinshaw et al. However, this implementation has been generalized by a notion of
+     * combinability (see {@link Combiner}) to determine the amount of overlap between transition properties, and takes
+     * initial state information into account.
+     * <p>
+     * More specifically, this function implements Equation (6) of the article of Walkinshaw et al. (and its "Prev"
+     * counterpart, depending on how {@code commonNeighbors} and {@code relevantProperties} are specified), as a
+     * refinement operation. The equation system as presented in the paper is recursive, and this implementation limits
+     * the recursion depth to be {@code nrOfRefinements} (which must be positive). If only a single refinement is
+     * performed, then the computed similarity scores should be the same as come out of Equations (2) and (4) in the
+     * article. However, by increasing the number of refinements further, the scores as computed by
+     * {@link WalkinshawGlobalScorer} can be approximated more closely.
+     * </p>
      * 
-     * @param commonNeighbors A function that determines the common neighboring state pairs for a given pair of (LHS,
-     *     RHS)-states, that are relevant for computing local similarity scores.
-     * @param relevantProperties A function that determines the transition properties for a given LTS and a state of
-     *     that LTS, that are relevant for computing local similarity scores.
+     * @param commonNeighbors A function from (LHS, RHS)-state pairs to their common neighboring state pairs. This
+     *     function should be unidirectional, i.e., should give all common predecessors or successors of the input pair.
+     * @param relevantProperties A function that, given an LTS and a state, determines the properties of the relevant
+     *     (forward or backward) transitions. This function should be consistent with {@code commonNeighbors}, in the
+     *     sense that, if {@code commonNeighbors} gives common predecessors, then this function should give the
+     *     properties of all incoming transitions of the given state pair (and likewise for common successors and
+     *     outgoing transitions).
      * @param accountForInitialStateArrows Whether the scoring calculation should take initial state arrows into
      *     account. Note that the original paper does not take initial states into account.
      * @return A matrix of local state similarity scores, all of which are in the range [-1,1].
      */
     private RealMatrix computeScores(
             Function<Pair<State<S>, State<S>>, Collection<Pair<State<S>, State<S>>>> commonNeighbors,
-            Function<U, Function<State<S>, Set<T>>> relevantProperties, boolean accountForInitialStateArrows)
+            BiFunction<U, State<S>, Set<T>> relevantProperties, boolean accountForInitialStateArrows)
     {
         // Define an initial similarity score matrix with score 0 for every (LHS, RHS)-state pair.
         RealMatrix scores = new OpenMapRealMatrix(lhs.size(), rhs.size());
 
         // Refine the scores a number of times. At least one refinement will always be performed.
         for (int i = 0; i < nrOfRefinements; i++) {
+            RealMatrix refinedScores = new OpenMapRealMatrix(lhs.size(), rhs.size());
+
             // Iterate over all pairs of (LHS, RHS)-states.
             for (State<S> leftState: lhs.getStates()) {
                 for (State<S> rightState: rhs.getStates()) {
@@ -115,38 +133,39 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
                     double refinedScore = similarityScore(leftState, rightState, scores, commonNeighbors,
                             relevantProperties, accountForInitialStateArrows);
 
-                    // Store the refined similarity score in 'scores'.
-                    scores.setEntry(leftState.getId(), rightState.getId(), refinedScore);
+                    // Store the refined similarity score in 'refinedScores'.
+                    refinedScores.setEntry(leftState.getId(), rightState.getId(), refinedScore);
                 }
             }
+
+            scores = refinedScores;
         }
 
         return scores;
     }
 
     /**
-     * Given a pair ({@code leftState}, {@code rightState}) of (LHS, RHS)-states, calculate a (local) similarity score
-     * between them by only considering the transitions that are relevant. Moreover, the similarity score calculation is
-     * based on refinement, in the sense that it refines (improves) a given matrix of current scores.
-     * <p>
-     * Details are in the paper. In particular Section 4.1 (Equations 2 and 4) and Section 4.2 (Equation 5). However,
-     * this implementation has been generalized by a notion of combinability (see {@link Combiner}) to determine the
-     * amount of overlap between transition properties.
-     * </p>
+     * Given a pair ({@code leftState}, {@code rightState}) of (LHS, RHS)-states, calculate a similarity score between
+     * them as indicated by Equation (6) in the TOSEM 2013 article of Walkinshaw et al., where the similarity scores of
+     * all state pairs on the right-hand side of this equation are resolved using {@code scores}.
      * 
      * @param leftState A LHS state.
      * @param rightState A RHS state.
      * @param scores The current matrix of similarity scores that is to be refined.
-     * @param commonNeighbors A function giving the relevant neighboring state pairs for a pair of (LHS, RHS)-states.
-     * @param relevantProperties A function that determines the relevant transition properties based on an LTS and a
-     *     state.
+     * @param commonNeighbors A function from (LHS, RHS)-state pairs to their common neighboring state pairs. This
+     *     function should be unidirectional, i.e., should give all common predecessors or successors of the input pair.
+     * @param relevantProperties A function that, given an LTS and a state, determines the properties of the relevant
+     *     (forward or backward) transitions. This function should be consistent with {@code commonNeighbors}, in the
+     *     sense that, if {@code commonNeighbors} gives common predecessors, then this function should give the
+     *     properties of all incoming transitions of the given state pair (and likewise for common successors and
+     *     outgoing transitions).
      * @param accountForInitialStateArrows Whether the scoring calculation should take initial state arrows into
      *     account. Note that the original paper does not take initial states into account.
-     * @return A (refined) similarity score for the given pair of (LHS, RHS)-states, in the range [-1,1].
+     * @return A state similarity score for the given pair of (LHS, RHS)-states, in the range [-1,1].
      */
     private double similarityScore(State<S> leftState, State<S> rightState, RealMatrix scores,
             Function<Pair<State<S>, State<S>>, Collection<Pair<State<S>, State<S>>>> commonNeighbors,
-            Function<U, Function<State<S>, Set<T>>> relevantProperties, boolean accountForInitialStateArrows)
+            BiFunction<U, State<S>, Set<T>> relevantProperties, boolean accountForInitialStateArrows)
     {
         // If 'leftState' and 'rightState' are uncombinable, then their similarity score is -1.
         if (!statePropertyCombiner.areCombinable(leftState.getProperty(), rightState.getProperty())) {
@@ -163,8 +182,8 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
         }
 
         // First calculate its denominator. Details are in the paper.
-        Set<T> propertiesLeft = relevantProperties.apply(lhs).apply(leftState);
-        Set<T> propertiesRight = relevantProperties.apply(rhs).apply(rightState);
+        Set<T> propertiesLeft = relevantProperties.apply(lhs, leftState);
+        Set<T> propertiesRight = relevantProperties.apply(rhs, rightState);
 
         // If 'leftState' and/or 'rightState' is initial and if initial state arrows should be accounted for,
         // then adjust the denominator by 'initialStateAdjustment' to indicate that there are initial states.
@@ -193,13 +212,13 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
         for (Pair<State<S>, State<S>> neighbor: neighbors) {
             int lhsIdx = neighbor.getFirst().getId();
             int rhsIdx = neighbor.getSecond().getId();
-            numerator += 1 + attenuationFactor * scores.getEntry(lhsIdx, rhsIdx);
+            numerator += 1d + attenuationFactor * scores.getEntry(lhsIdx, rhsIdx);
         }
 
         // If initial state arrows should be accounted for and if 'leftState' and 'rightState' are both initial,
         // then increase the numerator by 1 to increase the similarity score for this state pair.
         if (accountForInitialStateArrows && isLeftStateInitial && isRightStateInitial) {
-            numerator += 1.0d;
+            numerator += 1d;
         }
 
         // Calculate the new score.
