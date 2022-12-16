@@ -101,7 +101,10 @@ public class DefaultMerger<S, T, U extends LTS<S, T>> extends AbstractMerger<S, 
             rightMatchedStates.add(rightState);
 
             // Define and add the new combined state.
-            // Note: all matched state pairs have combinable state properties (otherwise there is a bug).
+            Preconditions.checkArgument(
+                    statePropertyCombiner.areCombinable(leftState.getProperty(), rightState.getProperty()),
+                    "Expected all matched state pairs to have combinable state properties.");
+
             State<S> newState = diff
                     .addState(statePropertyCombiner.combine(leftState.getProperty(), rightState.getProperty()));
 
