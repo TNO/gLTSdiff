@@ -166,9 +166,7 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
      */
     private double similarityScore(State<S> leftState, State<S> rightState, RealMatrix scores,
             BiFunction<U, State<S>, List<Transition<S, T>>> relevantTransitions,
-            Function<Transition<S, T>, State<S>> stateSelector,
-
-            boolean accountForInitialStateArrows)
+            Function<Transition<S, T>, State<S>> stateSelector, boolean accountForInitialStateArrows)
     {
         // If 'leftState' and 'rightState' are uncombinable, then their similarity score is -1.
         if (!statePropertyCombiner.areCombinable(leftState.getProperty(), rightState.getProperty())) {
