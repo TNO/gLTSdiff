@@ -162,42 +162,42 @@ public abstract class WalkinshawScorer<S, T, U extends LTS<S, T>> implements Sim
     protected abstract RealMatrix computeBackwardSimilarityScores();
 
     /**
-     * Counts the number of transitions in {@code leftTransitions} for which there does not exist any transition in
-     * {@code rightTransitions} with a transition property that is combinable.
+     * Counts the number of transitions in {@code first} for which there does not exist any transition in {@code second}
+     * with a transition property that is combinable.
      * 
-     * @param leftTransitions The collection of transitions from {@link #lhs}.
-     * @param rightTransitions The collection of transitions from {@link #rhs}.
-     * @return The number of transitions in {@code leftTransitions} with a property that is not combinable with the
-     *     property of any transition in {@code rightTransitions}.
+     * @param first The first collection of transitions.
+     * @param second The second collection of transitions.
+     * @return The number of transitions in {@code first} with a property that is not combinable with the property of
+     *     any transition in {@code second}.
      */
-    protected long numberOfUncombinableTransitions(Collection<Transition<S, T>> leftTransitions,
-            Collection<Transition<S, T>> rightTransitions)
+    protected long numberOfUncombinableTransitions(Collection<Transition<S, T>> first,
+            Collection<Transition<S, T>> second)
     {
-        return leftTransitions.stream()
-                .filter(left -> rightTransitions.stream().noneMatch(
-                        right -> transitionPropertyCombiner.areCombinable(left.getProperty(), right.getProperty())))
+        return first.stream()
+                .filter(f -> second.stream()
+                        .noneMatch(s -> transitionPropertyCombiner.areCombinable(f.getProperty(), s.getProperty())))
                 .count();
     }
 
     /**
-     * Collects the list of endpoint states (i.e., common neighbors) of all pairs of transitions from
-     * {@code leftTransitions} and {@code rightTransitions} whose transition properties are combinable. The endpoint
-     * states of all such transition pairs are determined using {@code stateSelector}.
+     * Collects the list of endpoint states (i.e., common neighbors) of all pairs of transitions from {@code first} and
+     * {@code second} whose transition properties are combinable. The endpoint states of all such transition pairs are
+     * determined using {@code stateSelector}.
      * 
-     * @param leftTransitions The collection of transitions from {@link #lhs}.
-     * @param rightTransitions The collection of transitions from {@link #rhs}.
+     * @param first The first collection of transitions.
+     * @param second The second collection of transitions.
      * @param stateSelector The selector function that determines which endpoint states are to be considered. This
      *     function should consistently give either the source state or the target state of any given transition.
      * @return The list of pairs of endpoint states, of all transition pairs with combinable transition properties.
      */
-    protected List<Pair<State<S>, State<S>>> getCommonNeighborStatePairs(Collection<Transition<S, T>> leftTransitions,
-            Collection<Transition<S, T>> rightTransitions, Function<Transition<S, T>, State<S>> stateSelector)
+    protected List<Pair<State<S>, State<S>>> getCommonNeighborStatePairs(Collection<Transition<S, T>> first,
+            Collection<Transition<S, T>> second, Function<Transition<S, T>, State<S>> stateSelector)
     {
-        return leftTransitions.stream()
+        return first.stream()
                 // Get all pairs of transitions with combinable properties, and obtain their relevant endpoint states.
-                .flatMap(left -> rightTransitions.stream().filter(
-                        right -> transitionPropertyCombiner.areCombinable(left.getProperty(), right.getProperty()))
-                        .map(right -> Pair.create(stateSelector.apply(left), stateSelector.apply(right))))
+                .flatMap(f -> second.stream()
+                        .filter(s -> transitionPropertyCombiner.areCombinable(f.getProperty(), s.getProperty()))
+                        .map(s -> Pair.create(stateSelector.apply(f), stateSelector.apply(s))))
                 // Collect all such pairs of endpoint states (i.e., common neighbors) into an array list.
                 .collect(Collectors.toCollection(ArrayList::new));
     }
