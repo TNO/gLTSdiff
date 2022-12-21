@@ -17,6 +17,13 @@ import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
 
+/**
+ * A labeled transition system, which is a {@link GLTS generalized labeled transition system} with the additional
+ * constraint that state properties must include initial state information.
+ *
+ * @param <S> The type of state properties.
+ * @param <T> The type of transition properties.
+ */
 public abstract class LTS<S, T> extends GLTS<S, T> {
     /** @return The number of initial states in this LTS satisfying {@code predicate}. */
     public long countInitialStates(Predicate<State<S>> predicate) {
