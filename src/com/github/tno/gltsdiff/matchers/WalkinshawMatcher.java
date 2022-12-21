@@ -27,7 +27,7 @@ import com.github.tno.gltsdiff.lts.LTS;
 import com.github.tno.gltsdiff.lts.State;
 import com.github.tno.gltsdiff.matchers.scorers.SimilarityScorer;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
-import com.github.tno.gltsdiff.utils.LTSUtils;
+import com.github.tno.gltsdiff.utils.GLTSUtils;
 import com.github.tno.gltsdiff.utils.Maps;
 import com.google.common.base.Preconditions;
 
@@ -263,9 +263,9 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
     private Set<Pair<State<S>, State<S>>> surroundingPairs(Pair<State<S>, State<S>> statePair,
             BiFunction<State<S>, State<S>, Double> scores)
     {
-        Stream<Pair<State<S>, State<S>>> predecessors = LTSUtils
+        Stream<Pair<State<S>, State<S>>> predecessors = GLTSUtils
                 .commonPredecessors(lhs, rhs, transitionPropertyCombiner, statePair).stream();
-        Stream<Pair<State<S>, State<S>>> successors = LTSUtils
+        Stream<Pair<State<S>, State<S>>> successors = GLTSUtils
                 .commonSuccessors(lhs, rhs, transitionPropertyCombiner, statePair).stream();
 
         // Return all compatible predecessors and successors.

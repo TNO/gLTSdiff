@@ -23,9 +23,9 @@ import com.github.tno.gltsdiff.lts.State;
 import com.github.tno.gltsdiff.lts.Transition;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 
-/** Utilities for working with LTSs. */
-public class LTSUtils {
-    private LTSUtils() {
+/** Utilities for working with GLTSs. */
+public class GLTSUtils {
+    private GLTSUtils() {
     }
 
     /**
@@ -33,8 +33,8 @@ public class LTSUtils {
      * 
      * @param <S> The type of state properties.
      * @param <T> The type of transition properties.
-     * @param left The left LTS.
-     * @param right The right LTS.
+     * @param left The left GLTS.
+     * @param right The right GLTS.
      * @param combiner The combiner for transition properties.
      * @param statePair The pair of ({@code left}, {@code right})-states to consider.
      * @return The stream containing all pairs of combinable incoming transitions into {@code statePair}.
@@ -54,8 +54,8 @@ public class LTSUtils {
      * 
      * @param <S> The type of state properties.
      * @param <T> The type of transition properties.
-     * @param left The left LTS.
-     * @param right The right LTS.
+     * @param left The left GLTS.
+     * @param right The right GLTS.
      * @param combiner The combiner for transition properties.
      * @param statePair The pair of ({@code left}, {@code right})-states to consider.
      * @return {@code true} if the given state pair has common combinable incoming transitions, {@code false} otherwise.
@@ -71,8 +71,8 @@ public class LTSUtils {
      * 
      * @param <S> The type of state properties.
      * @param <T> The type of transition properties.
-     * @param left The left LTS.
-     * @param right The right LTS.
+     * @param left The left GLTS.
+     * @param right The right GLTS.
      * @param combiner The combiner for transition properties.
      * @param statePair The pair of ({@code left}, {@code right})-states to consider.
      * @return The stream containing all pairs of combinable outgoing transitions out of {@code statePair}.
@@ -92,8 +92,8 @@ public class LTSUtils {
      * 
      * @param <S> The type of state properties.
      * @param <T> The type of transition properties.
-     * @param left The left LTS.
-     * @param right The right LTS.
+     * @param left The left GLTS.
+     * @param right The right GLTS.
      * @param combiner The combiner for transition properties.
      * @param statePair The pair of ({@code left}, {@code right})-states to consider.
      * @return {@code true} if the given state pair has common combinable outgoing transitions, {@code false} otherwise.
@@ -110,8 +110,8 @@ public class LTSUtils {
      * 
      * @param <S> The type of state properties.
      * @param <T> The type of transition properties.
-     * @param left The left LTS.
-     * @param right The right LTS.
+     * @param left The left GLTS.
+     * @param right The right GLTS.
      * @param combiner The combiner for transition properties.
      * @param statePair The state pair for which all common predecessors are to be found.
      * @return The set of all common predecessors of {@code statePair}.
@@ -130,8 +130,8 @@ public class LTSUtils {
      * 
      * @param <S> The type of state properties.
      * @param <T> The type of transition properties.
-     * @param left The left LTS.
-     * @param right The right LTS.
+     * @param left The left GLTS.
+     * @param right The right GLTS.
      * @param combiner The combiner for transition properties.
      * @param statePair The state pair for which all common successors are to be found.
      * @return The set of all common successors of {@code statePair}.

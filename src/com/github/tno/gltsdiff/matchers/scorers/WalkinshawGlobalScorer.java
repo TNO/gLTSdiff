@@ -32,7 +32,7 @@ import org.apache.commons.math3.util.Pair;
 import com.github.tno.gltsdiff.lts.LTS;
 import com.github.tno.gltsdiff.lts.State;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
-import com.github.tno.gltsdiff.utils.LTSUtils;
+import com.github.tno.gltsdiff.utils.GLTSUtils;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -74,13 +74,13 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
 
     @Override
     protected RealMatrix computeForwardSimilarityScores() {
-        return computeScores(pair -> LTSUtils.commonSuccessors(lhs, rhs, transitionPropertyCombiner, pair),
+        return computeScores(pair -> GLTSUtils.commonSuccessors(lhs, rhs, transitionPropertyCombiner, pair),
                 (lts, state) -> lts.getOutgoingTransitionProperties(state), false);
     }
 
     @Override
     protected RealMatrix computeBackwardSimilarityScores() {
-        return computeScores(pair -> LTSUtils.commonPredecessors(lhs, rhs, transitionPropertyCombiner, pair),
+        return computeScores(pair -> GLTSUtils.commonPredecessors(lhs, rhs, transitionPropertyCombiner, pair),
                 (lts, state) -> lts.getIncomingTransitionProperties(state), true);
     }
 
