@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.github.tno.gltsdiff.lts.GLTS;
+import com.github.tno.gltsdiff.lts.LTS;
 import com.github.tno.gltsdiff.lts.State;
 import com.github.tno.gltsdiff.lts.Transition;
 import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
@@ -33,7 +34,7 @@ import com.google.common.base.Preconditions;
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs to be written.
  */
-public abstract class LTSDotWriter<S, T, U extends GLTS<S, T>> {
+public abstract class LTSDotWriter<S, T, U extends LTS<S, T>> {
     static final String DEFAULT_COLOR = "#000000";
 
     static final String DEFAULT_STYLE = "";

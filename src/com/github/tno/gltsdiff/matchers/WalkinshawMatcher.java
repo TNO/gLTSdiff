@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.util.Pair;
 
-import com.github.tno.gltsdiff.lts.GLTS;
+import com.github.tno.gltsdiff.lts.LTS;
 import com.github.tno.gltsdiff.lts.State;
 import com.github.tno.gltsdiff.matchers.scorers.SimilarityScorer;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
@@ -41,7 +41,7 @@ import com.google.common.base.Preconditions;
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs.
  */
-public class WalkinshawMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatcher<S, T, U> {
+public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher<S, T, U> {
     /** The left-hand-side LTS. */
     private final U lhs;
 

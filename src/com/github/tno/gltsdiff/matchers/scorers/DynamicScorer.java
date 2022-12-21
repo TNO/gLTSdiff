@@ -14,7 +14,7 @@ import java.util.function.BiFunction;
 
 import org.apache.commons.math3.linear.RealMatrix;
 
-import com.github.tno.gltsdiff.lts.GLTS;
+import com.github.tno.gltsdiff.lts.LTS;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 
 /**
@@ -26,7 +26,7 @@ import com.github.tno.gltsdiff.operators.combiners.Combiner;
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs.
  */
-public class DynamicScorer<S, T, U extends GLTS<S, T>> implements SimilarityScorer<S, T, U> {
+public class DynamicScorer<S, T, U extends LTS<S, T>> implements SimilarityScorer<S, T, U> {
     /** The left-hand-side LTS, which has at least one state. */
     protected final U lhs;
 
@@ -85,7 +85,7 @@ public class DynamicScorer<S, T, U extends GLTS<S, T>> implements SimilarityScor
         return rhs;
     }
 
-    private static final <S, T, U extends GLTS<S, T>> SimilarityScorer<S, T, U> defaultScoringAlgorithmCreator(U lhs,
+    private static final <S, T, U extends LTS<S, T>> SimilarityScorer<S, T, U> defaultScoringAlgorithmCreator(U lhs,
             U rhs, Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner)
     {
         int nrOfStates = Math.max(lhs.size(), rhs.size());

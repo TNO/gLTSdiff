@@ -13,7 +13,7 @@ package com.github.tno.gltsdiff.matchers;
 import java.util.Map;
 import java.util.function.BiFunction;
 
-import com.github.tno.gltsdiff.lts.GLTS;
+import com.github.tno.gltsdiff.lts.LTS;
 import com.github.tno.gltsdiff.lts.State;
 import com.github.tno.gltsdiff.matchers.scorers.DynamicScorer;
 import com.github.tno.gltsdiff.matchers.scorers.SimilarityScorer;
@@ -28,7 +28,7 @@ import com.github.tno.gltsdiff.operators.combiners.Combiner;
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs.
  */
-public class DynamicMatcher<S, T, U extends GLTS<S, T>> implements Matcher<S, T, U> {
+public class DynamicMatcher<S, T, U extends LTS<S, T>> implements Matcher<S, T, U> {
     /** The left-hand-side LTS. */
     private final U lhs;
 
@@ -87,7 +87,7 @@ public class DynamicMatcher<S, T, U extends GLTS<S, T>> implements Matcher<S, T,
         return rhs;
     }
 
-    private static final <S, T, U extends GLTS<S, T>> Matcher<S, T, U> defaultMatchingAlgorithmCreator(U lhs, U rhs,
+    private static final <S, T, U extends LTS<S, T>> Matcher<S, T, U> defaultMatchingAlgorithmCreator(U lhs, U rhs,
             Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner)
     {
         SimilarityScorer<S, T, U> scorer = new DynamicScorer<>(lhs, rhs, statePropertyCombiner,

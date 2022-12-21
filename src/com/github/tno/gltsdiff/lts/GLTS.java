@@ -139,14 +139,6 @@ public abstract class GLTS<S, T> {
     }
 
     /**
-     * Determines whether the given state property indicates that the associated state is initial.
-     * 
-     * @param property The non-{@code null} state property.
-     * @return {@code true} if the given state property describes an initial state, {@code false} otherwise.
-     */
-    public abstract boolean isInitial(S property);
-
-    /**
      * Removes the given state from this LTS, thereby ensuring that the identifiers of all other states of this LTS
      * remain unique and between {@code 0} and {@code size() - 1}.
      * 
@@ -223,11 +215,6 @@ public abstract class GLTS<S, T> {
         return getStates().stream().filter(predicate).count();
     }
 
-    /** @return The number of initial states in this LTS satisfying {@code predicate}. */
-    public long countInitialStates(Predicate<State<S>> predicate) {
-        return getInitialStates().stream().filter(predicate).count();
-    }
-
     /** @return The number of transitions in this LTS with a property that satisfies {@code predicate}. */
     public long countTransitions(Predicate<T> predicate) {
         return getStates().stream().flatMap(state -> getOutgoingTransitions(state).stream())
@@ -284,11 +271,6 @@ public abstract class GLTS<S, T> {
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    /** @return The set of all initial states, all of which are non-{@code null}. */
-    public Set<State<S>> getInitialStates() {
-        return getStates().stream().filter(s -> isInitialState(s)).collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-
     /**
      * Determines whether the specified state exists in this LTS.
      * 
@@ -327,17 +309,6 @@ public abstract class GLTS<S, T> {
      */
     public boolean hasTransition(Transition<S, T> transition) {
         return hasTransition(transition.getSource(), transition.getProperty(), transition.getTarget());
-    }
-
-    /**
-     * Determines whether the specified state is initial.
-     * 
-     * @param state The non-{@code null} state, which must exist in this LTS.
-     * @return {@code true} if {@code state} is initial, {@code false} otherwise.
-     */
-    public boolean isInitialState(State<S> state) {
-        Preconditions.checkNotNull(state, "Expected a non-null state.");
-        return isInitial(state.getProperty());
     }
 
     /**

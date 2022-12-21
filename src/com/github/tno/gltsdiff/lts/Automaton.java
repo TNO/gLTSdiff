@@ -18,7 +18,7 @@ import com.google.common.base.Preconditions;
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
  */
-public abstract class Automaton<S, T> extends GLTS<S, T> {
+public abstract class Automaton<S, T> extends LTS<S, T> {
     /**
      * Determines whether the given state property indicates that the associated state is accepting.
      * 
