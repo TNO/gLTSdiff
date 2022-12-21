@@ -10,14 +10,19 @@
 
 package com.github.tno.gltsdiff.matchers.scorers;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.math3.linear.BlockRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
+import org.apache.commons.math3.util.Pair;
 
 import com.github.tno.gltsdiff.lts.LTS;
+import com.github.tno.gltsdiff.lts.State;
+import com.github.tno.gltsdiff.lts.Transition;
 import com.github.tno.gltsdiff.matchers.Matcher;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.google.common.base.Preconditions;
@@ -157,15 +162,43 @@ public abstract class WalkinshawScorer<S, T, U extends LTS<S, T>> implements Sim
     protected abstract RealMatrix computeBackwardSimilarityScores();
 
     /**
-     * Computes the set of all transition properties of {@code left} that cannot be combined with any property from
-     * {@code right}.
+     * Counts the number of transitions in {@code leftTransitions} for which there does not exist any transition in
+     * {@code rightTransitions} with a transition property that is combinable.
      * 
-     * @param left The set of transition properties to filter.
-     * @param right The set of transition properties from which the filtering criteria is determined.
-     * @return All properties of {@code left} minus the ones that can be combined with a property from {@code right}.
+     * @param leftTransitions The collection of transitions from {@link #lhs}.
+     * @param rightTransitions The collection of transitions from {@link #rhs}.
+     * @return The number of transitions in {@code leftTransitions} with a property that is not combinable with the
+     *     property of any transition in {@code rightTransitions}.
      */
-    protected Set<T> uncombinableTransitionProperties(Set<T> left, Set<T> right) {
-        return left.stream().filter(l -> right.stream().noneMatch(r -> transitionPropertyCombiner.areCombinable(l, r)))
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+    protected long numberOfUncombinableTransitions(Collection<Transition<S, T>> leftTransitions,
+            Collection<Transition<S, T>> rightTransitions)
+    {
+        return leftTransitions.stream()
+                .filter(left -> rightTransitions.stream().noneMatch(
+                        right -> transitionPropertyCombiner.areCombinable(left.getProperty(), right.getProperty())))
+                .count();
+    }
+
+    /**
+     * Collects the list of endpoint states (i.e., common neighbors) of all pairs of transitions from
+     * {@code leftTransitions} and {@code rightTransitions} whose transition properties are combinable. The endpoint
+     * states of all such transition pairs are determined using {@code stateSelector}.
+     * 
+     * @param leftTransitions The collection of transitions from {@link #lhs}.
+     * @param rightTransitions The collection of transitions from {@link #rhs}.
+     * @param stateSelector The selector function that determines which endpoint states are to be considered. This
+     *     function should consistently always give either the source state or the target state of any given transition.
+     * @return The list of pairs of endpoint states, of all transition pairs with combinable transition properties.
+     */
+    protected List<Pair<State<S>, State<S>>> getCommonNeighborStatePairs(Collection<Transition<S, T>> leftTransitions,
+            Collection<Transition<S, T>> rightTransitions, Function<Transition<S, T>, State<S>> stateSelector)
+    {
+        return leftTransitions.stream()
+                // Get all pairs of transitions with combinable properties, and obtain their relevant endpoint states.
+                .flatMap(left -> rightTransitions.stream().filter(
+                        right -> transitionPropertyCombiner.areCombinable(left.getProperty(), right.getProperty()))
+                        .map(right -> Pair.create(stateSelector.apply(left), stateSelector.apply(right))))
+                // Collect all such pairs of endpoint states (i.e., common neighbors) into an array list.
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 }

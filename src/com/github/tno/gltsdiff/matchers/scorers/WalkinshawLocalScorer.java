@@ -11,7 +11,7 @@
 package com.github.tno.gltsdiff.matchers.scorers;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -21,8 +21,8 @@ import org.apache.commons.math3.util.Pair;
 
 import com.github.tno.gltsdiff.lts.LTS;
 import com.github.tno.gltsdiff.lts.State;
+import com.github.tno.gltsdiff.lts.Transition;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
-import com.github.tno.gltsdiff.utils.LTSUtils;
 import com.google.common.base.Preconditions;
 
 /**
@@ -79,14 +79,12 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
 
     @Override
     protected RealMatrix computeForwardSimilarityScores() {
-        return computeScores(pair -> LTSUtils.commonSuccessors(lhs, rhs, transitionPropertyCombiner, pair),
-                (lts, state) -> lts.getOutgoingTransitionProperties(state), false);
+        return computeScores((lts, state) -> lts.getOutgoingTransitions(state), Transition::getTarget, false);
     }
 
     @Override
     protected RealMatrix computeBackwardSimilarityScores() {
-        return computeScores(pair -> LTSUtils.commonPredecessors(lhs, rhs, transitionPropertyCombiner, pair),
-                (lts, state) -> lts.getIncomingTransitionProperties(state), true);
+        return computeScores((lts, state) -> lts.getIncomingTransitions(state), Transition::getSource, true);
     }
 
     /**
@@ -104,20 +102,21 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
      * {@link WalkinshawGlobalScorer} can be approximated more closely.
      * </p>
      * 
-     * @param commonNeighbors A function from (LHS, RHS)-state pairs to their common neighboring state pairs. This
-     *     function should be unidirectional, i.e., should give all common predecessors or successors of the input pair.
-     * @param relevantProperties A function that, given an LTS and a state, determines the properties of the relevant
-     *     (forward or backward) transitions. This function should be consistent with {@code commonNeighbors}, in the
-     *     sense that, if {@code commonNeighbors} gives common predecessors, then this function should give the
-     *     properties of all incoming transitions of the given state pair (and likewise for common successors and
-     *     outgoing transitions).
+     * @param relevantTransitions A function that, given an LTS and a state of that LTS, determines the list of
+     *     transitions of the given state that are relevant for computing state similarity scores. This function should
+     *     be unidirectional, in the sense that it should give either all incoming transitions or all outgoing
+     *     transitions of the given state.
+     * @param stateSelector A function that indicates the endpoint state of any given transition that is relevant for
+     *     computing state similarity scores. This function should consistently give either the source or the target
+     *     state of any given transition, and should be consistent with {@code relevantTransitions}, in the sense that,
+     *     if {@code relevantTransitions} gives all outgoing transitions, then this function should select the target
+     *     state of any given transition (and likewise it should select source states in case of incoming transitions).
      * @param accountForInitialStateArrows Whether the scoring calculation should take initial state arrows into
      *     account. Note that the original paper does not take initial states into account.
      * @return A matrix of local state similarity scores, all of which are in the range [-1,1].
      */
-    private RealMatrix computeScores(
-            Function<Pair<State<S>, State<S>>, Collection<Pair<State<S>, State<S>>>> commonNeighbors,
-            BiFunction<U, State<S>, Set<T>> relevantProperties, boolean accountForInitialStateArrows)
+    private RealMatrix computeScores(BiFunction<U, State<S>, List<Transition<S, T>>> relevantTransitions,
+            Function<Transition<S, T>, State<S>> stateSelector, boolean accountForInitialStateArrows)
     {
         // Define an initial similarity score matrix with score 0 for every (LHS, RHS)-state pair.
         RealMatrix scores = new OpenMapRealMatrix(lhs.size(), rhs.size());
@@ -130,8 +129,8 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
             for (State<S> leftState: lhs.getStates()) {
                 for (State<S> rightState: rhs.getStates()) {
                     // Refine the similarity score of the current state pair.
-                    double refinedScore = similarityScore(leftState, rightState, scores, commonNeighbors,
-                            relevantProperties, accountForInitialStateArrows);
+                    double refinedScore = similarityScore(leftState, rightState, scores, relevantTransitions,
+                            stateSelector, accountForInitialStateArrows);
 
                     // Store the refined similarity score in 'refinedScores'.
                     refinedScores.setEntry(leftState.getId(), rightState.getId(), refinedScore);
@@ -152,20 +151,24 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
      * @param leftState A LHS state.
      * @param rightState A RHS state.
      * @param scores The current matrix of similarity scores that is to be refined.
-     * @param commonNeighbors A function from (LHS, RHS)-state pairs to their common neighboring state pairs. This
-     *     function should be unidirectional, i.e., should give all common predecessors or successors of the input pair.
-     * @param relevantProperties A function that, given an LTS and a state, determines the properties of the relevant
-     *     (forward or backward) transitions. This function should be consistent with {@code commonNeighbors}, in the
-     *     sense that, if {@code commonNeighbors} gives common predecessors, then this function should give the
-     *     properties of all incoming transitions of the given state pair (and likewise for common successors and
-     *     outgoing transitions).
+     * @param relevantTransitions A function that, given an LTS and a state of that LTS, determines the list of
+     *     transitions of the given state that are relevant for computing state similarity scores. This function should
+     *     be unidirectional, in the sense that it should give either all incoming transitions or all outgoing
+     *     transitions of the given state.
+     * @param stateSelector A function that indicates the endpoint state of any given transition that is relevant for
+     *     computing state similarity scores. This function should consistently give either the source or the target
+     *     state of any given transition, and should be consistent with {@code relevantTransitions}, in the sense that,
+     *     if {@code relevantTransitions} gives all outgoing transitions, then this function should select the target
+     *     state of any given transition (and likewise it should select source states in case of incoming transitions).
      * @param accountForInitialStateArrows Whether the scoring calculation should take initial state arrows into
      *     account. Note that the original paper does not take initial states into account.
      * @return A state similarity score for the given pair of (LHS, RHS)-states, in the range [-1,1].
      */
     private double similarityScore(State<S> leftState, State<S> rightState, RealMatrix scores,
-            Function<Pair<State<S>, State<S>>, Collection<Pair<State<S>, State<S>>>> commonNeighbors,
-            BiFunction<U, State<S>, Set<T>> relevantProperties, boolean accountForInitialStateArrows)
+            BiFunction<U, State<S>, List<Transition<S, T>>> relevantTransitions,
+            Function<Transition<S, T>, State<S>> stateSelector,
+
+            boolean accountForInitialStateArrows)
     {
         // If 'leftState' and 'rightState' are uncombinable, then their similarity score is -1.
         if (!statePropertyCombiner.areCombinable(leftState.getProperty(), rightState.getProperty())) {
@@ -174,7 +177,11 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
 
         // Get all relevant neighbors of 'leftState' and 'rightState' for computing the similarity score.
         // The similarity score is a fraction.
-        Collection<Pair<State<S>, State<S>>> neighbors = commonNeighbors.apply(Pair.create(leftState, rightState));
+        Collection<Transition<S, T>> leftTransitions = relevantTransitions.apply(lhs, leftState);
+        Collection<Transition<S, T>> rightTransitions = relevantTransitions.apply(rhs, rightState);
+
+        List<Pair<State<S>, State<S>>> neighbors = getCommonNeighborStatePairs(leftTransitions, rightTransitions,
+                stateSelector);
 
         // Shortcut to improve performance (having no neighbors means that the numerator will always be zero).
         if (neighbors.isEmpty()) {
@@ -182,8 +189,6 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
         }
 
         // First calculate its denominator. Details are in the paper.
-        Set<T> propertiesLeft = relevantProperties.apply(lhs, leftState);
-        Set<T> propertiesRight = relevantProperties.apply(rhs, rightState);
 
         // If 'leftState' and/or 'rightState' is initial and if initial state arrows should be accounted for,
         // then adjust the denominator by 'initialStateAdjustment' to indicate that there are initial states.
@@ -197,8 +202,8 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
 
         // Note that, with respect to the original paper we change the notion of transition properties
         // "that do not match each other" to be transition properties "that do not combine with each other".
-        int denominator = 2 * (uncombinableTransitionProperties(propertiesLeft, propertiesRight).size()
-                + uncombinableTransitionProperties(propertiesRight, propertiesLeft).size() + neighbors.size()
+        long denominator = 2 * (numberOfUncombinableTransitions(leftTransitions, rightTransitions)
+                + numberOfUncombinableTransitions(rightTransitions, leftTransitions) + neighbors.size()
                 + initialStateAdjustment);
 
         // Shortcut to improve performance.
