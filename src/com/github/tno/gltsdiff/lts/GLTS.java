@@ -40,8 +40,8 @@ public abstract class GLTS<S, T> {
     private final Set<State<S>> statesSet = new LinkedHashSet<>();
 
     /**
-     * A list of states of this GLTS, which should coincide with {@link #statesSet}. This separate list is maintained for
-     * performance reasons, mainly to efficiently implement {@link #getStateById(int)}.
+     * A list of states of this GLTS, which should coincide with {@link #statesSet}. This separate list is maintained
+     * for performance reasons, mainly to efficiently implement {@link #getStateById(int)}.
      */
     private final List<State<S>> statesList = new ArrayList<>();
 

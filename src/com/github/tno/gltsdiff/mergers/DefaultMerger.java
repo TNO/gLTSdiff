@@ -27,18 +27,18 @@ import com.github.tno.gltsdiff.operators.combiners.TransitionCombiner;
 import com.google.common.base.Preconditions;
 
 /**
- * A merger for merging two given LTSs (the LHS and RHS) into a single LTS. The merged LTS is constructed by combining
- * state properties and transition properties using specified combiners.
+ * A merger for merging two given GLTSs (the LHS and RHS) into a single GLTS. The merged GLTS is constructed by
+ * combining state properties and transition properties using specified combiners.
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
- * @param <U> The type of LTSs to merge.
+ * @param <U> The type of GLTSs to merge.
  */
 public class DefaultMerger<S, T, U extends GLTS<S, T>> extends AbstractMerger<S, T, U> {
-    /** The left-hand-side LTS. */
+    /** The left-hand-side GLTS. */
     private final U lhs;
 
-    /** The right-hand-side LTS. */
+    /** The right-hand-side GLTS. */
     private final U rhs;
 
     /** The combiner for state properties. */
@@ -47,17 +47,17 @@ public class DefaultMerger<S, T, U extends GLTS<S, T>> extends AbstractMerger<S,
     /** The combiner for sets of transitions. */
     private final Combiner<Set<Transition<S, T>>> transitionCombiner;
 
-    /** The supplier for instantiating new LTSs. */
+    /** The supplier for instantiating new GLTSs. */
     private final Supplier<U> instantiator;
 
     /**
      * Instantiates a new default merger.
      * 
-     * @param lhs The left-hand-side LTS.
-     * @param rhs The right-hand-side LTS.
+     * @param lhs The left-hand-side GLTS.
+     * @param rhs The right-hand-side GLTS.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
-     * @param instantiator The supplier for instantiating new LTSs.
+     * @param instantiator The supplier for instantiating new GLTSs.
      */
     public DefaultMerger(U lhs, U rhs, Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner,
             Supplier<U> instantiator)
@@ -147,19 +147,19 @@ public class DefaultMerger<S, T, U extends GLTS<S, T>> extends AbstractMerger<S,
     }
 
     /**
-     * Gives the set of all transitions of {@code lts}, where all source and target states are mapped according to
+     * Gives the set of all transitions of {@code glts}, where all source and target states are mapped according to
      * {@code projection}.
      * 
-     * @param lts The LTS for which to collect all transitions.
+     * @param glts The GLTS for which to collect all transitions.
      * @param projection The projection function that is applied to the source and target states of all transitions.
-     *     This function must contain a mapping for every state of {@code lts}.
-     * @return The set of all transitions of {@code lts}, projected along {@code projection}.
+     *     This function must contain a mapping for every state of {@code glts}.
+     * @return The set of all transitions of {@code glts}, projected along {@code projection}.
      */
-    private Set<Transition<S, T>> collectAllProjectedTransitionsOf(U lts, Map<State<S>, State<S>> projection) {
-        return lts.getStates().stream()
-                // Retrieve all transitions of 'lts'.
-                .flatMap(state -> lts.getOutgoingTransitions(state).stream())
-                // Map the source and target states of all transitions of 'lts' along 'projection'.
+    private Set<Transition<S, T>> collectAllProjectedTransitionsOf(U glts, Map<State<S>, State<S>> projection) {
+        return glts.getStates().stream()
+                // Retrieve all transitions of 'glts'.
+                .flatMap(state -> glts.getOutgoingTransitions(state).stream())
+                // Map the source and target states of all transitions of 'glts' along 'projection'.
                 .map(transition -> new Transition<>(projection.get(transition.getSource()), transition.getProperty(),
                         projection.get(transition.getTarget())))
                 // Collect all projected transitions into a set.

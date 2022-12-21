@@ -26,7 +26,7 @@ import com.google.common.base.Preconditions;
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
- * @param <U> The type of LTSs.
+ * @param <U> The type of GLTSs.
  */
 public abstract class ScoringMatcher<S, T, U extends GLTS<S, T>> implements Matcher<S, T, U> {
     /** The algorithm for computing state similarity scores. */

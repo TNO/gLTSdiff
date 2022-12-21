@@ -20,7 +20,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.github.tno.gltsdiff.lts.GLTS;
 import com.github.tno.gltsdiff.lts.LTS;
 import com.github.tno.gltsdiff.lts.State;
 import com.github.tno.gltsdiff.lts.Transition;
@@ -28,7 +27,7 @@ import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
 import com.google.common.base.Preconditions;
 
 /**
- * Functionality for writing {@link GLTS}s in DOT format.
+ * Functionality for writing {@link LTS LTSs} in DOT format.
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.

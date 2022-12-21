@@ -20,13 +20,13 @@ import com.github.tno.gltsdiff.lts.State;
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
- * @param <U> The type of LTSs.
+ * @param <U> The type of GLTSs.
  */
 public interface Matcher<S, T, U extends GLTS<S, T>> {
-    /** @return The left-hand-side (LHS) LTS. */
+    /** @return The left-hand-side (LHS) GLTS. */
     public U getLhs();
 
-    /** @return The right-hand-side (RHS) LTS. */
+    /** @return The right-hand-side (RHS) GLTS. */
     public U getRhs();
 
     /**

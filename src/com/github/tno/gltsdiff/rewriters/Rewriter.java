@@ -13,19 +13,19 @@ package com.github.tno.gltsdiff.rewriters;
 import com.github.tno.gltsdiff.lts.GLTS;
 
 /**
- * A transformation of LTSs.
+ * A transformation of GLTSs.
  * 
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
- * @param <U> The type of LTSs to rewrite.
+ * @param <U> The type of GLTSs to rewrite.
  */
 public interface Rewriter<S, T, U extends GLTS<S, T>> {
     /**
-     * Transforms the given LTS.
+     * Transforms the given GLTS.
      * 
-     * @param lts The LTS to be transformed.
-     * @return {@code true} if this transformation was <i>effective</i>, i.e., if the LTS has been modified by this
+     * @param glts The GLTS to be transformed.
+     * @return {@code true} if this transformation was <i>effective</i>, i.e., if the GLTS has been modified by this
      *     transformation; {@code false} otherwise.
      */
-    public boolean rewrite(U lts);
+    public boolean rewrite(U glts);
 }

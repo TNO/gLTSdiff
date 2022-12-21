@@ -20,13 +20,13 @@ import com.github.tno.gltsdiff.lts.GLTS;
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
- * @param <U> The type of LTSs.
+ * @param <U> The type of GLTSs.
  */
 public interface SimilarityScorer<S, T, U extends GLTS<S, T>> {
-    /** @return The left-hand-side LTS. */
+    /** @return The left-hand-side GLTS. */
     public U getLhs();
 
-    /** @return The right-hand-side LTS. */
+    /** @return The right-hand-side GLTS. */
     public U getRhs();
 
     /**

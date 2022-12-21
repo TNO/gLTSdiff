@@ -21,18 +21,18 @@ import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.google.common.base.Preconditions;
 
 /**
- * An abstract LTS merger that contains common validation logic for input matchings.
+ * An abstract GLTS merger that contains common validation logic for input matchings.
  * 
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
- * @param <U> The type of LTSs to merge.
+ * @param <U> The type of GLTSs to merge.
  */
 public abstract class AbstractMerger<S, T, U extends GLTS<S, T>> implements Merger<S, T, U> {
     /** The combiner for state properties. */
     private final Combiner<S> statePropertyCombiner;
 
     /**
-     * Instantiates an abstract LTS merger.
+     * Instantiates an abstract GLTS merger.
      * 
      * @param statePropertyCombiner The combiner for state properties.
      */
@@ -74,7 +74,7 @@ public abstract class AbstractMerger<S, T, U extends GLTS<S, T>> implements Merg
     }
 
     /**
-     * Merges the LHS and RHS into a single LTS. The given (LHS, RHS)-state matching determines which LHS states are to
+     * Merges the LHS and RHS into a single GLTS. The given (LHS, RHS)-state matching determines which LHS states are to
      * be merged with which RHS states.
      * 
      * @param matching A matching from LHS states to RHS states. This matching should be proper in the sense that:
@@ -84,7 +84,7 @@ public abstract class AbstractMerger<S, T, U extends GLTS<S, T>> implements Merg
      *     <li>All mappings are disjoint: no LHS or RHS state is part of more than one match.</li>
      *     <li>All matched states must have combinable state properties.</li>
      *     </ul>
-     * @return The LTS that is the merge of the LHS and the RHS.
+     * @return The GLTS that is the merge of the LHS and the RHS.
      */
     protected abstract U mergeInternal(Map<State<S>, State<S>> matching);
 }
