@@ -187,7 +187,7 @@ public abstract class WalkinshawScorer<S, T, U extends LTS<S, T>> implements Sim
      * @param leftTransitions The collection of transitions from {@link #lhs}.
      * @param rightTransitions The collection of transitions from {@link #rhs}.
      * @param stateSelector The selector function that determines which endpoint states are to be considered. This
-     *     function should consistently always give either the source state or the target state of any given transition.
+     *     function should consistently give either the source state or the target state of any given transition.
      * @return The list of pairs of endpoint states, of all transition pairs with combinable transition properties.
      */
     protected List<Pair<State<S>, State<S>>> getCommonNeighborStatePairs(Collection<Transition<S, T>> leftTransitions,

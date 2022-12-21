@@ -97,8 +97,8 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
      * 
      * @param relevantTransitions A function that, given an LTS and a state of that LTS, determines the list of
      *     transitions of the given state that are relevant for computing state similarity scores. This function should
-     *     be unidirectional, in the sense that it should give either all incoming transitions or all outgoing
-     *     transitions of the given state.
+     *     be unidirectional, in the sense that it should consistently give either all incoming transitions or all
+     *     outgoing transitions of the given state.
      * @param stateSelector A function that indicates the endpoint state of any given transition that is relevant for
      *     computing state similarity scores. This function should consistently give either the source or the target
      *     state of any given transition, and should be consistent with {@code relevantTransitions}, in the sense that,
@@ -241,8 +241,8 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
      *     updated by this method.
      * @param relevantTransitions A function that, given an LTS and a state of that LTS, determines the list of
      *     transitions of the given state that are relevant for computing state similarity scores. This function should
-     *     be unidirectional, in the sense that it should give either all incoming transitions or all outgoing
-     *     transitions of the given state.
+     *     be unidirectional, in the sense that it should consistently give either all incoming transitions or all
+     *     outgoing transitions of the given state.
      * @param stateSelector A function that indicates the endpoint state of any given transition that is relevant for
      *     computing state similarity scores. This function should consistently give either the source or the target
      *     state of any given transition, and should be consistent with {@code relevantTransitions}, in the sense that,
@@ -337,8 +337,8 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
      *     by this method.
      * @param relevantTransitions A function that, given an LTS and a state of that LTS, determines the list of
      *     transitions of the given state that are relevant for computing state similarity scores. This function should
-     *     be unidirectional, in the sense that it should give either all incoming transitions or all outgoing
-     *     transitions of the given state.
+     *     be unidirectional, in the sense that it should consistently give either all incoming transitions or all
+     *     outgoing transitions of the given state.
      * @param stateSelector A function that indicates the endpoint state of any given transition that is relevant for
      *     computing state similarity scores. This function should consistently give either the source or the target
      *     state of any given transition, and should be consistent with {@code relevantTransitions}, in the sense that,
