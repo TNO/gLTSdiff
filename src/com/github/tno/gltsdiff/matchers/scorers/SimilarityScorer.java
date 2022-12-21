@@ -12,7 +12,7 @@ package com.github.tno.gltsdiff.matchers.scorers;
 
 import org.apache.commons.math3.linear.RealMatrix;
 
-import com.github.tno.gltsdiff.lts.LTS;
+import com.github.tno.gltsdiff.lts.GLTS;
 
 /**
  * A scoring algorithm for computing similarity scores for every pair of (LHS, RHS)-states, indicating how similar their
@@ -22,7 +22,7 @@ import com.github.tno.gltsdiff.lts.LTS;
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs.
  */
-public interface SimilarityScorer<S, T, U extends LTS<S, T>> {
+public interface SimilarityScorer<S, T, U extends GLTS<S, T>> {
     /** @return The left-hand-side LTS. */
     public U getLhs();
 

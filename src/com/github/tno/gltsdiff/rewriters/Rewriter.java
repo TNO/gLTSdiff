@@ -10,7 +10,7 @@
 
 package com.github.tno.gltsdiff.rewriters;
 
-import com.github.tno.gltsdiff.lts.LTS;
+import com.github.tno.gltsdiff.lts.GLTS;
 
 /**
  * A transformation of LTSs.
@@ -19,7 +19,7 @@ import com.github.tno.gltsdiff.lts.LTS;
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs to rewrite.
  */
-public interface Rewriter<S, T, U extends LTS<S, T>> {
+public interface Rewriter<S, T, U extends GLTS<S, T>> {
     /**
      * Transforms the given LTS.
      * 

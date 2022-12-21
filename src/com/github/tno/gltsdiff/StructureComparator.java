@@ -12,7 +12,7 @@ package com.github.tno.gltsdiff;
 
 import java.util.Map;
 
-import com.github.tno.gltsdiff.lts.LTS;
+import com.github.tno.gltsdiff.lts.GLTS;
 import com.github.tno.gltsdiff.lts.State;
 import com.github.tno.gltsdiff.matchers.Matcher;
 import com.github.tno.gltsdiff.mergers.Merger;
@@ -25,7 +25,7 @@ import com.github.tno.gltsdiff.mergers.Merger;
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs to compare and combine.
  */
-public class StructureComparator<S, T, U extends LTS<S, T>> {
+public class StructureComparator<S, T, U extends GLTS<S, T>> {
     /** The left-hand-side LTS. */
     private final U lhs;
 

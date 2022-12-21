@@ -29,7 +29,7 @@ import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.util.Pair;
 
-import com.github.tno.gltsdiff.lts.LTS;
+import com.github.tno.gltsdiff.lts.GLTS;
 import com.github.tno.gltsdiff.lts.State;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.utils.LTSUtils;
@@ -57,7 +57,7 @@ import com.google.common.collect.HashBiMap;
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs.
  */
-public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends WalkinshawScorer<S, T, U> {
+public class WalkinshawGlobalScorer<S, T, U extends GLTS<S, T>> extends WalkinshawScorer<S, T, U> {
     /**
      * Instantiates a new Walkinshaw global scorer.
      * 

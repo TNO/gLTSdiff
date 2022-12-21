@@ -13,7 +13,7 @@ package com.github.tno.gltsdiff.rewriters;
 import java.util.Collection;
 import java.util.Set;
 
-import com.github.tno.gltsdiff.lts.LTS;
+import com.github.tno.gltsdiff.lts.GLTS;
 import com.github.tno.gltsdiff.lts.State;
 import com.github.tno.gltsdiff.lts.Transition;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
@@ -32,7 +32,7 @@ import com.github.tno.gltsdiff.utils.EquivalenceClasses;
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs to rewrite.
  */
-public class LocalRedundancyRewriter<S, T, U extends LTS<S, T>> implements Rewriter<S, T, U> {
+public class LocalRedundancyRewriter<S, T, U extends GLTS<S, T>> implements Rewriter<S, T, U> {
     /** The combiner for transitions. */
     private final Combiner<Transition<S, T>> combiner;
 

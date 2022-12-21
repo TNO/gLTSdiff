@@ -12,7 +12,7 @@ package com.github.tno.gltsdiff.mergers;
 
 import java.util.Map;
 
-import com.github.tno.gltsdiff.lts.LTS;
+import com.github.tno.gltsdiff.lts.GLTS;
 import com.github.tno.gltsdiff.lts.State;
 
 /**
@@ -22,7 +22,7 @@ import com.github.tno.gltsdiff.lts.State;
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs to merge.
  */
-public interface Merger<S, T, U extends LTS<S, T>> {
+public interface Merger<S, T, U extends GLTS<S, T>> {
     /** @return The left-hand-side LTS. */
     public U getLhs();
 

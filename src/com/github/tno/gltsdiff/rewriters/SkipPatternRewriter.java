@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.function.Function;
 
-import com.github.tno.gltsdiff.lts.LTS;
+import com.github.tno.gltsdiff.lts.GLTS;
 import com.github.tno.gltsdiff.lts.State;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
@@ -28,7 +28,7 @@ import com.google.common.collect.Sets;
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs to rewrite.
  */
-public abstract class SkipPatternRewriter<S, T, U extends LTS<S, T>> implements Rewriter<S, T, U> {
+public abstract class SkipPatternRewriter<S, T, U extends GLTS<S, T>> implements Rewriter<S, T, U> {
     /**
      * Determines whether there exists structure between {@code source} and {@code target} in {@code lts} that can
      * intuitively be skipped. Such structure exists if either <b>(1)</b> there exists a pattern of intuitively

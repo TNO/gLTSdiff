@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.math3.linear.BlockRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 
-import com.github.tno.gltsdiff.lts.LTS;
+import com.github.tno.gltsdiff.lts.GLTS;
 import com.github.tno.gltsdiff.matchers.Matcher;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.google.common.base.Preconditions;
@@ -38,7 +38,7 @@ import com.google.common.base.Preconditions;
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs.
  */
-public abstract class WalkinshawScorer<S, T, U extends LTS<S, T>> implements SimilarityScorer<S, T, U> {
+public abstract class WalkinshawScorer<S, T, U extends GLTS<S, T>> implements SimilarityScorer<S, T, U> {
     /**
      * This is the ratio in the range [0,1] that determines how much the similarity scores of far-away states influence
      * the final similarity scores.

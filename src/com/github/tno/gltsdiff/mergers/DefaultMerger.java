@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import com.github.tno.gltsdiff.lts.LTS;
+import com.github.tno.gltsdiff.lts.GLTS;
 import com.github.tno.gltsdiff.lts.State;
 import com.github.tno.gltsdiff.lts.Transition;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
@@ -34,7 +34,7 @@ import com.google.common.base.Preconditions;
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs to merge.
  */
-public class DefaultMerger<S, T, U extends LTS<S, T>> extends AbstractMerger<S, T, U> {
+public class DefaultMerger<S, T, U extends GLTS<S, T>> extends AbstractMerger<S, T, U> {
     /** The left-hand-side LTS. */
     private final U lhs;
 

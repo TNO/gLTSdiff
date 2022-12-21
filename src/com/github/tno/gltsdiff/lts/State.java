@@ -13,7 +13,7 @@ package com.github.tno.gltsdiff.lts;
 import com.google.common.base.Preconditions;
 
 /**
- * A state in an {@link LTS}.
+ * A state in an {@link GLTS}.
  *
  * @param <S> The type of state properties.
  */

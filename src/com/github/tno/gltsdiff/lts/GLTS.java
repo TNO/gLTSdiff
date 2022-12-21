@@ -32,7 +32,7 @@ import com.google.common.base.Preconditions;
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
  */
-public abstract class LTS<S, T> {
+public abstract class GLTS<S, T> {
     /**
      * The set of states of this LTS, all of which are unique and non-{@code null}, and have identifiers between
      * {@code 0} and {@code size() - 1} that are unique within this LTS.
@@ -407,7 +407,7 @@ public abstract class LTS<S, T> {
      *     is mapped to {@code null} will not be included in the returned LTS.
      * @return The LTS with mapped state and transition properties.
      */
-    public <U, V, L extends LTS<U, V>> L map(Supplier<L> instantiator, Function<S, U> statePropertyMapper,
+    public <U, V, L extends GLTS<U, V>> L map(Supplier<L> instantiator, Function<S, U> statePropertyMapper,
             Function<T, V> transitionPropertyMapper)
     {
         // Instantiate a fresh LTS.
@@ -452,7 +452,7 @@ public abstract class LTS<S, T> {
      * @param along The non-{@code null} element to project along.
      * @return The projected LTS.
      */
-    public <L extends LTS<S, T>, U> L project(Supplier<L> instantiator, Projector<S, U> statePropertyProjector,
+    public <L extends GLTS<S, T>, U> L project(Supplier<L> instantiator, Projector<S, U> statePropertyProjector,
             Projector<T, U> transitionPropertyProjector, U along)
     {
         Preconditions.checkNotNull(along, "Expected a non-null element to project along.");

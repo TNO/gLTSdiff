@@ -12,7 +12,7 @@ package com.github.tno.gltsdiff.lts;
 
 import java.util.Objects;
 
-/** A property that is associated to states in {@link LTS LTSs}. */
+/** A property that is associated to states in {@link GLTS LTSs}. */
 public class LTSStateProperty {
     /** Whether the associated state is initial. */
     private final boolean isInitial;

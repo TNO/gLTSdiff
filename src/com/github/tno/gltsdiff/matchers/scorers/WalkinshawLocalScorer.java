@@ -19,7 +19,7 @@ import org.apache.commons.math3.linear.OpenMapRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.util.Pair;
 
-import com.github.tno.gltsdiff.lts.LTS;
+import com.github.tno.gltsdiff.lts.GLTS;
 import com.github.tno.gltsdiff.lts.State;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.utils.LTSUtils;
@@ -41,7 +41,7 @@ import com.google.common.base.Preconditions;
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs.
  */
-public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends WalkinshawScorer<S, T, U> {
+public class WalkinshawLocalScorer<S, T, U extends GLTS<S, T>> extends WalkinshawScorer<S, T, U> {
     /** The number of refinements that the scoring algorithm should perform. This number must be at least 1. */
     private final int nrOfRefinements;
 
