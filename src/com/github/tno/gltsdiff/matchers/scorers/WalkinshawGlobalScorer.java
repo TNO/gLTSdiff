@@ -31,8 +31,8 @@ import org.apache.commons.math3.util.Pair;
 
 import com.github.tno.gltsdiff.lts.LTS;
 import com.github.tno.gltsdiff.lts.State;
+import com.github.tno.gltsdiff.lts.Transition;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
-import com.github.tno.gltsdiff.utils.LTSUtils;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -74,14 +74,12 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
 
     @Override
     protected RealMatrix computeForwardSimilarityScores() {
-        return computeScores(pair -> LTSUtils.commonSuccessors(lhs, rhs, transitionPropertyCombiner, pair),
-                (lts, state) -> lts.getOutgoingTransitionProperties(state), false);
+        return computeScores((lts, state) -> lts.getOutgoingTransitions(state), Transition::getTarget, false);
     }
 
     @Override
     protected RealMatrix computeBackwardSimilarityScores() {
-        return computeScores(pair -> LTSUtils.commonPredecessors(lhs, rhs, transitionPropertyCombiner, pair),
-                (lts, state) -> lts.getIncomingTransitionProperties(state), true);
+        return computeScores((lts, state) -> lts.getIncomingTransitions(state), Transition::getSource, true);
     }
 
     /**
@@ -97,25 +95,26 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
      * described in that article by a more general concept of combinability (see {@link Combiner}).
      * </p>
      * 
-     * @param commonNeighbors A function from (LHS, RHS)-state pairs to their common neighboring state pairs. This
-     *     function should be unidirectional, i.e., should give all common predecessors or successors of the input pair.
-     * @param relevantProperties A function that, given an LTS and a state, determines the properties of the relevant
-     *     (forward or backward) transitions. This function should be consistent with {@code commonNeighbors}, in the
-     *     sense that, if {@code commonNeighbors} gives common predecessors, then this function should give the
-     *     properties of all incoming transitions of the given state pair (and likewise for common successors and
-     *     outgoing transitions).
+     * @param relevantTransitions A function that, given an LTS and a state of that LTS, determines the list of
+     *     transitions of the given state that are relevant for computing state similarity scores. This function should
+     *     be unidirectional, in the sense that it should consistently give either all incoming transitions or all
+     *     outgoing transitions of the given state.
+     * @param stateSelector A function that indicates the endpoint state of any given transition that is relevant for
+     *     computing state similarity scores. This function should consistently give either the source or the target
+     *     state of any given transition, and should be consistent with {@code relevantTransitions}, in the sense that,
+     *     if {@code relevantTransitions} gives all outgoing transitions, then this function should select the target
+     *     state of any given transition (and likewise it should select source states in case of incoming transitions).
      * @param accountForInitialStateArrows Whether the scoring calculation should take initial state arrows into
      *     account. Note that the original paper does not take initial states into account.
      * @return A matrix of state similarity scores, all of which are in the range [-1,1].
      */
-    private RealMatrix computeScores(
-            Function<Pair<State<S>, State<S>>, Collection<Pair<State<S>, State<S>>>> commonNeighbors,
-            BiFunction<U, State<S>, Set<T>> relevantProperties, boolean accountForInitialStateArrows)
+    private RealMatrix computeScores(BiFunction<U, State<S>, Collection<Transition<S, T>>> relevantTransitions,
+            Function<Transition<S, T>, State<S>> stateSelector, boolean accountForInitialStateArrows)
     {
         // Collect all statically known similarity scores, as well as all state pairs with statically unknown scores.
         Map<Pair<State<S>, State<S>>, Double> staticallyKnownScores = new LinkedHashMap<>();
         Set<Pair<State<S>, State<S>>> statePairsWithUnknownScores = collectStaticallyKnownScores(staticallyKnownScores,
-                commonNeighbors, relevantProperties, accountForInitialStateArrows);
+                relevantTransitions, stateSelector, accountForInitialStateArrows);
 
         // Here it holds that the set of 'statePairsWithUnknownScores' unioned with the key set of
         // 'staticallyKnownScores' equals the set of all possible (LHS, RHS)-state pairs. Moreover, both these sets are
@@ -161,7 +160,11 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
             }
 
             // Otherwise we first determine the coefficients for all neighboring state pairs with unknown scores.
-            Collection<Pair<State<S>, State<S>>> neighborStatePairs = commonNeighbors.apply(statePair);
+            Collection<Transition<S, T>> leftTransitions = relevantTransitions.apply(lhs, leftState);
+            Collection<Transition<S, T>> rightTransitions = relevantTransitions.apply(rhs, rightState);
+
+            List<Pair<State<S>, State<S>>> neighborStatePairs = getCommonNeighborStatePairs(leftTransitions,
+                    rightTransitions, stateSelector);
 
             for (Pair<State<S>, State<S>> neighborStatePair: neighborStatePairs) {
                 Integer neighborStatePairIndex = statePairsToEncode.get(neighborStatePair);
@@ -172,9 +175,6 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
             }
 
             // Next we calculate the diagonal of the matrix. Details are in the paper.
-
-            Set<T> leftProperties = relevantProperties.apply(lhs, leftState);
-            Set<T> rightProperties = relevantProperties.apply(rhs, rightState);
 
             // If 'leftState' and/or 'rightState' is initial and if initial state arrows should be accounted for,
             // then adjust the diagonal by 'initialStateAdjustment' to indicate that there are initial states.
@@ -187,8 +187,8 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
             }
 
             double diagonal = coefficients.getEntry(statePairIndex, statePairIndex)
-                    + 2 * (uncombinableTransitionProperties(leftProperties, rightProperties).size()
-                            + uncombinableTransitionProperties(rightProperties, leftProperties).size()
+                    + 2 * (numberOfUncombinableTransitions(leftTransitions, rightTransitions)
+                            + numberOfUncombinableTransitions(rightTransitions, leftTransitions)
                             + neighborStatePairs.size() + initialStateAdjustment);
 
             if (diagonal == 0.0d && neighborStatePairs.size() == 0) {
@@ -239,13 +239,15 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
      * 
      * @param staticallyKnownScores A mutable map from state pairs to statically known similarity scores, which will be
      *     updated by this method.
-     * @param commonNeighbors A function from (LHS, RHS)-state pairs to their common neighboring state pairs. This
-     *     function should be unidirectional, i.e., should give all common predecessors or successors of the input pair.
-     * @param relevantProperties A function that, given an LTS and a state, determines the properties of the relevant
-     *     (forward or backward) transitions. This function should be consistent with {@code commonNeighbors}, in the
-     *     sense that, if {@code commonNeighbors} gives common predecessors, then this function should give the
-     *     properties of all incoming transitions of the given state pair (and likewise for common successors and
-     *     outgoing transitions).
+     * @param relevantTransitions A function that, given an LTS and a state of that LTS, determines the list of
+     *     transitions of the given state that are relevant for computing state similarity scores. This function should
+     *     be unidirectional, in the sense that it should consistently give either all incoming transitions or all
+     *     outgoing transitions of the given state.
+     * @param stateSelector A function that indicates the endpoint state of any given transition that is relevant for
+     *     computing state similarity scores. This function should consistently give either the source or the target
+     *     state of any given transition, and should be consistent with {@code relevantTransitions}, in the sense that,
+     *     if {@code relevantTransitions} gives all outgoing transitions, then this function should select the target
+     *     state of any given transition (and likewise it should select source states in case of incoming transitions).
      * @param accountForInitialStateArrows Whether the scoring calculation should take initial state arrows into
      *     account. Note that the original paper does not take initial states into account.
      * @return A set of all state pairs with statically unknown scores. This method guarantees that this returned set,
@@ -253,8 +255,8 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
      */
     private Set<Pair<State<S>, State<S>>> collectStaticallyKnownScores(
             Map<Pair<State<S>, State<S>>, Double> staticallyKnownScores,
-            Function<Pair<State<S>, State<S>>, Collection<Pair<State<S>, State<S>>>> commonNeighbors,
-            BiFunction<U, State<S>, Set<T>> relevantProperties, boolean accountForInitialStateArrows)
+            BiFunction<U, State<S>, Collection<Transition<S, T>>> relevantTransitions,
+            Function<Transition<S, T>, State<S>> stateSelector, boolean accountForInitialStateArrows)
     {
         // Compute the set of all state pairs with unknown similarity scores.
         Set<Pair<State<S>, State<S>>> statePairsWithUnknownScores = new LinkedHashSet<>();
@@ -274,7 +276,13 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
 
                 // Record that the similarity scores of all common neighbors of 'statePair' depend on the similarity
                 // score of 'statePair'.
-                for (Pair<State<S>, State<S>> commonNeighbor: commonNeighbors.apply(statePair)) {
+                Collection<Transition<S, T>> leftTransitions = relevantTransitions.apply(lhs, leftState);
+                Collection<Transition<S, T>> rightTransitions = relevantTransitions.apply(rhs, rightState);
+
+                List<Pair<State<S>, State<S>>> neighborStatePairs = getCommonNeighborStatePairs(leftTransitions,
+                        rightTransitions, stateSelector);
+
+                for (Pair<State<S>, State<S>> commonNeighbor: neighborStatePairs) {
                     commonNeighborsInverse.computeIfAbsent(commonNeighbor, p -> new LinkedHashSet<>()).add(statePair);
                 }
 
@@ -297,7 +305,7 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
 
             // Try to statically determine the similarity score of 'statePair'.
             Optional<Double> possibleScore = tryToStaticallyDetermineSimilarityScore(statePair, staticallyKnownScores,
-                    commonNeighbors, relevantProperties, accountForInitialStateArrows);
+                    relevantTransitions, stateSelector, accountForInitialStateArrows);
 
             if (possibleScore.isPresent()) {
                 // Register that 'statePair' is now a state pair with a statically known score.
@@ -327,13 +335,15 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
      * @param statePair The state pair for which to attempt to statically determine the similarity score.
      * @param staticallyKnownScores A map from state pairs to statically known similarity scores, which will be updated
      *     by this method.
-     * @param commonNeighbors A function from (LHS, RHS)-state pairs to their common neighboring state pairs. This
-     *     function should be unidirectional, i.e., should give all common predecessors or successors of the input pair.
-     * @param relevantProperties A function that, given an LTS and a state, determines the properties of the relevant
-     *     (forward or backward) transitions. This function should be consistent with {@code commonNeighbors}, in the
-     *     sense that, if {@code commonNeighbors} gives common predecessors, then this function should give the
-     *     properties of all incoming transitions of the given state pair (and likewise for common successors and
-     *     outgoing transitions).
+     * @param relevantTransitions A function that, given an LTS and a state of that LTS, determines the list of
+     *     transitions of the given state that are relevant for computing state similarity scores. This function should
+     *     be unidirectional, in the sense that it should consistently give either all incoming transitions or all
+     *     outgoing transitions of the given state.
+     * @param stateSelector A function that indicates the endpoint state of any given transition that is relevant for
+     *     computing state similarity scores. This function should consistently give either the source or the target
+     *     state of any given transition, and should be consistent with {@code relevantTransitions}, in the sense that,
+     *     if {@code relevantTransitions} gives all outgoing transitions, then this function should select the target
+     *     state of any given transition (and likewise it should select source states in case of incoming transitions).
      * @param accountForInitialStateArrows Whether the scoring calculation should take initial state arrows into
      *     account. Note that the original paper does not take initial states into account.
      * @return A similarity score in the range [-1,1] in case it was statically determined, or {@link Optional#empty}
@@ -341,8 +351,8 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
      */
     private Optional<Double> tryToStaticallyDetermineSimilarityScore(Pair<State<S>, State<S>> statePair,
             Map<Pair<State<S>, State<S>>, Double> staticallyKnownScores,
-            Function<Pair<State<S>, State<S>>, Collection<Pair<State<S>, State<S>>>> commonNeighbors,
-            BiFunction<U, State<S>, Set<T>> relevantProperties, boolean accountForInitialStateArrows)
+            BiFunction<U, State<S>, Collection<Transition<S, T>>> relevantTransitions,
+            Function<Transition<S, T>, State<S>> stateSelector, boolean accountForInitialStateArrows)
     {
         State<S> leftState = statePair.getFirst();
         State<S> rightState = statePair.getSecond();
@@ -353,7 +363,11 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
         }
 
         // Otherwise, get all relevant neighbors of 'statePair' to attempt to statically compute the similarity score.
-        Collection<Pair<State<S>, State<S>>> neighborStatePairs = commonNeighbors.apply(statePair);
+        Collection<Transition<S, T>> leftTransitions = relevantTransitions.apply(lhs, leftState);
+        Collection<Transition<S, T>> rightTransitions = relevantTransitions.apply(rhs, rightState);
+
+        List<Pair<State<S>, State<S>>> neighborStatePairs = getCommonNeighborStatePairs(leftTransitions,
+                rightTransitions, stateSelector);
 
         // We can statically determine the similarity score of 'statePair' if the similarity scores of all its common
         // neighbors are statically known.
@@ -374,8 +388,6 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
             }
 
             // Then we determine the denominator of the similarity score.
-            Set<T> leftProperties = relevantProperties.apply(lhs, leftState);
-            Set<T> rightProperties = relevantProperties.apply(rhs, rightState);
 
             // If 'leftState' and/or 'rightState' is initial and if initial state arrows should be accounted
             // for, then adjust the denominator by 'initialStateAdjustment' accordingly.
@@ -385,9 +397,9 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
                 initialStateAdjustment = 1;
             }
 
-            double denominator = 2d * (uncombinableTransitionProperties(leftProperties, rightProperties).size()
-                    + uncombinableTransitionProperties(rightProperties, leftProperties).size()
-                    + neighborStatePairs.size() + initialStateAdjustment);
+            double denominator = 2d * (numberOfUncombinableTransitions(leftTransitions, rightTransitions)
+                    + numberOfUncombinableTransitions(rightTransitions, leftTransitions) + neighborStatePairs.size()
+                    + initialStateAdjustment);
 
             // Determine and return the similarity score of 'statePair'.
             return denominator == 0d ? Optional.of(0d) : Optional.of(numerator / denominator);
