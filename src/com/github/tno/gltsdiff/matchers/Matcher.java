@@ -12,8 +12,8 @@ package com.github.tno.gltsdiff.matchers;
 
 import java.util.Map;
 
-import com.github.tno.gltsdiff.lts.GLTS;
-import com.github.tno.gltsdiff.lts.State;
+import com.github.tno.gltsdiff.glts.GLTS;
+import com.github.tno.gltsdiff.glts.State;
 
 /**
  * A matcher that computes a (graph theoretical) matching between the states of the LHS and RHS.

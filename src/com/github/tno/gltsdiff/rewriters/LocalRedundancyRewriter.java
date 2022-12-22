@@ -13,9 +13,9 @@ package com.github.tno.gltsdiff.rewriters;
 import java.util.Collection;
 import java.util.Set;
 
-import com.github.tno.gltsdiff.lts.GLTS;
-import com.github.tno.gltsdiff.lts.State;
-import com.github.tno.gltsdiff.lts.Transition;
+import com.github.tno.gltsdiff.glts.GLTS;
+import com.github.tno.gltsdiff.glts.State;
+import com.github.tno.gltsdiff.glts.Transition;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.operators.combiners.TransitionCombiner;
 import com.github.tno.gltsdiff.utils.EquivalenceClasses;

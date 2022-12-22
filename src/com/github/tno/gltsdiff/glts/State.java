@@ -8,7 +8,7 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.lts;
+package com.github.tno.gltsdiff.glts;
 
 import com.google.common.base.Preconditions;
 

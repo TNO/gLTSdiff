@@ -14,7 +14,7 @@ import java.util.function.BiFunction;
 
 import org.apache.commons.math3.linear.RealMatrix;
 
-import com.github.tno.gltsdiff.lts.LTS;
+import com.github.tno.gltsdiff.glts.LTS;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 
 /**

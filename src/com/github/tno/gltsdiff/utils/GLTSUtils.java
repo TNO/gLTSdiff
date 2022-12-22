@@ -18,9 +18,9 @@ import java.util.stream.Stream;
 
 import org.apache.commons.math3.util.Pair;
 
-import com.github.tno.gltsdiff.lts.GLTS;
-import com.github.tno.gltsdiff.lts.State;
-import com.github.tno.gltsdiff.lts.Transition;
+import com.github.tno.gltsdiff.glts.GLTS;
+import com.github.tno.gltsdiff.glts.State;
+import com.github.tno.gltsdiff.glts.Transition;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 
 /** Utilities for working with GLTSs. */

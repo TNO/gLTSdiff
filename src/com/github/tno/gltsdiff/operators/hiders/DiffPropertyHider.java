@@ -10,8 +10,8 @@
 
 package com.github.tno.gltsdiff.operators.hiders;
 
-import com.github.tno.gltsdiff.lts.DiffKind;
-import com.github.tno.gltsdiff.lts.DiffProperty;
+import com.github.tno.gltsdiff.glts.DiffKind;
+import com.github.tno.gltsdiff.glts.DiffProperty;
 import com.google.common.base.Preconditions;
 
 /**

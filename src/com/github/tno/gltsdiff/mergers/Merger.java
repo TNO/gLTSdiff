@@ -12,8 +12,8 @@ package com.github.tno.gltsdiff.mergers;
 
 import java.util.Map;
 
-import com.github.tno.gltsdiff.lts.GLTS;
-import com.github.tno.gltsdiff.lts.State;
+import com.github.tno.gltsdiff.glts.GLTS;
+import com.github.tno.gltsdiff.glts.State;
 
 /**
  * A merger that combines two input GLTSs based on a matching between their states.

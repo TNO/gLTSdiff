@@ -12,7 +12,7 @@ package com.github.tno.gltsdiff.matchers.scorers;
 
 import org.apache.commons.math3.linear.RealMatrix;
 
-import com.github.tno.gltsdiff.lts.GLTS;
+import com.github.tno.gltsdiff.glts.GLTS;
 
 /**
  * A scoring algorithm for computing similarity scores for every pair of (LHS, RHS)-states, indicating how similar their

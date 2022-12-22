@@ -8,7 +8,7 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.lts;
+package com.github.tno.gltsdiff.glts;
 
 /**
  * The intended use of {@link DiffKind} is to associate difference information to states, transitions and initial state

@@ -12,7 +12,7 @@ package com.github.tno.gltsdiff.operators.combiners;
 
 import java.util.Set;
 
-import com.github.tno.gltsdiff.lts.AnnotatedProperty;
+import com.github.tno.gltsdiff.glts.AnnotatedProperty;
 
 /**
  * A combiner for {@link AnnotatedProperty annotated properties}. Annotated properties can be combined if their inner

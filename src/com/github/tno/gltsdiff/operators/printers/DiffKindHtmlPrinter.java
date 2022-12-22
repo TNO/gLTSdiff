@@ -10,7 +10,7 @@
 
 package com.github.tno.gltsdiff.operators.printers;
 
-import com.github.tno.gltsdiff.lts.DiffKind;
+import com.github.tno.gltsdiff.glts.DiffKind;
 import com.google.common.base.Preconditions;
 
 /** An HTML printer that prints the hex color associated to a specified {@link DiffKind difference kind}. */

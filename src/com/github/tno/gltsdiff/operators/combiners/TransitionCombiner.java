@@ -10,7 +10,7 @@
 
 package com.github.tno.gltsdiff.operators.combiners;
 
-import com.github.tno.gltsdiff.lts.Transition;
+import com.github.tno.gltsdiff.glts.Transition;
 
 /**
  * A combiner for {@link Transition transitions}. Any two transitions are combinable if their source and target states

@@ -12,8 +12,8 @@ package com.github.tno.gltsdiff.operators.projectors;
 
 import java.util.Optional;
 
-import com.github.tno.gltsdiff.lts.DiffAutomatonStateProperty;
-import com.github.tno.gltsdiff.lts.DiffKind;
+import com.github.tno.gltsdiff.glts.DiffAutomatonStateProperty;
+import com.github.tno.gltsdiff.glts.DiffKind;
 import com.google.common.base.Preconditions;
 
 /**

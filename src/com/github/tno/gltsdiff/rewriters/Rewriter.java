@@ -10,7 +10,7 @@
 
 package com.github.tno.gltsdiff.rewriters;
 
-import com.github.tno.gltsdiff.lts.GLTS;
+import com.github.tno.gltsdiff.glts.GLTS;
 
 /**
  * A transformation of GLTSs.

@@ -12,8 +12,8 @@ package com.github.tno.gltsdiff;
 
 import java.util.Map;
 
-import com.github.tno.gltsdiff.lts.GLTS;
-import com.github.tno.gltsdiff.lts.State;
+import com.github.tno.gltsdiff.glts.GLTS;
+import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.matchers.Matcher;
 import com.github.tno.gltsdiff.mergers.Merger;
 
