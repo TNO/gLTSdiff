@@ -39,7 +39,7 @@ public class DiffAutomatonDotWriter<T, U extends DiffAutomaton<T>>
     /**
      * Instantiates a writer for the given difference automaton, which prints state identifiers as state labels.
      * 
-     * @param automaton The automaton to be written.
+     * @param automaton The difference automaton to be written.
      * @param transitionLabelPrinter A printer for printing transition labels.
      */
     public DiffAutomatonDotWriter(U automaton, HtmlPrinter<DiffProperty<T>> transitionLabelPrinter) {
@@ -49,7 +49,7 @@ public class DiffAutomatonDotWriter<T, U extends DiffAutomaton<T>>
     /**
      * Instantiates a writer for the given difference automaton.
      * 
-     * @param automaton The automaton to be written.
+     * @param automaton The difference automaton to be written.
      * @param stateLabelPrinter A printer for printing state labels.
      * @param transitionLabelPrinter A printer for printing transition labels.
      */
