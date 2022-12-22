@@ -40,10 +40,10 @@ public class DiffAutomatonDotWriter<T, U extends DiffAutomaton<T>>
      * Instantiates a writer for the given difference automaton, which prints state identifiers as state labels.
      * 
      * @param automaton The automaton to be written.
-     * @param transitionPropertyPrinter A printer for printing labels for transition properties.
+     * @param transitionLabelPrinter A printer for printing transition labels.
      */
-    public DiffAutomatonDotWriter(U automaton, HtmlPrinter<DiffProperty<T>> transitionPropertyPrinter) {
-        super(automaton, transition -> transitionPropertyPrinter.print(transition.getProperty()));
+    public DiffAutomatonDotWriter(U automaton, HtmlPrinter<DiffProperty<T>> transitionLabelPrinter) {
+        super(automaton, transition -> transitionLabelPrinter.print(transition.getProperty()));
     }
 
     /**
@@ -51,12 +51,12 @@ public class DiffAutomatonDotWriter<T, U extends DiffAutomaton<T>>
      * 
      * @param automaton The automaton to be written.
      * @param stateLabelPrinter A printer for printing state labels.
-     * @param transitionPropertyPrinter A printer for printing labels for transition properties.
+     * @param transitionLabelPrinter A printer for printing transition labels.
      */
     public DiffAutomatonDotWriter(U automaton, HtmlPrinter<State<DiffAutomatonStateProperty>> stateLabelPrinter,
-            HtmlPrinter<DiffProperty<T>> transitionPropertyPrinter)
+            HtmlPrinter<DiffProperty<T>> transitionLabelPrinter)
     {
-        super(automaton, stateLabelPrinter, transition -> transitionPropertyPrinter.print(transition.getProperty()));
+        super(automaton, stateLabelPrinter, transition -> transitionLabelPrinter.print(transition.getProperty()));
     }
 
     @Override
