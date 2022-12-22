@@ -1,4 +1,4 @@
-digraph lts {
+digraph automaton {
 	1 [label=<s1> shape="circle"];
 	2 [label=<s2> shape="circle"];
 	3 [label=<s3> shape="circle"];
