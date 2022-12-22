@@ -8,12 +8,12 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.lts;
+package com.github.tno.gltsdiff.glts;
 
 import com.google.common.base.Preconditions;
 
 /**
- * A state in an {@link LTS}.
+ * A state in a {@link GLTS}.
  *
  * @param <S> The type of state properties.
  */

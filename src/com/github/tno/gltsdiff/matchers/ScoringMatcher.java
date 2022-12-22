@@ -15,8 +15,8 @@ import java.util.Map;
 import org.apache.commons.math3.linear.BlockRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 
-import com.github.tno.gltsdiff.lts.LTS;
-import com.github.tno.gltsdiff.lts.State;
+import com.github.tno.gltsdiff.glts.GLTS;
+import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.matchers.scorers.SimilarityScorer;
 import com.google.common.base.Preconditions;
 
@@ -26,9 +26,9 @@ import com.google.common.base.Preconditions;
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
- * @param <U> The type of LTSs.
+ * @param <U> The type of GLTSs.
  */
-public abstract class ScoringMatcher<S, T, U extends LTS<S, T>> implements Matcher<S, T, U> {
+public abstract class ScoringMatcher<S, T, U extends GLTS<S, T>> implements Matcher<S, T, U> {
     /** The algorithm for computing state similarity scores. */
     private final SimilarityScorer<S, T, U> scoring;
 

@@ -12,7 +12,7 @@ package com.github.tno.gltsdiff.operators.printers;
 
 import java.util.Set;
 
-import com.github.tno.gltsdiff.lts.AnnotatedProperty;
+import com.github.tno.gltsdiff.glts.AnnotatedProperty;
 import com.google.common.base.Preconditions;
 
 /**

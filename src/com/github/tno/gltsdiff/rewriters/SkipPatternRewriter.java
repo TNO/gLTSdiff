@@ -15,8 +15,8 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.function.Function;
 
-import com.github.tno.gltsdiff.lts.LTS;
-import com.github.tno.gltsdiff.lts.State;
+import com.github.tno.gltsdiff.glts.GLTS;
+import com.github.tno.gltsdiff.glts.State;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
@@ -26,11 +26,11 @@ import com.google.common.collect.Sets;
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
- * @param <U> The type of LTSs to rewrite.
+ * @param <U> The type of GLTSs to rewrite.
  */
-public abstract class SkipPatternRewriter<S, T, U extends LTS<S, T>> implements Rewriter<S, T, U> {
+public abstract class SkipPatternRewriter<S, T, U extends GLTS<S, T>> implements Rewriter<S, T, U> {
     /**
-     * Determines whether there exists structure between {@code source} and {@code target} in {@code lts} that can
+     * Determines whether there exists structure between {@code source} and {@code target} in {@code glts} that can
      * intuitively be skipped. Such structure exists if either <b>(1)</b> there exists a pattern of intuitively
      * skippable structure, or <b>(2)</b> there are only direct transitions from {@code source} to {@code target}.
      * <p>
@@ -50,22 +50,22 @@ public abstract class SkipPatternRewriter<S, T, U extends LTS<S, T>> implements 
      * patterns, it checks if the pattern without the last two edges (that form the join) can intuitively be skipped.
      * </p>
      * 
-     * @param lts The contextual input LTS.
+     * @param glts The contextual input GLTS.
      * @param source The source state, which must not be the same as {@code target}.
      * @param target The target state, which must not be the same as {@code source}.
      * @param forbidden The set of states that is not to be considered when determining if there is skippable structure.
      *     This set must not include {@code source} nor {@code target}.
      * @return {@code true} if there exists intuitively skippable structure as described above, {@code false} otherwise.
      */
-    protected final boolean existSkippableStructure(U lts, State<S> source, State<S> target, Set<State<S>> forbidden) {
-        Preconditions.checkArgument(lts.getStates().containsAll(ImmutableSet.of(source, target)),
-                "Expected the given LTS to contain the specified source and target states.");
+    protected final boolean existSkippableStructure(U glts, State<S> source, State<S> target, Set<State<S>> forbidden) {
+        Preconditions.checkArgument(glts.getStates().containsAll(ImmutableSet.of(source, target)),
+                "Expected the given GLTS to contain the specified source and target states.");
         Preconditions.checkArgument(source != target, "Expected the given source and target states to not be equal.");
         Preconditions.checkArgument(Sets.intersection(forbidden, ImmutableSet.of(source, target)).isEmpty(),
                 "Expected the given source and target states to not be forbidden themselves.");
 
         // If 'target' is not reachable from 'source' without using 'forbidden' states, then there is nothing to skip.
-        Set<State<S>> reachable = explore(source, state -> lts.getSuccessorsOf(state),
+        Set<State<S>> reachable = explore(source, state -> glts.getSuccessorsOf(state),
                 Sets.union(ImmutableSet.of(target), forbidden));
 
         if (!reachable.contains(target)) {
@@ -73,7 +73,7 @@ public abstract class SkipPatternRewriter<S, T, U extends LTS<S, T>> implements 
         }
 
         // Determine the set of states reachable from 'source' and co-reachable from 'target', up to 'forbidden' states.
-        Set<State<S>> coreachable = explore(target, state -> lts.getPredecessorsOf(state),
+        Set<State<S>> coreachable = explore(target, state -> glts.getPredecessorsOf(state),
                 Sets.union(ImmutableSet.of(source), forbidden));
         Set<State<S>> trim = Sets.intersection(reachable, coreachable);
 
@@ -101,8 +101,8 @@ public abstract class SkipPatternRewriter<S, T, U extends LTS<S, T>> implements 
         Set<State<S>> intermediateAndSource = Sets.union(intermediate, ImmutableSet.of(source));
         Set<State<S>> intermediateAndTarget = Sets.union(intermediate, ImmutableSet.of(target));
 
-        return intermediate.stream().allMatch(state -> intermediateAndSource.containsAll(lts.getPredecessorsOf(state))
-                && intermediateAndTarget.containsAll(lts.getSuccessorsOf(state)));
+        return intermediate.stream().allMatch(state -> intermediateAndSource.containsAll(glts.getPredecessorsOf(state))
+                && intermediateAndTarget.containsAll(glts.getSuccessorsOf(state)));
     }
 
     /**

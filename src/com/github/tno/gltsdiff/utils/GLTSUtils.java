@@ -18,14 +18,14 @@ import java.util.stream.Stream;
 
 import org.apache.commons.math3.util.Pair;
 
-import com.github.tno.gltsdiff.lts.LTS;
-import com.github.tno.gltsdiff.lts.State;
-import com.github.tno.gltsdiff.lts.Transition;
+import com.github.tno.gltsdiff.glts.GLTS;
+import com.github.tno.gltsdiff.glts.State;
+import com.github.tno.gltsdiff.glts.Transition;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 
-/** Utilities for working with LTSs. */
-public class LTSUtils {
-    private LTSUtils() {
+/** Utilities for working with GLTSs. */
+public class GLTSUtils {
+    private GLTSUtils() {
     }
 
     /**
@@ -33,14 +33,14 @@ public class LTSUtils {
      * 
      * @param <S> The type of state properties.
      * @param <T> The type of transition properties.
-     * @param left The left LTS.
-     * @param right The right LTS.
+     * @param left The left GLTS.
+     * @param right The right GLTS.
      * @param combiner The combiner for transition properties.
      * @param statePair The pair of ({@code left}, {@code right})-states to consider.
      * @return The stream containing all pairs of combinable incoming transitions into {@code statePair}.
      */
-    public static <S, T> Stream<Pair<Transition<S, T>, Transition<S, T>>> commonIncomingTransitions(LTS<S, T> left,
-            LTS<S, T> right, Combiner<T> combiner, Pair<State<S>, State<S>> statePair)
+    public static <S, T> Stream<Pair<Transition<S, T>, Transition<S, T>>> commonIncomingTransitions(GLTS<S, T> left,
+            GLTS<S, T> right, Combiner<T> combiner, Pair<State<S>, State<S>> statePair)
     {
         List<Transition<S, T>> leftTransitions = left.getIncomingTransitions(statePair.getFirst());
         List<Transition<S, T>> rightTransitions = right.getIncomingTransitions(statePair.getSecond());
@@ -54,13 +54,13 @@ public class LTSUtils {
      * 
      * @param <S> The type of state properties.
      * @param <T> The type of transition properties.
-     * @param left The left LTS.
-     * @param right The right LTS.
+     * @param left The left GLTS.
+     * @param right The right GLTS.
      * @param combiner The combiner for transition properties.
      * @param statePair The pair of ({@code left}, {@code right})-states to consider.
      * @return {@code true} if the given state pair has common combinable incoming transitions, {@code false} otherwise.
      */
-    public static <S, T> boolean hasCommonIncomingTransitions(LTS<S, T> left, LTS<S, T> right, Combiner<T> combiner,
+    public static <S, T> boolean hasCommonIncomingTransitions(GLTS<S, T> left, GLTS<S, T> right, Combiner<T> combiner,
             Pair<State<S>, State<S>> statePair)
     {
         return commonIncomingTransitions(left, right, combiner, statePair).findAny().isPresent();
@@ -71,14 +71,14 @@ public class LTSUtils {
      * 
      * @param <S> The type of state properties.
      * @param <T> The type of transition properties.
-     * @param left The left LTS.
-     * @param right The right LTS.
+     * @param left The left GLTS.
+     * @param right The right GLTS.
      * @param combiner The combiner for transition properties.
      * @param statePair The pair of ({@code left}, {@code right})-states to consider.
      * @return The stream containing all pairs of combinable outgoing transitions out of {@code statePair}.
      */
-    public static <S, T> Stream<Pair<Transition<S, T>, Transition<S, T>>> commonOutgoingTransitions(LTS<S, T> left,
-            LTS<S, T> right, Combiner<T> combiner, Pair<State<S>, State<S>> statePair)
+    public static <S, T> Stream<Pair<Transition<S, T>, Transition<S, T>>> commonOutgoingTransitions(GLTS<S, T> left,
+            GLTS<S, T> right, Combiner<T> combiner, Pair<State<S>, State<S>> statePair)
     {
         List<Transition<S, T>> leftTransitions = left.getOutgoingTransitions(statePair.getFirst());
         List<Transition<S, T>> rightTransitions = right.getOutgoingTransitions(statePair.getSecond());
@@ -92,13 +92,13 @@ public class LTSUtils {
      * 
      * @param <S> The type of state properties.
      * @param <T> The type of transition properties.
-     * @param left The left LTS.
-     * @param right The right LTS.
+     * @param left The left GLTS.
+     * @param right The right GLTS.
      * @param combiner The combiner for transition properties.
      * @param statePair The pair of ({@code left}, {@code right})-states to consider.
      * @return {@code true} if the given state pair has common combinable outgoing transitions, {@code false} otherwise.
      */
-    public static <S, T> boolean hasCommonOutgoingTransitions(LTS<S, T> left, LTS<S, T> right, Combiner<T> combiner,
+    public static <S, T> boolean hasCommonOutgoingTransitions(GLTS<S, T> left, GLTS<S, T> right, Combiner<T> combiner,
             Pair<State<S>, State<S>> statePair)
     {
         return commonOutgoingTransitions(left, right, combiner, statePair).findAny().isPresent();
@@ -110,13 +110,13 @@ public class LTSUtils {
      * 
      * @param <S> The type of state properties.
      * @param <T> The type of transition properties.
-     * @param left The left LTS.
-     * @param right The right LTS.
+     * @param left The left GLTS.
+     * @param right The right GLTS.
      * @param combiner The combiner for transition properties.
      * @param statePair The state pair for which all common predecessors are to be found.
      * @return The set of all common predecessors of {@code statePair}.
      */
-    public static <S, T> Set<Pair<State<S>, State<S>>> commonPredecessors(LTS<S, T> left, LTS<S, T> right,
+    public static <S, T> Set<Pair<State<S>, State<S>>> commonPredecessors(GLTS<S, T> left, GLTS<S, T> right,
             Combiner<T> combiner, Pair<State<S>, State<S>> statePair)
     {
         return commonIncomingTransitions(left, right, combiner, statePair)
@@ -130,13 +130,13 @@ public class LTSUtils {
      * 
      * @param <S> The type of state properties.
      * @param <T> The type of transition properties.
-     * @param left The left LTS.
-     * @param right The right LTS.
+     * @param left The left GLTS.
+     * @param right The right GLTS.
      * @param combiner The combiner for transition properties.
      * @param statePair The state pair for which all common successors are to be found.
      * @return The set of all common successors of {@code statePair}.
      */
-    public static <S, T> Set<Pair<State<S>, State<S>>> commonSuccessors(LTS<S, T> left, LTS<S, T> right,
+    public static <S, T> Set<Pair<State<S>, State<S>>> commonSuccessors(GLTS<S, T> left, GLTS<S, T> right,
             Combiner<T> combiner, Pair<State<S>, State<S>> statePair)
     {
         return commonOutgoingTransitions(left, right, combiner, statePair)

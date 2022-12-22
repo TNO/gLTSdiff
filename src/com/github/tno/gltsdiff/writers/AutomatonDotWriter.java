@@ -10,9 +10,9 @@
 
 package com.github.tno.gltsdiff.writers;
 
-import com.github.tno.gltsdiff.lts.Automaton;
-import com.github.tno.gltsdiff.lts.State;
-import com.github.tno.gltsdiff.lts.Transition;
+import com.github.tno.gltsdiff.glts.Automaton;
+import com.github.tno.gltsdiff.glts.State;
+import com.github.tno.gltsdiff.glts.Transition;
 import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
 
 /**

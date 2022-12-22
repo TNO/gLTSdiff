@@ -24,8 +24,8 @@ import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.util.Pair;
 
-import com.github.tno.gltsdiff.lts.LTS;
-import com.github.tno.gltsdiff.lts.State;
+import com.github.tno.gltsdiff.glts.GLTS;
+import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.matchers.scorers.SimilarityScorer;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.google.common.base.Preconditions;
@@ -39,23 +39,23 @@ import com.google.common.collect.HashBiMap;
  * <p>
  * The underlying algorithm is the Kuhn-Munkres algorithm that is also known as the Hungarian algorithm. Its
  * computational complexity is about O((|LHS| + |RHS|)^3) with |LHS| and |RHS| the number of states on the
- * left-hand-side and right-hand-side, respectively. However, the runtime may be cheaper in case the input LTSs are
+ * left-hand-side and right-hand-side, respectively. However, the runtime may be cheaper in case the input GLTSs are
  * sparse.
  * </p>
  * <p>
- * If one experiences performance problems with {@link KuhnMunkresMatcher}, for example because the input LTSs are large
- * or dense, consider switching to a more lightweight matcher like for example {@link WalkinshawMatcher}.
+ * If one experiences performance problems with {@link KuhnMunkresMatcher}, for example because the input GLTSs are
+ * large or dense, consider switching to a more lightweight matcher like for example {@link WalkinshawMatcher}.
  * </p>
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
- * @param <U> The type of LTSs.
+ * @param <U> The type of GLTSs.
  */
-public class KuhnMunkresMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher<S, T, U> {
-    /** The left-hand-side LTS. */
+public class KuhnMunkresMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatcher<S, T, U> {
+    /** The left-hand-side GLTS. */
     private final U lhs;
 
-    /** The right-hand-side LTS. */
+    /** The right-hand-side GLTS. */
     private final U rhs;
 
     /** The combiner for state properties. */
@@ -64,8 +64,8 @@ public class KuhnMunkresMatcher<S, T, U extends LTS<S, T>> extends ScoringMatche
     /**
      * Constructs a new state matcher, for computing maximal (LHS, RHS)-state matchings.
      * 
-     * @param lhs The left-hand-side LTS.
-     * @param rhs The right-hand-side LTS.
+     * @param lhs The left-hand-side GLTS.
+     * @param rhs The right-hand-side GLTS.
      * @param scoring The algorithm for computing state similarity scores.
      * @param statePropertyCombiner The combiner for state properties.
      */

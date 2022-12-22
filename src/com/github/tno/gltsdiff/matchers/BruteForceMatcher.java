@@ -19,11 +19,11 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.math3.util.Pair;
 
-import com.github.tno.gltsdiff.lts.LTS;
-import com.github.tno.gltsdiff.lts.State;
+import com.github.tno.gltsdiff.glts.LTS;
+import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.matchers.BruteForceMatcher;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
-import com.github.tno.gltsdiff.utils.LTSUtils;
+import com.github.tno.gltsdiff.utils.GLTSUtils;
 import com.github.tno.gltsdiff.utils.Maps;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
@@ -261,7 +261,7 @@ public class BruteForceMatcher<S, T, U extends LTS<S, T>> implements Matcher<S, 
             }
 
             // Account for combinable transitions.
-            count += LTSUtils.commonOutgoingTransitions(lhs, rhs, transitionPropertyCombiner, pair)
+            count += GLTSUtils.commonOutgoingTransitions(lhs, rhs, transitionPropertyCombiner, pair)
                     .map(t -> Pair.create(t.getFirst().getTarget(), t.getSecond().getTarget())).filter(fixed::contains)
                     .count();
         }
@@ -289,8 +289,8 @@ public class BruteForceMatcher<S, T, U extends LTS<S, T>> implements Matcher<S, 
 
         Pair<State<S>, State<S>> statePair = Pair.create(lhsState, rhsState);
 
-        return LTSUtils.hasCommonIncomingTransitions(lhs, rhs, transitionPropertyCombiner, statePair)
-                || LTSUtils.hasCommonOutgoingTransitions(lhs, rhs, transitionPropertyCombiner, statePair);
+        return GLTSUtils.hasCommonIncomingTransitions(lhs, rhs, transitionPropertyCombiner, statePair)
+                || GLTSUtils.hasCommonOutgoingTransitions(lhs, rhs, transitionPropertyCombiner, statePair);
     }
 
     /** @return The set of all (LHS, RHS)-state pairs with potential according to {@link #hasPotential(S, S)}. */

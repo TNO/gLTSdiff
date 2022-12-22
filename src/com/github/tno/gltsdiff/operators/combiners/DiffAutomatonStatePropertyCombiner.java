@@ -12,8 +12,8 @@ package com.github.tno.gltsdiff.operators.combiners;
 
 import java.util.Optional;
 
-import com.github.tno.gltsdiff.lts.DiffAutomatonStateProperty;
-import com.github.tno.gltsdiff.lts.DiffKind;
+import com.github.tno.gltsdiff.glts.DiffAutomatonStateProperty;
+import com.github.tno.gltsdiff.glts.DiffKind;
 
 /**
  * A combiner for {@link DiffAutomatonStateProperty difference automaton state properties}. Any two such properties are

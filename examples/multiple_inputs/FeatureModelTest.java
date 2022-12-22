@@ -18,10 +18,10 @@ import java.util.stream.Stream;
 import org.apache.commons.math3.util.Pair;
 
 import com.github.tno.gltsdiff.StructureComparator;
-import com.github.tno.gltsdiff.lts.AutomatonStateProperty;
-import com.github.tno.gltsdiff.lts.SimpleAutomaton;
-import com.github.tno.gltsdiff.lts.State;
-import com.github.tno.gltsdiff.lts.Transition;
+import com.github.tno.gltsdiff.glts.AutomatonStateProperty;
+import com.github.tno.gltsdiff.glts.SimpleAutomaton;
+import com.github.tno.gltsdiff.glts.State;
+import com.github.tno.gltsdiff.glts.Transition;
 import com.github.tno.gltsdiff.matchers.BruteForceMatcher;
 import com.github.tno.gltsdiff.mergers.DefaultMerger;
 import com.github.tno.gltsdiff.operators.combiners.AutomatonStatePropertyCombiner;

@@ -12,21 +12,21 @@ package com.github.tno.gltsdiff.matchers;
 
 import java.util.Map;
 
-import com.github.tno.gltsdiff.lts.LTS;
-import com.github.tno.gltsdiff.lts.State;
+import com.github.tno.gltsdiff.glts.GLTS;
+import com.github.tno.gltsdiff.glts.State;
 
 /**
  * A matcher that computes a (graph theoretical) matching between the states of the LHS and RHS.
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
- * @param <U> The type of LTSs.
+ * @param <U> The type of GLTSs.
  */
-public interface Matcher<S, T, U extends LTS<S, T>> {
-    /** @return The left-hand-side (LHS) LTS. */
+public interface Matcher<S, T, U extends GLTS<S, T>> {
+    /** @return The left-hand-side (LHS) GLTS. */
     public U getLhs();
 
-    /** @return The right-hand-side (RHS) LTS. */
+    /** @return The right-hand-side (RHS) GLTS. */
     public U getRhs();
 
     /**
