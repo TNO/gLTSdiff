@@ -50,7 +50,7 @@ public class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
     protected final HtmlPrinter<Transition<S, T>> transitionLabelPrinter;
 
     /**
-     * Instantiates a writer for the given GLTS, which uses {@link #stateLabel} to construct state labels.
+     * Instantiates a writer for the given GLTS, which prints state identifiers as state labels.
      * 
      * @param glts The GLTS to be written.
      * @param transitionLabelPrinter A printer for printing transition labels.
