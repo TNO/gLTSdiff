@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.util.Pair;
 
+import com.github.tno.gltsdiff.glts.GLTS;
 import com.github.tno.gltsdiff.glts.LTS;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.matchers.scorers.SimilarityScorer;
@@ -39,13 +40,13 @@ import com.google.common.base.Preconditions;
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
- * @param <U> The type of LTSs.
+ * @param <U> The type of GLTSs.
  */
-public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher<S, T, U> {
-    /** The left-hand-side LTS. */
+public class WalkinshawMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatcher<S, T, U> {
+    /** The left-hand-side GLTS. */
     private final U lhs;
 
-    /** The right-hand-side LTS. */
+    /** The right-hand-side GLTS. */
     private final U rhs;
 
     /**
@@ -81,8 +82,8 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
     /**
      * Instantiates a new Walkinshaw matcher.
      * 
-     * @param lhs The left-hand-side LTS.
-     * @param rhs The right-hand-side LTS.
+     * @param lhs The left-hand-side GLTS.
+     * @param rhs The right-hand-side GLTS.
      * @param scoring The algorithm for computing state similarity scores.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
@@ -234,7 +235,7 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
             }
 
             // If there turns out to be a highest scoring pair of compatible initial (LHS, RHS)-states,
-            // then that will be our landmark. (Otherwise the final merged LTS shall not contain any combined states.)
+            // then that will be our landmark. (Otherwise the final merged GLTS shall not contain any combined states.)
             if (bestCurrentPair != null) {
                 landmarks.add(bestCurrentPair);
             }
@@ -343,7 +344,7 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
 
     /**
      * Given a set of landmarks, determines which (LHS, RHS)-states should be matched to one another. These matched
-     * states can then later be merged into a single state when computing the final merged LTS.
+     * states can then later be merged into a single state when computing the final merged GLTS.
      * <p>
      * More details about the algorithm and its heuristics can be found on page 17 in the article of Walkinshaw et al.,
      * in particular Algorithm 1 and the accompanying explanation.
