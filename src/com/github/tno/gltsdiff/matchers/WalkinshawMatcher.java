@@ -30,6 +30,7 @@ import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.utils.GLTSUtils;
 import com.github.tno.gltsdiff.utils.Maps;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Functionality for computing (LHS, RHS)-state matchings based on heuristics proposed by Walkinshaw et al. (TOSEM 2013;
@@ -206,41 +207,24 @@ public class WalkinshawMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatche
             }
         }
 
-        // It might be that, at this point, no landmarks have been found. If that is the case, try to identify a
-        // "fallback" landmark that is defined as the pair of best scoring initial states.
-
+        // It might be that no landmarks were found. In that case, try to identify fallback landmarks.
         if (landmarks.isEmpty()) {
-            // Iterate over all combinations of initial states, and keep track of the highest scoring combination.
-            Pair<State<S>, State<S>> bestCurrentPair = null;
-
-            for (State<S> leftInitialState: lhs.getInitialStates()) {
-                for (State<S> rightInitialState: rhs.getInitialStates()) {
-                    Pair<State<S>, State<S>> pair = Pair.create(leftInitialState, rightInitialState);
-
-                    if (!isCompatible(pair, scores)) {
-                        continue;
-                    }
-
-                    if (bestCurrentPair == null) {
-                        bestCurrentPair = pair;
-                    }
-
-                    if (scores.apply(pair.getFirst(), pair.getSecond()) > scores.apply(bestCurrentPair.getFirst(),
-                            bestCurrentPair.getSecond()))
-                    {
-                        bestCurrentPair = pair;
-                    }
-                }
-            }
-
-            // If there turns out to be a highest scoring pair of compatible initial (LHS, RHS)-states,
-            // then that will be our landmark. (Otherwise the final merged GLTS shall not contain any combined states.)
-            if (bestCurrentPair != null) {
-                landmarks.add(bestCurrentPair);
-            }
+            landmarks.addAll(getFallbackLandmarks(scores));
         }
 
         return landmarks;
+    }
+
+    /**
+     * Gives a set of fallback landmarks, which is used in case no ordinary landmark can be found.
+     * 
+     * @param scores A scoring function that expresses for all (LHS, RHS)-state pairs how structurally similar they are.
+     *     All state similarity scores must either be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
+     * @return A set of non-{@code null} fallback landmark. These fallback landmarks are guaranteed not to overlap (any
+     *     LHS/RHS state is involved in at most one landmark), and be compatible according to {@link #isCompatible}.
+     */
+    protected Set<Pair<State<S>, State<S>>> getFallbackLandmarks(BiFunction<State<S>, State<S>, Double> scores) {
+        return ImmutableSet.of();
     }
 
     /**
@@ -413,7 +397,7 @@ public class WalkinshawMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatche
      *     be {@link Double#POSITIVE_INFINITY}.
      * @return {@code true} if the given state pair is compatible, {@code false} otherwise.
      */
-    private boolean isCompatible(Pair<State<S>, State<S>> statePair, BiFunction<State<S>, State<S>, Double> scores) {
+    protected boolean isCompatible(Pair<State<S>, State<S>> statePair, BiFunction<State<S>, State<S>, Double> scores) {
         State<S> leftState = statePair.getFirst();
         State<S> rightState = statePair.getSecond();
 
