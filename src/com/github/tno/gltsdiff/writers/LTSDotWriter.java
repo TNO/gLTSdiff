@@ -51,6 +51,11 @@ public class LTSDotWriter<S, T, U extends LTS<S, T>> extends GLTSDotWriter<S, T,
     }
 
     @Override
+    protected String getDigraphName() {
+        return "lts";
+    }
+
+    @Override
     protected void writeTransitions(Writer writer) throws IOException {
         // Write all initial state arrows.
         for (State<S> state: sortStates(glts.getInitialStates())) {

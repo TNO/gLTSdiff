@@ -83,7 +83,7 @@ public class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
     public void write(OutputStream stream) throws IOException {
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(stream))) {
             // Open graph scope.
-            writer.write("digraph glts {");
+            writer.write("digraph " + getDigraphName() + " {");
             writer.write(System.lineSeparator());
 
             // Write all states and transitions.
@@ -93,6 +93,11 @@ public class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
             // Close graph scope.
             writer.append("}");
         }
+    }
+
+    /** @return The name of the digraph to be written in DOT format. */
+    protected String getDigraphName() {
+        return "glts";
     }
 
     /**

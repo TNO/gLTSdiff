@@ -60,6 +60,11 @@ public class DiffAutomatonDotWriter<T, U extends DiffAutomaton<T>>
     }
 
     @Override
+    protected String getDigraphName() {
+        return "diffautomaton";
+    }
+
+    @Override
     protected String stateStyle(State<DiffAutomatonStateProperty> state) {
         switch (state.getProperty().getStateDiffKind()) {
             case ADDED:
