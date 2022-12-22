@@ -33,7 +33,7 @@ import com.google.common.base.Preconditions;
  * @param <T> The type of transition properties.
  * @param <U> The type of GLTSs to be written.
  */
-public abstract class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
+public class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
     static final String DEFAULT_COLOR = "#000000";
 
     static final String DEFAULT_STYLE = "";
