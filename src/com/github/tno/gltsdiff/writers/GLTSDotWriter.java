@@ -33,7 +33,7 @@ import com.google.common.base.Preconditions;
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs to be written.
  */
-public abstract class LTSDotWriter<S, T, U extends LTS<S, T>> {
+public abstract class GLTSDotWriter<S, T, U extends LTS<S, T>> {
     static final String DEFAULT_COLOR = "#000000";
 
     static final String DEFAULT_STYLE = "";
@@ -55,8 +55,8 @@ public abstract class LTSDotWriter<S, T, U extends LTS<S, T>> {
      * @param lts The LTS to be written.
      * @param transitionLabelPrinter A printer for printing transition labels.
      */
-    public LTSDotWriter(U lts, HtmlPrinter<Transition<S, T>> transitionLabelPrinter) {
-        this(lts, LTSDotWriter::stateLabel, transitionLabelPrinter);
+    public GLTSDotWriter(U lts, HtmlPrinter<Transition<S, T>> transitionLabelPrinter) {
+        this(lts, GLTSDotWriter::stateLabel, transitionLabelPrinter);
     }
 
     /**
@@ -66,7 +66,7 @@ public abstract class LTSDotWriter<S, T, U extends LTS<S, T>> {
      * @param stateLabelPrinter A printer for printing state labels.
      * @param transitionLabelPrinter A printer for printing transition labels.
      */
-    public LTSDotWriter(U lts, HtmlPrinter<State<S>> stateLabelPrinter,
+    public GLTSDotWriter(U lts, HtmlPrinter<State<S>> stateLabelPrinter,
             HtmlPrinter<Transition<S, T>> transitionLabelPrinter)
     {
         this.lts = lts;

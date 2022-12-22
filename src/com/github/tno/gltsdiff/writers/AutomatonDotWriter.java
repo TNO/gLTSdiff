@@ -22,7 +22,7 @@ import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
  * @param <T> The type of transition properties.
  * @param <U> The type of automata to be written.
  */
-public class AutomatonDotWriter<S, T, U extends Automaton<S, T>> extends LTSDotWriter<S, T, U> {
+public class AutomatonDotWriter<S, T, U extends Automaton<S, T>> extends GLTSDotWriter<S, T, U> {
     static final String SHAPE_DOUBLE_CIRCLE = "doublecircle";
 
     /**
