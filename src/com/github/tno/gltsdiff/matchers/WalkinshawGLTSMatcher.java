@@ -42,7 +42,7 @@ import com.google.common.collect.ImmutableSet;
  * @param <T> The type of transition properties.
  * @param <U> The type of GLTSs.
  */
-public class WalkinshawMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatcher<S, T, U> {
+public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatcher<S, T, U> {
     /** The left-hand-side GLTS. */
     private final U lhs;
 
@@ -88,7 +88,7 @@ public class WalkinshawMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatche
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
-    public WalkinshawMatcher(U lhs, U rhs, SimilarityScorer<S, T, U> scoring, Combiner<S> statePropertyCombiner,
+    public WalkinshawGLTSMatcher(U lhs, U rhs, SimilarityScorer<S, T, U> scoring, Combiner<S> statePropertyCombiner,
             Combiner<T> transitionPropertyCombiner)
     {
         super(scoring);
