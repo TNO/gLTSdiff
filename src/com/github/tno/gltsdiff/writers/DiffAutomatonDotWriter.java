@@ -37,13 +37,26 @@ public class DiffAutomatonDotWriter<T, U extends DiffAutomaton<T>>
     private final HtmlPrinter<DiffKind> diffKindColorPrinter = new DiffKindHtmlPrinter();
 
     /**
-     * Instantiates a writer for the given automaton.
+     * Instantiates a writer for the given difference automaton, which prints state identifiers as state labels.
      * 
      * @param automaton The automaton to be written.
      * @param transitionPropertyPrinter A printer for printing labels for transition properties.
      */
     public DiffAutomatonDotWriter(U automaton, HtmlPrinter<DiffProperty<T>> transitionPropertyPrinter) {
         super(automaton, transition -> transitionPropertyPrinter.print(transition.getProperty()));
+    }
+
+    /**
+     * Instantiates a writer for the given difference automaton.
+     * 
+     * @param automaton The automaton to be written.
+     * @param stateLabelPrinter A printer for printing state labels.
+     * @param transitionPropertyPrinter A printer for printing labels for transition properties.
+     */
+    public DiffAutomatonDotWriter(U automaton, HtmlPrinter<State<DiffAutomatonStateProperty>> stateLabelPrinter,
+            HtmlPrinter<DiffProperty<T>> transitionPropertyPrinter)
+    {
+        super(automaton, stateLabelPrinter, transition -> transitionPropertyPrinter.print(transition.getProperty()));
     }
 
     @Override
