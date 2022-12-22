@@ -37,13 +37,31 @@ public class DiffAutomatonDotWriter<T, U extends DiffAutomaton<T>>
     private final HtmlPrinter<DiffKind> diffKindColorPrinter = new DiffKindHtmlPrinter();
 
     /**
-     * Instantiates a writer for the given automaton.
+     * Instantiates a writer for the given difference automaton, which prints state identifiers as state labels.
      * 
-     * @param automaton The automaton to be written.
-     * @param transitionPropertyPrinter A printer for printing labels for transition properties.
+     * @param automaton The difference automaton to be written.
+     * @param transitionLabelPrinter A printer for printing transition labels.
      */
-    public DiffAutomatonDotWriter(U automaton, HtmlPrinter<DiffProperty<T>> transitionPropertyPrinter) {
-        super(automaton, transition -> transitionPropertyPrinter.print(transition.getProperty()));
+    public DiffAutomatonDotWriter(U automaton, HtmlPrinter<DiffProperty<T>> transitionLabelPrinter) {
+        super(automaton, transition -> transitionLabelPrinter.print(transition.getProperty()));
+    }
+
+    /**
+     * Instantiates a writer for the given difference automaton.
+     * 
+     * @param automaton The difference automaton to be written.
+     * @param stateLabelPrinter A printer for printing state labels.
+     * @param transitionLabelPrinter A printer for printing transition labels.
+     */
+    public DiffAutomatonDotWriter(U automaton, HtmlPrinter<State<DiffAutomatonStateProperty>> stateLabelPrinter,
+            HtmlPrinter<DiffProperty<T>> transitionLabelPrinter)
+    {
+        super(automaton, stateLabelPrinter, transition -> transitionLabelPrinter.print(transition.getProperty()));
+    }
+
+    @Override
+    protected String getDigraphName() {
+        return "diffautomaton";
     }
 
     @Override
@@ -84,7 +102,7 @@ public class DiffAutomatonDotWriter<T, U extends DiffAutomaton<T>>
 
     @Override
     protected String initialStateColor(State<DiffAutomatonStateProperty> initialState) {
-        Preconditions.checkArgument(lts.isInitialState(initialState), "Expected an initial state.");
+        Preconditions.checkArgument(glts.isInitialState(initialState), "Expected an initial state.");
         return diffKindColorPrinter.print(initialState.getProperty().getInitDiffKind());
     }
 }
