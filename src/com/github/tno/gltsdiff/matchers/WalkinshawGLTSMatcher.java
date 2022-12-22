@@ -33,10 +33,11 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 
 /**
- * Functionality for computing (LHS, RHS)-state matchings based on heuristics proposed by Walkinshaw et al. (TOSEM 2013;
- * see Section 4.3.1). However, this implementation has been generalized with respect to the approach of Walkinshaw et
- * al. by a more general notion of combinability (see {@link Combiner}). Transitions are now considered to be "common"
- * if they have combinable properties, rather than the stronger condition that they must be equal.
+ * Functionality for computing (LHS, RHS)-state matchings for {@link GLTS GLTSs} based on heuristics proposed by
+ * Walkinshaw et al. (TOSEM 2013; see Section 4.3.1). However, this implementation has been generalized with respect to
+ * the approach of Walkinshaw et al. by a more general notion of combinability (see {@link Combiner}). Transitions are
+ * now considered to be "common" if they have combinable properties, rather than the stronger condition that they must
+ * be equal.
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
@@ -44,10 +45,10 @@ import com.google.common.collect.ImmutableSet;
  */
 public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatcher<S, T, U> {
     /** The left-hand-side GLTS. */
-    private final U lhs;
+    protected final U lhs;
 
     /** The right-hand-side GLTS. */
-    private final U rhs;
+    protected final U rhs;
 
     /**
      * Of all the possible pairs of (LHS, RHS)-states, Walkinshaw et al. propose the heuristic to only consider the top
@@ -80,7 +81,7 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
     private final Combiner<T> transitionPropertyCombiner;
 
     /**
-     * Instantiates a new Walkinshaw matcher.
+     * Instantiates a new Walkinshaw matcher for GLTSs.
      * 
      * @param lhs The left-hand-side GLTS.
      * @param rhs The right-hand-side GLTS.
