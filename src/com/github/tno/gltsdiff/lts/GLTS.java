@@ -32,7 +32,7 @@ import com.google.common.base.Preconditions;
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
  */
-public abstract class GLTS<S, T> {
+public class GLTS<S, T> {
     /**
      * The set of states of this GLTS, all of which are unique and non-{@code null}, and have identifiers between
      * {@code 0} and {@code size() - 1} that are unique within this GLTS.
