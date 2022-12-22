@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.github.tno.gltsdiff.glts.GLTS;
-import com.github.tno.gltsdiff.glts.LTS;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.Transition;
 import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
@@ -87,26 +86,39 @@ public abstract class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
             writer.write("digraph glts {");
             writer.write(System.lineSeparator());
 
-            // Write all states.
-            for (State<S> state: sortStates(glts.getStates())) {
-                writeState(writer, state);
-            }
-
-            // Write all initial state arrows.
-            for (State<S> state: sortStates(glts.getInitialStates())) {
-                writeInitialTransition(writer, state);
-            }
-
-            // Write all transitions.
-            for (State<S> source: sortStates(glts.getStates())) {
-                int index = 0;
-                for (Transition<S, T> transition: glts.getOutgoingTransitions(source)) {
-                    writeTransition(writer, transition, index++);
-                }
-            }
+            // Write all states and transitions.
+            writeStates(writer);
+            writeTransitions(writer);
 
             // Close graph scope.
             writer.append("}");
+        }
+    }
+
+    /**
+     * Writes state information of the enclosed GLTS in DOT format to the provided writer.
+     * 
+     * @param writer The writer to write DOT data to.
+     * @throws IOException In case of an I/O error.
+     */
+    protected void writeStates(Writer writer) throws IOException {
+        for (State<S> state: sortStates(glts.getStates())) {
+            writeState(writer, state);
+        }
+    }
+
+    /**
+     * Writes transition information of the enclosed GLTS in DOT format to the provided writer.
+     * 
+     * @param writer The writer to write DOT data to.
+     * @throws IOException In case of an I/O error.
+     */
+    protected void writeTransitions(Writer writer) throws IOException {
+        for (State<S> source: sortStates(glts.getStates())) {
+            int index = 0;
+            for (Transition<S, T> transition: glts.getOutgoingTransitions(source)) {
+                writeTransition(writer, transition, index++);
+            }
         }
     }
 
@@ -174,14 +186,17 @@ public abstract class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
 
     /** @return A comparator that imposes a deterministic and total order on states. */
     protected Comparator<State<S>> getStateComparator() {
-        return Comparator
-                // First compare initial state information (descending order: first true, then false).
-                .comparing((State<S> state) -> !glts.isInitialState(state))
-                // Then compare state identifiers.
-                .thenComparing(State::getId);
+        return Comparator.comparing(State::getId);
     }
 
-    private void writeState(Writer writer, State<S> state) throws IOException {
+    /**
+     * Writes information of a single state of the enclosed GLTS in DOT format to the provided writer.
+     * 
+     * @param writer The writer to write DOT data to.
+     * @param state The state to write in DOT format.
+     * @throws IOException In case of an I/O error.
+     */
+    protected void writeState(Writer writer, State<S> state) throws IOException {
         String stateId = stateId(state);
         writer.write("\t");
         writer.write(stateId);
@@ -195,18 +210,15 @@ public abstract class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
         writer.write(System.lineSeparator());
     }
 
-    private void writeInitialTransition(Writer writer, State<S> initialTransition) throws IOException {
-        String initialTransitionId = stateId(initialTransition);
-        writer.write(String.format("\t__init%s [label=<> shape=\"none\"];", initialTransitionId));
-        writer.write(System.lineSeparator());
-
-        writer.write(String.format("\t__init%s -> %s", initialTransitionId, initialTransitionId));
-        optionalWrite(" [color=\"%s\"]", skipDefaultColor(initialStateColor(initialTransition)), writer);
-        writer.write(";");
-        writer.write(System.lineSeparator());
-    }
-
-    private void writeTransition(Writer writer, Transition<S, T> transition, int index) throws IOException {
+    /**
+     * Writes information of a single transition of the enclosed GLTS in DOT format to the provided writer.
+     * 
+     * @param writer The writer to write DOT data to.
+     * @param transition The transition to write in DOT format.
+     * @param index The transition index.
+     * @throws IOException In case of an I/O error.
+     */
+    protected void writeTransition(Writer writer, Transition<S, T> transition, int index) throws IOException {
         writer.write(String.format("\t%s -> %s [", stateId(transition.getSource()), stateId(transition.getTarget())));
         writer.write(String.format("label=<%s>", transitionLabelPrinter.print(transition)));
         optionalWrite(" color=\"%s\"", skipDefaultColor(transitionColor(transition)), writer);
@@ -215,7 +227,13 @@ public abstract class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
         writer.write(System.lineSeparator());
     }
 
-    private String skipDefaultColor(String color) {
+    /**
+     * Gives either the provided {@code color}, or an empty string in case this color represents a default color.
+     * 
+     * @param color A hex color code.
+     * @return Either {@code color}, or the empty string in case {@code color} is a default color.
+     */
+    protected String skipDefaultColor(String color) {
         return DEFAULT_COLOR.equals(color) ? "" : color;
     }
 
@@ -223,7 +241,7 @@ public abstract class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
      * Optionally writes the String.format(${template}, ${templateData}) to the writer. Writes only occur when the
      * trimmed value of ${templateData} is non empty.
      */
-    private void optionalWrite(String template, String templateData, Writer writer) throws IOException {
+    protected void optionalWrite(String template, String templateData, Writer writer) throws IOException {
         if (!templateData.trim().isEmpty()) {
             writer.write(String.format(template, templateData));
         }
@@ -236,7 +254,7 @@ public abstract class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
      * @param states The states to order.
      * @return A list of deterministically ordered states.
      */
-    private List<State<S>> sortStates(Collection<State<S>> states) {
+    protected List<State<S>> sortStates(Collection<State<S>> states) {
         return states.stream().sorted(getStateComparator()).collect(Collectors.toList());
     }
 }
