@@ -50,6 +50,6 @@ public class AutomatonDotWriter<S, T, U extends Automaton<S, T>> extends GLTSDot
 
     @Override
     protected String stateShape(State<S> state) {
-        return lts.isAcceptingState(state) ? SHAPE_DOUBLE_CIRCLE : super.stateShape(state);
+        return glts.isAcceptingState(state) ? SHAPE_DOUBLE_CIRCLE : super.stateShape(state);
     }
 }

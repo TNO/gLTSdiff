@@ -20,6 +20,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.github.tno.gltsdiff.glts.GLTS;
 import com.github.tno.gltsdiff.glts.LTS;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.Transition;
@@ -27,21 +28,21 @@ import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
 import com.google.common.base.Preconditions;
 
 /**
- * Functionality for writing {@link LTS LTSs} in DOT format.
+ * Functionality for writing {@link GLTS GLTSs} in DOT format.
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
- * @param <U> The type of LTSs to be written.
+ * @param <U> The type of GLTSs to be written.
  */
-public abstract class GLTSDotWriter<S, T, U extends LTS<S, T>> {
+public abstract class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
     static final String DEFAULT_COLOR = "#000000";
 
     static final String DEFAULT_STYLE = "";
 
     static final String SHAPE_CIRCLE = "circle";
 
-    /** The LTS to be written. */
-    protected final U lts;
+    /** The GLTS to be written. */
+    protected final U glts;
 
     /** A printer for printing state labels. */
     protected final HtmlPrinter<State<S>> stateLabelPrinter;
@@ -50,32 +51,32 @@ public abstract class GLTSDotWriter<S, T, U extends LTS<S, T>> {
     protected final HtmlPrinter<Transition<S, T>> transitionLabelPrinter;
 
     /**
-     * Instantiates a writer for the given LTS, which uses {@link #stateLabel} to construct state labels.
+     * Instantiates a writer for the given GLTS, which uses {@link #stateLabel} to construct state labels.
      * 
-     * @param lts The LTS to be written.
+     * @param glts The LTS to be written.
      * @param transitionLabelPrinter A printer for printing transition labels.
      */
-    public GLTSDotWriter(U lts, HtmlPrinter<Transition<S, T>> transitionLabelPrinter) {
-        this(lts, GLTSDotWriter::stateLabel, transitionLabelPrinter);
+    public GLTSDotWriter(U glts, HtmlPrinter<Transition<S, T>> transitionLabelPrinter) {
+        this(glts, GLTSDotWriter::stateLabel, transitionLabelPrinter);
     }
 
     /**
-     * Instantiates a writer for the given LTS.
+     * Instantiates a writer for the given GLTS.
      * 
-     * @param lts The LTS to be written.
+     * @param glts The LTS to be written.
      * @param stateLabelPrinter A printer for printing state labels.
      * @param transitionLabelPrinter A printer for printing transition labels.
      */
-    public GLTSDotWriter(U lts, HtmlPrinter<State<S>> stateLabelPrinter,
+    public GLTSDotWriter(U glts, HtmlPrinter<State<S>> stateLabelPrinter,
             HtmlPrinter<Transition<S, T>> transitionLabelPrinter)
     {
-        this.lts = lts;
+        this.glts = glts;
         this.stateLabelPrinter = stateLabelPrinter;
         this.transitionLabelPrinter = transitionLabelPrinter;
     }
 
     /**
-     * Writes the enclosed LTS in DOT format to the provided output stream.
+     * Writes the enclosed GLTS in DOT format to the provided output stream.
      * 
      * @param stream Stream to output DOT data to.
      * @throws IOException In case of an I/O error.
@@ -83,23 +84,23 @@ public abstract class GLTSDotWriter<S, T, U extends LTS<S, T>> {
     public void write(OutputStream stream) throws IOException {
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(stream))) {
             // Open graph scope.
-            writer.write("digraph lts {");
+            writer.write("digraph glts {");
             writer.write(System.lineSeparator());
 
             // Write all states.
-            for (State<S> state: sortStates(lts.getStates())) {
+            for (State<S> state: sortStates(glts.getStates())) {
                 writeState(writer, state);
             }
 
             // Write all initial state arrows.
-            for (State<S> state: sortStates(lts.getInitialStates())) {
+            for (State<S> state: sortStates(glts.getInitialStates())) {
                 writeInitialTransition(writer, state);
             }
 
             // Write all transitions.
-            for (State<S> source: sortStates(lts.getStates())) {
+            for (State<S> source: sortStates(glts.getStates())) {
                 int index = 0;
-                for (Transition<S, T> transition: lts.getOutgoingTransitions(source)) {
+                for (Transition<S, T> transition: glts.getOutgoingTransitions(source)) {
                     writeTransition(writer, transition, index++);
                 }
             }
@@ -120,7 +121,7 @@ public abstract class GLTSDotWriter<S, T, U extends LTS<S, T>> {
     }
 
     /**
-     * Gives the DOT graph identifier of the specified transition within {@link #lts}.
+     * Gives the DOT graph identifier of the specified transition within {@link #glts}.
      * 
      * @param transition The transition for which to obtain the DOT graph identifier.
      * @param index The transition index.
@@ -130,8 +131,8 @@ public abstract class GLTSDotWriter<S, T, U extends LTS<S, T>> {
         State<S> source = transition.getSource();
         State<S> target = transition.getTarget();
 
-        Preconditions.checkArgument(lts.hasState(source), "Expected the source state to exist in the given LTS.");
-        Preconditions.checkArgument(lts.hasState(target), "Expected the target state to exist in the given LTS.");
+        Preconditions.checkArgument(glts.hasState(source), "Expected the source state to exist in the given GLTS.");
+        Preconditions.checkArgument(glts.hasState(target), "Expected the target state to exist in the given GLTS.");
         Preconditions.checkArgument(index >= 0, "Expected the given index to be non-negative.");
 
         return String.format("%s-%d-%s", stateId(source), index, stateId(target));
@@ -175,7 +176,7 @@ public abstract class GLTSDotWriter<S, T, U extends LTS<S, T>> {
     protected Comparator<State<S>> getStateComparator() {
         return Comparator
                 // First compare initial state information (descending order: first true, then false).
-                .comparing((State<S> state) -> !lts.isInitialState(state))
+                .comparing((State<S> state) -> !glts.isInitialState(state))
                 // Then compare state identifiers.
                 .thenComparing(State::getId);
     }

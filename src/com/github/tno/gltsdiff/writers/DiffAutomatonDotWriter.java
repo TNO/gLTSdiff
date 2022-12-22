@@ -84,7 +84,7 @@ public class DiffAutomatonDotWriter<T, U extends DiffAutomaton<T>>
 
     @Override
     protected String initialStateColor(State<DiffAutomatonStateProperty> initialState) {
-        Preconditions.checkArgument(lts.isInitialState(initialState), "Expected an initial state.");
+        Preconditions.checkArgument(glts.isInitialState(initialState), "Expected an initial state.");
         return diffKindColorPrinter.print(initialState.getProperty().getInitDiffKind());
     }
 }
