@@ -52,7 +52,7 @@ public class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
     /**
      * Instantiates a writer for the given GLTS, which uses {@link #stateLabel} to construct state labels.
      * 
-     * @param glts The LTS to be written.
+     * @param glts The GLTS to be written.
      * @param transitionLabelPrinter A printer for printing transition labels.
      */
     public GLTSDotWriter(U glts, HtmlPrinter<Transition<S, T>> transitionLabelPrinter) {
@@ -62,7 +62,7 @@ public class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
     /**
      * Instantiates a writer for the given GLTS.
      * 
-     * @param glts The LTS to be written.
+     * @param glts The GLTS to be written.
      * @param stateLabelPrinter A printer for printing state labels.
      * @param transitionLabelPrinter A printer for printing transition labels.
      */
