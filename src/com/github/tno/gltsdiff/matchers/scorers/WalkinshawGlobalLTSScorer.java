@@ -6,8 +6,8 @@ import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 
 /**
- * Contains functionality for computing global similarity scores for pairs of (LHS, RHS)-states in {@link LTS LTSs},
- * thereby taking initial state information into account.
+ * Scorer that computes global similarity scores for pairs of (LHS, RHS)-states in {@link LTS LTSs}, thereby taking
+ * initial state information into account.
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.

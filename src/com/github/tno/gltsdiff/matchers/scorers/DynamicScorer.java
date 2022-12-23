@@ -18,9 +18,9 @@ import com.github.tno.gltsdiff.glts.LTS;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 
 /**
- * Contains functionality for computing state similarity scores that makes a trade-off between computational intensity
- * and the quality of the computed scores. Different scoring algorithms can be used for different input LTSs, e.g. based
- * on their sizes (numbers of states) from "heavyweight" (for smaller LTSs) to "lightweight" (for larger LTSs).
+ * Scorer that computes state similarity scores that makes a trade-off between computational intensity and the quality
+ * of the computed scores. Different scoring algorithms can be used for different input LTSs, e.g. based on their sizes
+ * (numbers of states) from "heavyweight" (for smaller LTSs) to "lightweight" (for larger LTSs).
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.

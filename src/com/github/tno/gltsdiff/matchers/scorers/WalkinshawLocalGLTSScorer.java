@@ -26,9 +26,8 @@ import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.google.common.base.Preconditions;
 
 /**
- * Contains functionality for computing local similarity scores for pairs of (LHS, RHS)-states in {@link GLTS GLTSs}.
- * These scores are local in the sense that they are determined by the amount of overlap in incoming and outgoing
- * transitions.
+ * Scorer that computes local similarity scores for pairs of (LHS, RHS)-states in {@link GLTS GLTSs}. These scores are
+ * local in the sense that they are determined by the amount of overlap in incoming and outgoing transitions.
  * <p>
  * The complexity of computing local similarity scores is about O(|LHS|*|RHS|), with |LHS| and |RHS| the number of
  * states plus transitions in the LHS and RHS, respectively.
