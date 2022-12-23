@@ -221,7 +221,7 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
      * 
      * @param scores A scoring function that expresses for all (LHS, RHS)-state pairs how structurally similar they are.
      *     All state similarity scores must either be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
-     * @return A set of non-{@code null} fallback landmark. These fallback landmarks are guaranteed not to overlap (any
+     * @return A set of non-{@code null} fallback landmarks. These fallback landmarks are guaranteed not to overlap (any
      *     LHS/RHS state is involved in at most one landmark), and be compatible according to {@link #isCompatible}.
      */
     protected Set<Pair<State<S>, State<S>>> getFallbackLandmarks(BiFunction<State<S>, State<S>, Double> scores) {
