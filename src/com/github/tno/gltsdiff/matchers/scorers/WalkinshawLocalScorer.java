@@ -90,8 +90,7 @@ public class WalkinshawLocalScorer<S, T, U extends GLTS<S, T>> extends Walkinsha
     /**
      * Computes local similarity scores for every pair of (LHS, RHS)-state pairs. Details of this computation are in the
      * TOSEM 2013 article of Walkinshaw et al. However, this implementation has been generalized by a notion of
-     * combinability (see {@link Combiner}) to determine the amount of overlap between transition properties, and takes
-     * initial state information into account.
+     * combinability (see {@link Combiner}) to determine the amount of overlap between transition properties.
      * <p>
      * More specifically, this function implements Equation (6) of the article of Walkinshaw et al. (and its "Prev"
      * counterpart, depending on how {@code commonNeighbors} and {@code relevantProperties} are specified), as a
