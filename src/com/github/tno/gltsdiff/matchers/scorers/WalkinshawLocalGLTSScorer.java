@@ -26,8 +26,9 @@ import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.google.common.base.Preconditions;
 
 /**
- * Contains functionality for computing local similarity scores for pairs of (LHS, RHS)-states. These scores are local
- * in the sense that they are determined by the amount of overlap in incoming and outgoing transitions.
+ * Contains functionality for computing local similarity scores for pairs of (LHS, RHS)-states in {@link GLTS GLTSs}.
+ * These scores are local in the sense that they are determined by the amount of overlap in incoming and outgoing
+ * transitions.
  * <p>
  * The complexity of computing local similarity scores is about O(|LHS|*|RHS|), with |LHS| and |RHS| the number of
  * states plus transitions in the LHS and RHS, respectively.
@@ -46,7 +47,7 @@ public class WalkinshawLocalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walki
     private final int nrOfRefinements;
 
     /**
-     * Instantiates a new Walkinshaw local similarity scorer that performs only a single refinement.
+     * Instantiates a new Walkinshaw local similarity scorer for GLTSs, that performs only a single refinement.
      * 
      * @param lhs The left-hand-side GLTS, which has at least one state.
      * @param rhs The right-hand-side GLTS, which has at least one state.
@@ -60,7 +61,7 @@ public class WalkinshawLocalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walki
     }
 
     /**
-     * Instantiates a new Walkinshaw local similarity scorer.
+     * Instantiates a new Walkinshaw local similarity scorer for GLTSs.
      * 
      * @param lhs The left-hand-side GLTS, which has at least one state.
      * @param rhs The right-hand-side GLTS, which has at least one state.
