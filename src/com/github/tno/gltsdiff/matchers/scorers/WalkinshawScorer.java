@@ -162,6 +162,34 @@ public abstract class WalkinshawScorer<S, T, U extends GLTS<S, T>> implements Si
     protected abstract RealMatrix computeBackwardSimilarityScores();
 
     /**
+     * Gives an adjustment to the numerator of the fractional similarity score equation for the given state pair. This
+     * adjustment, together with {@code #getDenominatorAdjustment}, must ensure that state similarity scores stay within
+     * the range [-1,1].
+     * 
+     * @param leftState A LHS state.
+     * @param rightState A RHS state.
+     * @param Whether the state similarity score equation is for the forward or the backward direction.
+     * @return An adjustment to the numerator of the fractional similarity score equation for the given state pair.
+     */
+    protected double getNumeratorAdjustment(State<S> leftState, State<S> rightState, boolean isForward) {
+        return 0d;
+    }
+
+    /**
+     * Gives an adjustment to the denominator of the fractional similarity score equation for the given state pair. This
+     * adjustment, together with {@code #getNumeratorAdjustment}, must ensure that state similarity scores stay within
+     * the range [-1,1].
+     * 
+     * @param leftState A LHS state.
+     * @param rightState A RHS state.
+     * @param Whether the state similarity score equation is for the forward or the backward direction.
+     * @return An adjustment to the denominator of the fractional similarity score equation for the given state pair.
+     */
+    protected double getDenominatorAdjustment(State<S> leftState, State<S> rightState, boolean isForward) {
+        return 0d;
+    }
+
+    /**
      * Counts the number of transitions in {@code first} for which there does not exist any transition in {@code second}
      * with a transition property that is combinable.
      * 
