@@ -26,7 +26,7 @@ import com.github.tno.gltsdiff.operators.combiners.Combiner;
  * @param <T> The type of transition properties.
  * @param <U> The type of GLTSs.
  */
-public class DynamicScorer<S, T, U extends GLTS<S, T>> implements SimilarityScorer<S, T, U> {
+public class DynamicGLTSScorer<S, T, U extends GLTS<S, T>> implements SimilarityScorer<S, T, U> {
     /** The left-hand-side GLTS, which has at least one state. */
     protected final U lhs;
 
@@ -50,7 +50,7 @@ public class DynamicScorer<S, T, U extends GLTS<S, T>> implements SimilarityScor
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
-    public DynamicScorer(U lhs, U rhs, Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner) {
+    public DynamicGLTSScorer(U lhs, U rhs, Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner) {
         this(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner,
                 (l, r) -> (s, t) -> defaultScoringAlgorithmCreator(l, r, s, t));
     }
@@ -65,7 +65,7 @@ public class DynamicScorer<S, T, U extends GLTS<S, T>> implements SimilarityScor
      * @param scoringAlgorithmCreator The scoring algorithm creator. Given the input GLTSs and appropriate combiners,
      *     creates a suitable algorithm.
      */
-    public DynamicScorer(U lhs, U rhs, Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner,
+    public DynamicGLTSScorer(U lhs, U rhs, Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner,
             BiFunction<U, U, BiFunction<Combiner<S>, Combiner<T>, SimilarityScorer<S, T, U>>> scoringAlgorithmCreator)
     {
         this.lhs = lhs;
