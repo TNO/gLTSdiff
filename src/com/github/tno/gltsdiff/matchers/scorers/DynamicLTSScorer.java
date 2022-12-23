@@ -16,7 +16,7 @@ import com.github.tno.gltsdiff.operators.combiners.Combiner;
  */
 public class DynamicLTSScorer<S, T, U extends LTS<S, T>> extends DynamicGLTSScorer<S, T, U> {
     /**
-     * Instantiates a new dynamic scoring algorithm for GLTSs, that uses a default configuration of scoring algorithms.
+     * Instantiates a new dynamic scoring algorithm for LTSs, that uses a default configuration of scoring algorithms.
      * 
      * @param lhs The left-hand-side LTS, which has at least one state.
      * @param rhs The right-hand-side LTS, which has at least one state.
