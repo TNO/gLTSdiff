@@ -18,9 +18,10 @@ import com.github.tno.gltsdiff.glts.GLTS;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 
 /**
- * Scorer that computes state similarity scores that makes a trade-off between computational intensity and the quality
- * of the computed scores. Different scoring algorithms can be used for different input GLTSs, e.g. based on their sizes
- * (numbers of states) from "heavyweight" (for smaller GLTSs) to "lightweight" (for larger GLTSs).
+ * Scorer that computes state similarity scores for {@link GLTS GLTSs} that makes a trade-off between computational
+ * intensity and the quality of the computed scores. Different scoring algorithms can be used for different input GLTSs,
+ * e.g. based on their sizes (numbers of states) from "heavyweight" (for smaller GLTSs) to "lightweight" (for larger
+ * GLTSs).
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
@@ -43,7 +44,7 @@ public class DynamicGLTSScorer<S, T, U extends GLTS<S, T>> implements Similarity
     private final BiFunction<U, U, BiFunction<Combiner<S>, Combiner<T>, SimilarityScorer<S, T, U>>> scoringAlgorithmCreator;
 
     /**
-     * Instantiates a new dynamic scoring algorithm, that uses a default configuration of scoring algorithms.
+     * Instantiates a new dynamic scoring algorithm for GLTSs, that uses a default configuration of scoring algorithms.
      * 
      * @param lhs The left-hand-side GLTS, which has at least one state.
      * @param rhs The right-hand-side GLTS, which has at least one state.
@@ -56,7 +57,7 @@ public class DynamicGLTSScorer<S, T, U extends GLTS<S, T>> implements Similarity
     }
 
     /**
-     * Instantiates a new dynamic scoring algorithm.
+     * Instantiates a new dynamic scoring algorithm for GLTSs.
      * 
      * @param lhs The left-hand-side GLTS, which has at least one state.
      * @param rhs The right-hand-side GLTS, which has at least one state.
