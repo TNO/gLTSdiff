@@ -175,21 +175,10 @@ public class WalkinshawGlobalScorer<S, T, U extends GLTS<S, T>> extends Walkinsh
             }
 
             // Next we calculate the diagonal of the matrix. Details are in the paper.
-
-            // If 'leftState' and/or 'rightState' is initial and if initial state arrows should be accounted for,
-            // then adjust the diagonal by 'initialStateAdjustment' to indicate that there are initial states.
-            boolean isLeftStateInitial = lhs.getInitialStates().contains(leftState);
-            boolean isRightStateInitial = rhs.getInitialStates().contains(rightState);
-            int initialStateAdjustment = 0;
-
-            if (accountForInitialStateArrows && (isLeftStateInitial || isRightStateInitial)) {
-                initialStateAdjustment = 1;
-            }
-
             double diagonal = coefficients.getEntry(statePairIndex, statePairIndex)
                     + 2 * (numberOfUncombinableTransitions(leftTransitions, rightTransitions)
                             + numberOfUncombinableTransitions(rightTransitions, leftTransitions)
-                            + neighborStatePairs.size() + initialStateAdjustment);
+                            + neighborStatePairs.size() + getDenominatorAdjustment(leftState, rightState, isForward));
 
             if (diagonal == 0.0d && neighborStatePairs.size() == 0) {
                 diagonal = 1.0d;
@@ -198,14 +187,10 @@ public class WalkinshawGlobalScorer<S, T, U extends GLTS<S, T>> extends Walkinsh
             coefficients.setEntry(statePairIndex, statePairIndex, diagonal);
 
             // Lastly determine the constant term in the linear system for the current state pair.
-            double constant = neighborStatePairs.size() + neighborStatePairs.stream().map(staticallyKnownScores::get)
-                    .filter(score -> score != null).mapToDouble(score -> attenuationFactor * score).sum();
-
-            // If initial state arrows should be accounted for and if 'leftState' and 'rightState' are both initial,
-            // then increase the constant of 'index' by 1 to increase the similarity score.
-            if (accountForInitialStateArrows && isLeftStateInitial && isRightStateInitial) {
-                constant += 1d;
-            }
+            double constant = neighborStatePairs.size()
+                    + neighborStatePairs.stream().map(staticallyKnownScores::get).filter(score -> score != null)
+                            .mapToDouble(score -> attenuationFactor * score).sum()
+                    + getNumeratorAdjustment(leftState, rightState, isForward);
 
             constants.setEntry(statePairIndex, constant);
         }
@@ -376,30 +361,13 @@ public class WalkinshawGlobalScorer<S, T, U extends GLTS<S, T>> extends Walkinsh
 
             // The similarity score is a fraction. First we determine its numerator. Details are in the paper.
             double numerator = neighborStatePairs.stream()
-                    .mapToDouble(pair -> 1d + attenuationFactor * staticallyKnownScores.get(pair)).sum();
-
-            // If initial state arrows should be accounted for and if 'leftState' and 'rightState' are both
-            // initial, then increase the numerator by 1 to increase the similarity score for this state pair.
-            boolean isLeftStateInitial = lhs.isInitialState(leftState);
-            boolean isRightStateInitial = rhs.isInitialState(rightState);
-
-            if (accountForInitialStateArrows && isLeftStateInitial && isRightStateInitial) {
-                numerator += 1d;
-            }
+                    .mapToDouble(pair -> 1d + attenuationFactor * staticallyKnownScores.get(pair)).sum()
+                    + getNumeratorAdjustment(leftState, rightState, isForward);
 
             // Then we determine the denominator of the similarity score.
-
-            // If 'leftState' and/or 'rightState' is initial and if initial state arrows should be accounted
-            // for, then adjust the denominator by 'initialStateAdjustment' accordingly.
-            int initialStateAdjustment = 0;
-
-            if (accountForInitialStateArrows && (isLeftStateInitial || isRightStateInitial)) {
-                initialStateAdjustment = 1;
-            }
-
             double denominator = 2d * (numberOfUncombinableTransitions(leftTransitions, rightTransitions)
                     + numberOfUncombinableTransitions(rightTransitions, leftTransitions) + neighborStatePairs.size()
-                    + initialStateAdjustment);
+                    + getDenominatorAdjustment(leftState, rightState, isForward));
 
             // Determine and return the similarity score of 'statePair'.
             return denominator == 0d ? Optional.of(0d) : Optional.of(numerator / denominator);
