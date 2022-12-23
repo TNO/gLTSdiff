@@ -19,7 +19,7 @@ import org.apache.commons.math3.linear.OpenMapRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.util.Pair;
 
-import com.github.tno.gltsdiff.glts.LTS;
+import com.github.tno.gltsdiff.glts.GLTS;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.Transition;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
@@ -39,17 +39,17 @@ import com.google.common.base.Preconditions;
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
- * @param <U> The type of LTSs.
+ * @param <U> The type of GLTSs.
  */
-public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends WalkinshawScorer<S, T, U> {
+public class WalkinshawLocalScorer<S, T, U extends GLTS<S, T>> extends WalkinshawScorer<S, T, U> {
     /** The number of refinements that the scoring algorithm should perform. This number must be at least 1. */
     private final int nrOfRefinements;
 
     /**
      * Instantiates a new Walkinshaw local similarity scorer that performs only a single refinement.
      * 
-     * @param lhs The left-hand-side LTS, which has at least one state.
-     * @param rhs The right-hand-side LTS, which has at least one state.
+     * @param lhs The left-hand-side GLTS, which has at least one state.
+     * @param rhs The right-hand-side GLTS, which has at least one state.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
@@ -62,8 +62,8 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
     /**
      * Instantiates a new Walkinshaw local similarity scorer.
      * 
-     * @param lhs The left-hand-side LTS, which has at least one state.
-     * @param rhs The right-hand-side LTS, which has at least one state.
+     * @param lhs The left-hand-side GLTS, which has at least one state.
+     * @param rhs The right-hand-side GLTS, which has at least one state.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      * @param nrOfRefinements The number of refinements to perform, which must be at least 1.
@@ -79,12 +79,12 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
 
     @Override
     protected RealMatrix computeForwardSimilarityScores() {
-        return computeScores((lts, state) -> lts.getOutgoingTransitions(state), Transition::getTarget, false);
+        return computeScores((glts, state) -> glts.getOutgoingTransitions(state), Transition::getTarget, false);
     }
 
     @Override
     protected RealMatrix computeBackwardSimilarityScores() {
-        return computeScores((lts, state) -> lts.getIncomingTransitions(state), Transition::getSource, true);
+        return computeScores((glts, state) -> glts.getIncomingTransitions(state), Transition::getSource, true);
     }
 
     /**
@@ -102,7 +102,7 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
      * {@link WalkinshawGlobalScorer} can be approximated more closely.
      * </p>
      * 
-     * @param relevantTransitions A function that, given an LTS and a state of that LTS, determines the list of
+     * @param relevantTransitions A function that, given an GLTS and a state of that GLTS, determines the list of
      *     transitions of the given state that are relevant for computing state similarity scores. This function should
      *     be unidirectional, in the sense that it should consistently give either all incoming transitions or all
      *     outgoing transitions of the given state.
@@ -151,7 +151,7 @@ public class WalkinshawLocalScorer<S, T, U extends LTS<S, T>> extends Walkinshaw
      * @param leftState A LHS state.
      * @param rightState A RHS state.
      * @param scores The current matrix of similarity scores that is to be refined.
-     * @param relevantTransitions A function that, given an LTS and a state of that LTS, determines the list of
+     * @param relevantTransitions A function that, given an GLTS and a state of that GLTS, determines the list of
      *     transitions of the given state that are relevant for computing state similarity scores. This function should
      *     be unidirectional, in the sense that it should consistently give either all incoming transitions or all
      *     outgoing transitions of the given state.
