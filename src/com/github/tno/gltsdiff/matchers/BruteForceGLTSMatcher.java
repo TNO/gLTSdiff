@@ -49,16 +49,16 @@ import com.google.common.collect.Sets;
  */
 public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matcher<S, T, U> {
     /** The left-hand-side GLTS. */
-    private final U lhs;
+    protected final U lhs;
 
     /** The right-hand-side GLTS. */
-    private final U rhs;
+    protected final U rhs;
 
     /** The combiner for state properties. */
-    private final Combiner<S> statePropertyCombiner;
+    protected final Combiner<S> statePropertyCombiner;
 
     /** The combiner for transition properties. */
-    private final Combiner<T> transitionPropertyCombiner;
+    protected final Combiner<T> transitionPropertyCombiner;
 
     /**
      * Instantiates a new brute force matcher for GLTSs.
