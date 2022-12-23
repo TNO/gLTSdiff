@@ -20,9 +20,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.math3.util.Pair;
 
 import com.github.tno.gltsdiff.glts.GLTS;
-import com.github.tno.gltsdiff.glts.LTS;
 import com.github.tno.gltsdiff.glts.State;
-import com.github.tno.gltsdiff.matchers.BruteForceGLTSMatcher;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.utils.GLTSUtils;
 import com.github.tno.gltsdiff.utils.Maps;
@@ -244,33 +242,47 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
 
     /**
      * The objective function that is to be maximized by the brute force matcher. This function determines the number of
-     * initial state arrows and transitions that would be combined in the final merged GLTS of {@link #getLhs()} and
-     * {@link #getRhs()}, in which all (LHS, RHS)-state pairs in {@code fixed} were matched and merged.
+     * transitions that would be combined in the final merged GLTS of {@link #getLhs()} and {@link #getRhs()}, in which
+     * all (LHS, RHS)-state pairs in {@code fixed} were matched and merged.
+     *
      * <p>
      * The time complexity of this operation is O(|V1|*|V2|*|{@code fixed}|), with |V1| the number of states in
      * {@link #getLhs()} and |V2| the number of states in {@link #getRhs()}.
      * </p>
-     * 
+     *
+     * <p>
+     * The function may be adjusted by {@link #getOptimizationObjectiveAdjustment}.
+     * </p>
+     *
      * @param fixed The input set of fixed (LHS, RHS)-state matchings.
-     * @return The number of initial state arrows and transitions in the LHS and RHS that would collapse into a combined
-     *     transition if all state pairs in {@code fixed} were matched and merged.
+     * @return The number of transitions in the LHS and RHS that would collapse into a combined transition if all state
+     *     pairs in {@code fixed} were matched and merged, with adjustments applied.
      */
     private int optimizationObjective(Set<Pair<State<S>, State<S>>> fixed) {
         int count = 0;
 
         for (Pair<State<S>, State<S>> pair: fixed) {
-            // Account for combinable initial state arrows.
-            if (lhs.isInitialState(pair.getFirst()) && rhs.isInitialState(pair.getSecond())) {
-                count += 1;
-            }
-
             // Account for combinable transitions.
             count += GLTSUtils.commonOutgoingTransitions(lhs, rhs, transitionPropertyCombiner, pair)
                     .map(t -> Pair.create(t.getFirst().getTarget(), t.getSecond().getTarget())).filter(fixed::contains)
                     .count();
+
+            // Apply configurable adjustment.
+            count += getOptimizationObjectiveAdjustment(pair.getFirst(), pair.getSecond());
         }
 
         return count;
+    }
+
+    /**
+     * Gives an adjustment to the {@link #optimizationObjective objective function} for the given state pair.
+     *
+     * @param leftState A LHS state.
+     * @param rightState A RHS state.
+     * @return An adjustment to the objective function for the given state pair.
+     */
+    protected int getOptimizationObjectiveAdjustment(State<S> leftState, State<S> rightState) {
+        return 0;
     }
 
     /**
