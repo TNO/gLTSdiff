@@ -99,7 +99,7 @@ public class WalkinshawLocalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walki
      * the recursion depth to be {@code nrOfRefinements} (which must be positive). If only a single refinement is
      * performed, then the computed similarity scores should be the same as come out of Equations (2) and (4) in the
      * article. However, by increasing the number of refinements further, the scores as computed by
-     * {@link WalkinshawGlobalScorer} can be approximated more closely.
+     * {@link WalkinshawGlobalGLTSScorer} can be approximated more closely.
      * </p>
      * 
      * @param relevantTransitions A function that, given an GLTS and a state of that GLTS, determines the list of

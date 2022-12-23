@@ -49,7 +49,7 @@ import com.google.common.collect.HashBiMap;
  * instead, like for example {@link WalkinshawLocalGLTSScorer}.
  * </p>
  * <p>
- * However, {@link WalkinshawGlobalScorer} has shown to perform well in practice even with big GLTSs (say, a few dozens
+ * However, {@link WalkinshawGlobalGLTSScorer} has shown to perform well in practice even with big GLTSs (say, a few dozens
  * of states each) as long as they are sparse. That is, as long as states typically only have a few neighbors.
  * </p>
  *
@@ -57,7 +57,7 @@ import com.google.common.collect.HashBiMap;
  * @param <T> The type of transition properties.
  * @param <U> The type of GLTSs.
  */
-public class WalkinshawGlobalScorer<S, T, U extends GLTS<S, T>> extends WalkinshawScorer<S, T, U> {
+public class WalkinshawGlobalGLTSScorer<S, T, U extends GLTS<S, T>> extends WalkinshawScorer<S, T, U> {
     /**
      * Instantiates a new Walkinshaw global scorer.
      * 
@@ -66,7 +66,7 @@ public class WalkinshawGlobalScorer<S, T, U extends GLTS<S, T>> extends Walkinsh
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
-    public WalkinshawGlobalScorer(U lhs, U rhs, Combiner<S> statePropertyCombiner,
+    public WalkinshawGlobalGLTSScorer(U lhs, U rhs, Combiner<S> statePropertyCombiner,
             Combiner<T> transitionPropertyCombiner)
     {
         super(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner);
