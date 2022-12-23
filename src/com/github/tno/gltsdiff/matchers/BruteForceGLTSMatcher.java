@@ -19,9 +19,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.math3.util.Pair;
 
-import com.github.tno.gltsdiff.glts.LTS;
+import com.github.tno.gltsdiff.glts.GLTS;
 import com.github.tno.gltsdiff.glts.State;
-import com.github.tno.gltsdiff.matchers.BruteForceMatcher;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.utils.GLTSUtils;
 import com.github.tno.gltsdiff.utils.Maps;
@@ -32,10 +31,11 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 /**
- * A brute force matching algorithm that calculates a best possible maximal (LHS, RHS)-state matching. The results are
- * <i>best possible</i> (or optimal) in the sense that matchings are computed with the objective to maximize the number
- * of transitions that would be combined in the final merged LTS. Or, equivalently, it minimizes the number of
- * uncombined transitions. Moreover, the computed matching is guaranteed not to introduce any tangles.
+ * A brute force matching algorithm for {@link GLTS GLTSs} that calculates a best possible maximal (LHS, RHS)-state
+ * matching. The results are <i>best possible</i> (or optimal) in the sense that matchings are computed with the
+ * objective to maximize the number of transitions that would be combined in the final merged GLTS. Or, equivalently, it
+ * minimizes the number of uncombined transitions. Moreover, the computed matching is guaranteed not to introduce any
+ * tangles.
  * <p>
  * This algorithm explores all the possible choices of relevant state matchings, making it brute force. The worst case
  * time complexity is therefore O(N!) with N = min{|LHS|, |RHS|}, where |LHS| and |RHS| are the number of states in the
@@ -45,30 +45,32 @@ import com.google.common.collect.Sets;
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
- * @param <U> The type of LTSs.
+ * @param <U> The type of GLTSs.
  */
-public class BruteForceMatcher<S, T, U extends LTS<S, T>> implements Matcher<S, T, U> {
-    /** The left-hand-side LTS. */
-    private final U lhs;
+public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matcher<S, T, U> {
+    /** The left-hand-side GLTS. */
+    protected final U lhs;
 
-    /** The right-hand-side LTS. */
-    private final U rhs;
+    /** The right-hand-side GLTS. */
+    protected final U rhs;
 
     /** The combiner for state properties. */
-    private final Combiner<S> statePropertyCombiner;
+    protected final Combiner<S> statePropertyCombiner;
 
     /** The combiner for transition properties. */
-    private final Combiner<T> transitionPropertyCombiner;
+    protected final Combiner<T> transitionPropertyCombiner;
 
     /**
-     * Instantiates a new brute force matcher.
+     * Instantiates a new brute force matcher for GLTSs.
      * 
-     * @param lhs The left-hand-side LTS.
-     * @param rhs The right-hand-side LTS.
+     * @param lhs The left-hand-side GLTS.
+     * @param rhs The right-hand-side GLTS.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
-    public BruteForceMatcher(U lhs, U rhs, Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner) {
+    public BruteForceGLTSMatcher(U lhs, U rhs, Combiner<S> statePropertyCombiner,
+            Combiner<T> transitionPropertyCombiner)
+    {
         this.lhs = lhs;
         this.rhs = rhs;
         this.statePropertyCombiner = statePropertyCombiner;
@@ -99,7 +101,7 @@ public class BruteForceMatcher<S, T, U extends LTS<S, T>> implements Matcher<S, 
      * Determines the best possible matching out of a set {@code candidateMatches} of possible candidate matchings, that
      * contains at least all the matchings in {@code fixedMatches} (which are thus fixed).
      * <p>
-     * Note that, since this method is recursive, stack depth issues may occur if the input LTSs are very big (e.g., in
+     * Note that, since this method is recursive, stack depth issues may occur if the input GLTSs are very big (e.g., in
      * the order of tens of thousands of states).
      * </p>
      * 
@@ -240,33 +242,47 @@ public class BruteForceMatcher<S, T, U extends LTS<S, T>> implements Matcher<S, 
 
     /**
      * The objective function that is to be maximized by the brute force matcher. This function determines the number of
-     * initial state arrows and transitions that would be combined in the final merged LTS of {@link #getLhs()} and
-     * {@link #getRhs()}, in which all (LHS, RHS)-state pairs in {@code fixed} were matched and merged.
+     * transitions that would be combined in the final merged GLTS of {@link #getLhs()} and {@link #getRhs()}, in which
+     * all (LHS, RHS)-state pairs in {@code fixed} were matched and merged.
+     *
      * <p>
      * The time complexity of this operation is O(|V1|*|V2|*|{@code fixed}|), with |V1| the number of states in
      * {@link #getLhs()} and |V2| the number of states in {@link #getRhs()}.
      * </p>
-     * 
+     *
+     * <p>
+     * The function may be adjusted by {@link #getOptimizationObjectiveAdjustment}.
+     * </p>
+     *
      * @param fixed The input set of fixed (LHS, RHS)-state matchings.
-     * @return The number of initial state arrows and transitions in the LHS and RHS that would collapse into a combined
-     *     transition if all state pairs in {@code fixed} were matched and merged.
+     * @return The number of transitions in the LHS and RHS that would collapse into a combined transition if all state
+     *     pairs in {@code fixed} were matched and merged, with adjustments applied.
      */
     private int optimizationObjective(Set<Pair<State<S>, State<S>>> fixed) {
         int count = 0;
 
         for (Pair<State<S>, State<S>> pair: fixed) {
-            // Account for combinable initial state arrows.
-            if (lhs.isInitialState(pair.getFirst()) && rhs.isInitialState(pair.getSecond())) {
-                count += 1;
-            }
-
             // Account for combinable transitions.
             count += GLTSUtils.commonOutgoingTransitions(lhs, rhs, transitionPropertyCombiner, pair)
                     .map(t -> Pair.create(t.getFirst().getTarget(), t.getSecond().getTarget())).filter(fixed::contains)
                     .count();
+
+            // Apply configurable adjustment.
+            count += getOptimizationObjectiveAdjustment(pair.getFirst(), pair.getSecond());
         }
 
         return count;
+    }
+
+    /**
+     * Gives an adjustment to the {@link #optimizationObjective objective function} for the given state pair.
+     *
+     * @param leftState A LHS state.
+     * @param rightState A RHS state.
+     * @return An adjustment to the objective function for the given state pair.
+     */
+    protected int getOptimizationObjectiveAdjustment(State<S> leftState, State<S> rightState) {
+        return 0;
     }
 
     /**
