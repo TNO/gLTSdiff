@@ -21,7 +21,7 @@ import org.apache.commons.math3.util.Pair;
 
 import com.github.tno.gltsdiff.glts.LTS;
 import com.github.tno.gltsdiff.glts.State;
-import com.github.tno.gltsdiff.matchers.BruteForceMatcher;
+import com.github.tno.gltsdiff.matchers.BruteForceGLTSMatcher;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.utils.GLTSUtils;
 import com.github.tno.gltsdiff.utils.Maps;
@@ -47,7 +47,7 @@ import com.google.common.collect.Sets;
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs.
  */
-public class BruteForceMatcher<S, T, U extends LTS<S, T>> implements Matcher<S, T, U> {
+public class BruteForceGLTSMatcher<S, T, U extends LTS<S, T>> implements Matcher<S, T, U> {
     /** The left-hand-side LTS. */
     private final U lhs;
 
@@ -68,7 +68,7 @@ public class BruteForceMatcher<S, T, U extends LTS<S, T>> implements Matcher<S, 
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
-    public BruteForceMatcher(U lhs, U rhs, Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner) {
+    public BruteForceGLTSMatcher(U lhs, U rhs, Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner) {
         this.lhs = lhs;
         this.rhs = rhs;
         this.statePropertyCombiner = statePropertyCombiner;
