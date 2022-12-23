@@ -63,7 +63,7 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
     private final Combiner<T> transitionPropertyCombiner;
 
     /**
-     * Instantiates a new brute force matcher.
+     * Instantiates a new brute force matcher for GLTSs.
      * 
      * @param lhs The left-hand-side GLTS.
      * @param rhs The right-hand-side GLTS.
