@@ -191,7 +191,8 @@ public abstract class WalkinshawScorer<S, T, U extends GLTS<S, T>> implements Si
     }
 
     /**
-     * A default adjustment to the numerator of state similarity scores for LTSs.
+     * A default adjustment to the numerator of state similarity scores for LTSs, that takes initial state information
+     * into account.
      * 
      * @param <S> The type of state properties.
      * @param <T> The type of transition properties.
@@ -214,7 +215,8 @@ public abstract class WalkinshawScorer<S, T, U extends GLTS<S, T>> implements Si
     }
 
     /**
-     * A default adjustment to the denominator of state similarity scores for LTSs.
+     * A default adjustment to the denominator of state similarity scores for LTSs, that takes initial state information
+     * into account.
      * 
      * @param <S> The type of state properties.
      * @param <T> The type of transition properties.
