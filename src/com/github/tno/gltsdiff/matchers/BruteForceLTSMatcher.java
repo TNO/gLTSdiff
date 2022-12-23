@@ -20,7 +20,7 @@ import com.github.tno.gltsdiff.operators.combiners.Combiner;
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
- * @param <U> The type of GLTSs.
+ * @param <U> The type of LTSs.
  */
 public class BruteForceLTSMatcher<S, T, U extends LTS<S, T>> extends BruteForceGLTSMatcher<S, T, U> {
     /**
