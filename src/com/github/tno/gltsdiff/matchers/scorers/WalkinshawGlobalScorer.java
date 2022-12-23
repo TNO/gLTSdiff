@@ -29,7 +29,7 @@ import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.util.Pair;
 
-import com.github.tno.gltsdiff.glts.LTS;
+import com.github.tno.gltsdiff.glts.GLTS;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.Transition;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
@@ -49,20 +49,20 @@ import com.google.common.collect.HashBiMap;
  * instead, like for example {@link WalkinshawLocalGLTSScorer}.
  * </p>
  * <p>
- * However, {@link WalkinshawGlobalScorer} has shown to perform well in practice even with big LTSs (say, a few dozens
+ * However, {@link WalkinshawGlobalScorer} has shown to perform well in practice even with big GLTSs (say, a few dozens
  * of states each) as long as they are sparse. That is, as long as states typically only have a few neighbors.
  * </p>
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
- * @param <U> The type of LTSs.
+ * @param <U> The type of GLTSs.
  */
-public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends WalkinshawScorer<S, T, U> {
+public class WalkinshawGlobalScorer<S, T, U extends GLTS<S, T>> extends WalkinshawScorer<S, T, U> {
     /**
      * Instantiates a new Walkinshaw global scorer.
      * 
-     * @param lhs The left-hand-side LTS, which has at least one state.
-     * @param rhs The right-hand-side LTS, which has at least one state.
+     * @param lhs The left-hand-side GLTS, which has at least one state.
+     * @param rhs The right-hand-side GLTS, which has at least one state.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
@@ -74,12 +74,12 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
 
     @Override
     protected RealMatrix computeForwardSimilarityScores() {
-        return computeScores((lts, state) -> lts.getOutgoingTransitions(state), Transition::getTarget, false);
+        return computeScores((glts, state) -> glts.getOutgoingTransitions(state), Transition::getTarget, false);
     }
 
     @Override
     protected RealMatrix computeBackwardSimilarityScores() {
-        return computeScores((lts, state) -> lts.getIncomingTransitions(state), Transition::getSource, true);
+        return computeScores((glts, state) -> glts.getIncomingTransitions(state), Transition::getSource, true);
     }
 
     /**
@@ -87,7 +87,7 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
      * <p>
      * This computation relies on a function {@code commonNeighbors} that gives a list of all relevant common
      * neighboring state pairs that are possible from the input pair of states. Furthermore, {@code relevantProperties}
-     * gives the set of transition properties that are relevant to consider from a given state in a specified LTS.
+     * gives the set of transition properties that are relevant to consider from a given state in a specified GLTS.
      * </p>
      * <p>
      * The similarity scores are computed by constructing and solving a system of linear equations. Details on this can
@@ -95,7 +95,7 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
      * described in that article by a more general concept of combinability (see {@link Combiner}).
      * </p>
      * 
-     * @param relevantTransitions A function that, given an LTS and a state of that LTS, determines the list of
+     * @param relevantTransitions A function that, given an GLTS and a state of that GLTS, determines the list of
      *     transitions of the given state that are relevant for computing state similarity scores. This function should
      *     be unidirectional, in the sense that it should consistently give either all incoming transitions or all
      *     outgoing transitions of the given state.
@@ -239,7 +239,7 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
      * 
      * @param staticallyKnownScores A mutable map from state pairs to statically known similarity scores, which will be
      *     updated by this method.
-     * @param relevantTransitions A function that, given an LTS and a state of that LTS, determines the list of
+     * @param relevantTransitions A function that, given an GLTS and a state of that GLTS, determines the list of
      *     transitions of the given state that are relevant for computing state similarity scores. This function should
      *     be unidirectional, in the sense that it should consistently give either all incoming transitions or all
      *     outgoing transitions of the given state.
@@ -335,7 +335,7 @@ public class WalkinshawGlobalScorer<S, T, U extends LTS<S, T>> extends Walkinsha
      * @param statePair The state pair for which to attempt to statically determine the similarity score.
      * @param staticallyKnownScores A map from state pairs to statically known similarity scores, which will be updated
      *     by this method.
-     * @param relevantTransitions A function that, given an LTS and a state of that LTS, determines the list of
+     * @param relevantTransitions A function that, given an GLTS and a state of that GLTS, determines the list of
      *     transitions of the given state that are relevant for computing state similarity scores. This function should
      *     be unidirectional, in the sense that it should consistently give either all incoming transitions or all
      *     outgoing transitions of the given state.
