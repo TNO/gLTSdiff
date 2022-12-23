@@ -15,8 +15,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -58,6 +58,9 @@ import com.google.common.collect.HashBiMap;
  * @param <U> The type of GLTSs.
  */
 public class WalkinshawGlobalGLTSScorer<S, T, U extends GLTS<S, T>> extends WalkinshawScorer<S, T, U> {
+    /** Whether to optimize statically determinable scores. */
+    private boolean optimizeStaticallyDeterminableScores = true;
+
     /**
      * Instantiates a new Walkinshaw global scorer for GLTSs.
      * 
@@ -70,6 +73,15 @@ public class WalkinshawGlobalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walk
             Combiner<T> transitionPropertyCombiner)
     {
         super(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner);
+    }
+
+    /**
+     * Sets whether to optimize statically determinable scores.
+     *
+     * @param optimize Whether to optimize or not.
+     */
+    public void setOptimizeStaticallyDeterminableScores(boolean optimize) {
+        this.optimizeStaticallyDeterminableScores = optimize;
     }
 
     @Override
@@ -241,6 +253,20 @@ public class WalkinshawGlobalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walk
             BiFunction<U, State<S>, Collection<Transition<S, T>>> relevantTransitions,
             Function<Transition<S, T>, State<S>> stateSelector, boolean isForward)
     {
+        // If configured not to optimize, all remaining state pairs have unknown scores.
+        if (!optimizeStaticallyDeterminableScores) {
+            Set<Pair<State<S>, State<S>>> statePairsWithUnknownScores = new LinkedHashSet<>();
+            for (State<S> leftState: lhs.getStates()) {
+                for (State<S> rightState: rhs.getStates()) {
+                    Pair<State<S>, State<S>> statePair = Pair.create(leftState, rightState);
+                    if (!staticallyKnownScores.containsKey(statePair)) {
+                        statePairsWithUnknownScores.add(statePair);
+                    }
+                }
+            }
+            return statePairsWithUnknownScores;
+        }
+
         // Compute the set of all state pairs with unknown similarity scores.
         Set<Pair<State<S>, State<S>>> statePairsWithUnknownScores = new LinkedHashSet<>();
 
