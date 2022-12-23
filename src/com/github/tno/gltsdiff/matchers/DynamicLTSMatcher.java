@@ -18,7 +18,7 @@ import com.github.tno.gltsdiff.matchers.scorers.SimilarityScorer;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 
 /**
- * Matcher that computes state matchings for {@link LTS LTSs} that makes a trade-off between computational intensity and
+ * Matcher that computes state matchings for {@link LTS LTSs}, that makes a trade-off between computational intensity and
  * the quality of the computed matchings.
  *
  * @param <S> The type of state properties.

@@ -20,7 +20,7 @@ import com.github.tno.gltsdiff.matchers.scorers.SimilarityScorer;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 
 /**
- * Matcher that computes state matchings for {@link GLTS GLTSs} that makes a trade-off between computational intensity
+ * Matcher that computes state matchings for {@link GLTS GLTSs}, that makes a trade-off between computational intensity
  * and the quality of the computed matchings. Different matching algorithms can be used for different input GLTSs, e.g.
  * based on their sizes (numbers of states) from "heavyweight" (for smaller GLTSs) to "lightweight" (for larger GLTSs).
  *
