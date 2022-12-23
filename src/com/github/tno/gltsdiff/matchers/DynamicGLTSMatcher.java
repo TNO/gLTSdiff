@@ -20,9 +20,9 @@ import com.github.tno.gltsdiff.matchers.scorers.SimilarityScorer;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 
 /**
- * Contains functionality for computing state matchings that makes a trade-off between computational intensity and the
- * quality of the computed matchings. Different matching algorithms can be used for different input GLTSs, e.g. based on
- * their sizes (numbers of states) from "heavyweight" (for smaller GLTSs) to "lightweight" (for larger GLTSs).
+ * Matcher that computes state matchings for {@link GLTS GLTSs} that makes a trade-off between computational intensity
+ * and the quality of the computed matchings. Different matching algorithms can be used for different input GLTSs, e.g.
+ * based on their sizes (numbers of states) from "heavyweight" (for smaller GLTSs) to "lightweight" (for larger GLTSs).
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
@@ -47,7 +47,7 @@ public class DynamicGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matcher<S
     private final BiFunction<U, U, BiFunction<Combiner<S>, Combiner<T>, Matcher<S, T, U>>> matchingAlgorithmCreator;
 
     /**
-     * Instantiates a new dynamic matching algorithm, that uses a default configuration of matching algorithms.
+     * Instantiates a new dynamic matcher for GLTSs, that uses a default configuration of matching algorithms.
      * 
      * @param lhs The left-hand-side GLTS.
      * @param rhs The right-hand-side GLTS.
@@ -60,7 +60,7 @@ public class DynamicGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matcher<S
     }
 
     /**
-     * Instantiates a new dynamic matching algorithm.
+     * Instantiates a new dynamic matcher for GLTSs.
      * 
      * @param lhs The left-hand-side GLTS.
      * @param rhs The right-hand-side GLTS.
