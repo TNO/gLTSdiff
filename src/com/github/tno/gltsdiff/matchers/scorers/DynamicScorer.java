@@ -93,9 +93,9 @@ public class DynamicScorer<S, T, U extends LTS<S, T>> implements SimilarityScore
         if (nrOfStates <= 45) {
             return new WalkinshawGlobalScorer<>(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner);
         } else if (nrOfStates <= 500) {
-            return new WalkinshawLocalScorer<>(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner, 5);
+            return new WalkinshawLocalGLTSScorer<>(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner, 5);
         } else {
-            return new WalkinshawLocalScorer<>(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner, 1);
+            return new WalkinshawLocalGLTSScorer<>(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner, 1);
         }
     }
 

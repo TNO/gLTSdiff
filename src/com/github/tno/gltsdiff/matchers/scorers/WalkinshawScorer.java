@@ -49,7 +49,7 @@ public abstract class WalkinshawScorer<S, T, U extends GLTS<S, T>> implements Si
      * the final similarity scores.
      * <p>
      * A ratio of 0 would mean that only local similarity scores are used. Note that, if one is only interested in local
-     * similarity, {@link WalkinshawLocalScorer} should be used instead, which gives the same result but is much cheaper
+     * similarity, {@link WalkinshawLocalGLTSScorer} should be used instead, which gives the same result but is much cheaper
      * in terms of computation. A ratio of 1 would mean that far-away state similarities contribute equally much as
      * local ones.
      * </p>

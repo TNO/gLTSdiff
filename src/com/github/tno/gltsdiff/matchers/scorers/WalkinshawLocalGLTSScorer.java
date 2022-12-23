@@ -41,7 +41,7 @@ import com.google.common.base.Preconditions;
  * @param <T> The type of transition properties.
  * @param <U> The type of GLTSs.
  */
-public class WalkinshawLocalScorer<S, T, U extends GLTS<S, T>> extends WalkinshawScorer<S, T, U> {
+public class WalkinshawLocalGLTSScorer<S, T, U extends GLTS<S, T>> extends WalkinshawScorer<S, T, U> {
     /** The number of refinements that the scoring algorithm should perform. This number must be at least 1. */
     private final int nrOfRefinements;
 
@@ -53,7 +53,7 @@ public class WalkinshawLocalScorer<S, T, U extends GLTS<S, T>> extends Walkinsha
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
-    public WalkinshawLocalScorer(U lhs, U rhs, Combiner<S> statePropertyCombiner,
+    public WalkinshawLocalGLTSScorer(U lhs, U rhs, Combiner<S> statePropertyCombiner,
             Combiner<T> transitionPropertyCombiner)
     {
         this(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner, 1);
@@ -68,7 +68,7 @@ public class WalkinshawLocalScorer<S, T, U extends GLTS<S, T>> extends Walkinsha
      * @param transitionPropertyCombiner The combiner for transition properties.
      * @param nrOfRefinements The number of refinements to perform, which must be at least 1.
      */
-    public WalkinshawLocalScorer(U lhs, U rhs, Combiner<S> statePropertyCombiner,
+    public WalkinshawLocalGLTSScorer(U lhs, U rhs, Combiner<S> statePropertyCombiner,
             Combiner<T> transitionPropertyCombiner, int nrOfRefinements)
     {
         super(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner);
