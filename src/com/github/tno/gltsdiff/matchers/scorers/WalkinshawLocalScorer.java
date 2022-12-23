@@ -79,12 +79,12 @@ public class WalkinshawLocalScorer<S, T, U extends GLTS<S, T>> extends Walkinsha
 
     @Override
     protected RealMatrix computeForwardSimilarityScores() {
-        return computeScores((glts, state) -> glts.getOutgoingTransitions(state), Transition::getTarget, false);
+        return computeScores((glts, state) -> glts.getOutgoingTransitions(state), Transition::getTarget, true);
     }
 
     @Override
     protected RealMatrix computeBackwardSimilarityScores() {
-        return computeScores((glts, state) -> glts.getIncomingTransitions(state), Transition::getSource, true);
+        return computeScores((glts, state) -> glts.getIncomingTransitions(state), Transition::getSource, false);
     }
 
     /**
@@ -111,12 +111,11 @@ public class WalkinshawLocalScorer<S, T, U extends GLTS<S, T>> extends Walkinsha
      *     state of any given transition, and should be consistent with {@code relevantTransitions}, in the sense that,
      *     if {@code relevantTransitions} gives all outgoing transitions, then this function should select the target
      *     state of any given transition (and likewise it should select source states in case of incoming transitions).
-     * @param accountForInitialStateArrows Whether the scoring calculation should take initial state arrows into
-     *     account. Note that the original paper does not take initial states into account.
+     * @param isForward Whether the state similarity score equation is for the forward or the backward direction.
      * @return A matrix of local state similarity scores, all of which are in the range [-1,1].
      */
     private RealMatrix computeScores(BiFunction<U, State<S>, List<Transition<S, T>>> relevantTransitions,
-            Function<Transition<S, T>, State<S>> stateSelector, boolean accountForInitialStateArrows)
+            Function<Transition<S, T>, State<S>> stateSelector, boolean isForward)
     {
         // Define an initial similarity score matrix with score 0 for every (LHS, RHS)-state pair.
         RealMatrix scores = new OpenMapRealMatrix(lhs.size(), rhs.size());
@@ -130,7 +129,7 @@ public class WalkinshawLocalScorer<S, T, U extends GLTS<S, T>> extends Walkinsha
                 for (State<S> rightState: rhs.getStates()) {
                     // Refine the similarity score of the current state pair.
                     double refinedScore = similarityScore(leftState, rightState, scores, relevantTransitions,
-                            stateSelector, accountForInitialStateArrows);
+                            stateSelector, isForward);
 
                     // Store the refined similarity score in 'refinedScores'.
                     refinedScores.setEntry(leftState.getId(), rightState.getId(), refinedScore);
@@ -160,13 +159,12 @@ public class WalkinshawLocalScorer<S, T, U extends GLTS<S, T>> extends Walkinsha
      *     state of any given transition, and should be consistent with {@code relevantTransitions}, in the sense that,
      *     if {@code relevantTransitions} gives all outgoing transitions, then this function should select the target
      *     state of any given transition (and likewise it should select source states in case of incoming transitions).
-     * @param accountForInitialStateArrows Whether the scoring calculation should take initial state arrows into
-     *     account. Note that the original paper does not take initial states into account.
+     * @param isForward Whether the state similarity score equation is for the forward or the backward direction.
      * @return A state similarity score for the given pair of (LHS, RHS)-states, in the range [-1,1].
      */
     private double similarityScore(State<S> leftState, State<S> rightState, RealMatrix scores,
             BiFunction<U, State<S>, List<Transition<S, T>>> relevantTransitions,
-            Function<Transition<S, T>, State<S>> stateSelector, boolean accountForInitialStateArrows)
+            Function<Transition<S, T>, State<S>> stateSelector, boolean isForward)
     {
         // If 'leftState' and 'rightState' are uncombinable, then their similarity score is -1.
         if (!statePropertyCombiner.areCombinable(leftState.getProperty(), rightState.getProperty())) {
@@ -192,7 +190,7 @@ public class WalkinshawLocalScorer<S, T, U extends GLTS<S, T>> extends Walkinsha
         // "that do not match each other" to be transition properties "that do not combine with each other".
         double denominator = 2 * (numberOfUncombinableTransitions(leftTransitions, rightTransitions)
                 + numberOfUncombinableTransitions(rightTransitions, leftTransitions) + neighbors.size()
-                + getDenominatorAdjustment(leftState, rightState));
+                + getDenominatorAdjustment(leftState, rightState, isForward));
 
         // Shortcut to improve performance.
         if (denominator == 0) {
@@ -200,7 +198,7 @@ public class WalkinshawLocalScorer<S, T, U extends GLTS<S, T>> extends Walkinsha
         }
 
         // Second, calculate its numerator. Details are in the paper.
-        double numerator = getNumeratorAdjustment(leftState, rightState);
+        double numerator = getNumeratorAdjustment(leftState, rightState, isForward);
 
         for (Pair<State<S>, State<S>> neighbor: neighbors) {
             int lhsIdx = neighbor.getFirst().getId();
@@ -219,9 +217,10 @@ public class WalkinshawLocalScorer<S, T, U extends GLTS<S, T>> extends Walkinsha
      * 
      * @param leftState A LHS state.
      * @param rightState A RHS state.
+     * @param Whether the state similarity score equation is for the forward or the backward direction.
      * @return An adjustment to the numerator of the fractional similarity score equation for the given state pair.
      */
-    protected double getNumeratorAdjustment(State<S> leftState, State<S> rightState) {
+    protected double getNumeratorAdjustment(State<S> leftState, State<S> rightState, boolean isForward) {
         return 0d;
     }
 
@@ -232,9 +231,10 @@ public class WalkinshawLocalScorer<S, T, U extends GLTS<S, T>> extends Walkinsha
      * 
      * @param leftState A LHS state.
      * @param rightState A RHS state.
+     * @param Whether the state similarity score equation is for the forward or the backward direction.
      * @return An adjustment to the denominator of the fractional similarity score equation for the given state pair.
      */
-    protected double getDenominatorAdjustment(State<S> leftState, State<S> rightState) {
+    protected double getDenominatorAdjustment(State<S> leftState, State<S> rightState, boolean isForward) {
         return 0d;
     }
 }
