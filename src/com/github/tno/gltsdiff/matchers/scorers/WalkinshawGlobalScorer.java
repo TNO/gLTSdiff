@@ -74,12 +74,12 @@ public class WalkinshawGlobalScorer<S, T, U extends GLTS<S, T>> extends Walkinsh
 
     @Override
     protected RealMatrix computeForwardSimilarityScores() {
-        return computeScores((glts, state) -> glts.getOutgoingTransitions(state), Transition::getTarget, false);
+        return computeScores((glts, state) -> glts.getOutgoingTransitions(state), Transition::getTarget, true);
     }
 
     @Override
     protected RealMatrix computeBackwardSimilarityScores() {
-        return computeScores((glts, state) -> glts.getIncomingTransitions(state), Transition::getSource, true);
+        return computeScores((glts, state) -> glts.getIncomingTransitions(state), Transition::getSource, false);
     }
 
     /**
@@ -104,17 +104,16 @@ public class WalkinshawGlobalScorer<S, T, U extends GLTS<S, T>> extends Walkinsh
      *     state of any given transition, and should be consistent with {@code relevantTransitions}, in the sense that,
      *     if {@code relevantTransitions} gives all outgoing transitions, then this function should select the target
      *     state of any given transition (and likewise it should select source states in case of incoming transitions).
-     * @param accountForInitialStateArrows Whether the scoring calculation should take initial state arrows into
-     *     account. Note that the original paper does not take initial states into account.
+     * @param isForward Whether the state similarity score equation is for the forward or the backward direction.
      * @return A matrix of state similarity scores, all of which are in the range [-1,1].
      */
     private RealMatrix computeScores(BiFunction<U, State<S>, Collection<Transition<S, T>>> relevantTransitions,
-            Function<Transition<S, T>, State<S>> stateSelector, boolean accountForInitialStateArrows)
+            Function<Transition<S, T>, State<S>> stateSelector, boolean isForward)
     {
         // Collect all statically known similarity scores, as well as all state pairs with statically unknown scores.
         Map<Pair<State<S>, State<S>>, Double> staticallyKnownScores = new LinkedHashMap<>();
         Set<Pair<State<S>, State<S>>> statePairsWithUnknownScores = collectStaticallyKnownScores(staticallyKnownScores,
-                relevantTransitions, stateSelector, accountForInitialStateArrows);
+                relevantTransitions, stateSelector, isForward);
 
         // Here it holds that the set of 'statePairsWithUnknownScores' unioned with the key set of
         // 'staticallyKnownScores' equals the set of all possible (LHS, RHS)-state pairs. Moreover, both these sets are
@@ -233,15 +232,14 @@ public class WalkinshawGlobalScorer<S, T, U extends GLTS<S, T>> extends Walkinsh
      *     state of any given transition, and should be consistent with {@code relevantTransitions}, in the sense that,
      *     if {@code relevantTransitions} gives all outgoing transitions, then this function should select the target
      *     state of any given transition (and likewise it should select source states in case of incoming transitions).
-     * @param accountForInitialStateArrows Whether the scoring calculation should take initial state arrows into
-     *     account. Note that the original paper does not take initial states into account.
+     * @param isForward Whether the state similarity score equation is for the forward or the backward direction.
      * @return A set of all state pairs with statically unknown scores. This method guarantees that this returned set,
      *     unioned with the key set of {@code staticallyKnownScores}, equals the set of all possible state pairs.
      */
     private Set<Pair<State<S>, State<S>>> collectStaticallyKnownScores(
             Map<Pair<State<S>, State<S>>, Double> staticallyKnownScores,
             BiFunction<U, State<S>, Collection<Transition<S, T>>> relevantTransitions,
-            Function<Transition<S, T>, State<S>> stateSelector, boolean accountForInitialStateArrows)
+            Function<Transition<S, T>, State<S>> stateSelector, boolean isForward)
     {
         // Compute the set of all state pairs with unknown similarity scores.
         Set<Pair<State<S>, State<S>>> statePairsWithUnknownScores = new LinkedHashSet<>();
@@ -290,7 +288,7 @@ public class WalkinshawGlobalScorer<S, T, U extends GLTS<S, T>> extends Walkinsh
 
             // Try to statically determine the similarity score of 'statePair'.
             Optional<Double> possibleScore = tryToStaticallyDetermineSimilarityScore(statePair, staticallyKnownScores,
-                    relevantTransitions, stateSelector, accountForInitialStateArrows);
+                    relevantTransitions, stateSelector, isForward);
 
             if (possibleScore.isPresent()) {
                 // Register that 'statePair' is now a state pair with a statically known score.
@@ -329,15 +327,14 @@ public class WalkinshawGlobalScorer<S, T, U extends GLTS<S, T>> extends Walkinsh
      *     state of any given transition, and should be consistent with {@code relevantTransitions}, in the sense that,
      *     if {@code relevantTransitions} gives all outgoing transitions, then this function should select the target
      *     state of any given transition (and likewise it should select source states in case of incoming transitions).
-     * @param accountForInitialStateArrows Whether the scoring calculation should take initial state arrows into
-     *     account. Note that the original paper does not take initial states into account.
+     * @param isForward Whether the state similarity score equation is for the forward or the backward direction.
      * @return A similarity score in the range [-1,1] in case it was statically determined, or {@link Optional#empty}
      *     otherwise.
      */
     private Optional<Double> tryToStaticallyDetermineSimilarityScore(Pair<State<S>, State<S>> statePair,
             Map<Pair<State<S>, State<S>>, Double> staticallyKnownScores,
             BiFunction<U, State<S>, Collection<Transition<S, T>>> relevantTransitions,
-            Function<Transition<S, T>, State<S>> stateSelector, boolean accountForInitialStateArrows)
+            Function<Transition<S, T>, State<S>> stateSelector, boolean isForward)
     {
         State<S> leftState = statePair.getFirst();
         State<S> rightState = statePair.getSecond();
