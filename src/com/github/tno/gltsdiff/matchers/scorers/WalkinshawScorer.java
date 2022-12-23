@@ -20,7 +20,7 @@ import org.apache.commons.math3.linear.BlockRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.util.Pair;
 
-import com.github.tno.gltsdiff.glts.LTS;
+import com.github.tno.gltsdiff.glts.GLTS;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.Transition;
 import com.github.tno.gltsdiff.matchers.Matcher;
@@ -41,17 +41,17 @@ import com.google.common.base.Preconditions;
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
- * @param <U> The type of LTSs.
+ * @param <U> The type of GLTSs.
  */
-public abstract class WalkinshawScorer<S, T, U extends LTS<S, T>> implements SimilarityScorer<S, T, U> {
+public abstract class WalkinshawScorer<S, T, U extends GLTS<S, T>> implements SimilarityScorer<S, T, U> {
     /**
      * This is the ratio in the range [0,1] that determines how much the similarity scores of far-away states influence
      * the final similarity scores.
      * <p>
      * A ratio of 0 would mean that only local similarity scores are used. Note that, if one is only interested in local
-     * similarity, {@link WalkinshawLocalScorer} should be used instead, which gives the same result but is much cheaper
-     * in terms of computation. A ratio of 1 would mean that far-away state similarities contribute equally much as
-     * local ones.
+     * similarity, {@link WalkinshawLocalGLTSScorer} should be used instead, which gives the same result but is much
+     * cheaper in terms of computation. A ratio of 1 would mean that far-away state similarities contribute equally much
+     * as local ones.
      * </p>
      * <p>
      * This factor can be tweaked a bit if the comparison results come out unsatisfactory.
@@ -59,10 +59,10 @@ public abstract class WalkinshawScorer<S, T, U extends LTS<S, T>> implements Sim
      */
     protected final double attenuationFactor = 0.6d;
 
-    /** The left-hand-side LTS, which has at least one state. */
+    /** The left-hand-side GLTS, which has at least one state. */
     protected final U lhs;
 
-    /** The right-hand-side LTS, which has at least one state. */
+    /** The right-hand-side GLTS, which has at least one state. */
     protected final U rhs;
 
     /** The combiner for state properties. */
@@ -74,8 +74,8 @@ public abstract class WalkinshawScorer<S, T, U extends LTS<S, T>> implements Sim
     /**
      * Instantiates a new Walkinshaw similarity scorer.
      * 
-     * @param lhs The left-hand-side LTS, which has at least one state.
-     * @param rhs The right-hand-side LTS, which has at least one state.
+     * @param lhs The left-hand-side GLTS, which has at least one state.
+     * @param rhs The right-hand-side GLTS, which has at least one state.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
@@ -160,6 +160,34 @@ public abstract class WalkinshawScorer<S, T, U extends LTS<S, T>> implements Sim
      *     of which are in the range [-1,1], where any negative score indicates an incompatible state pair.
      */
     protected abstract RealMatrix computeBackwardSimilarityScores();
+
+    /**
+     * Gives an adjustment to the numerator of the fractional similarity score equation for the given state pair. This
+     * adjustment, together with {@code #getDenominatorAdjustment}, must ensure that state similarity scores stay within
+     * the range [-1,1].
+     * 
+     * @param leftState A LHS state.
+     * @param rightState A RHS state.
+     * @param Whether the state similarity score equation is for the forward or the backward direction.
+     * @return An adjustment to the numerator of the fractional similarity score equation for the given state pair.
+     */
+    protected double getNumeratorAdjustment(State<S> leftState, State<S> rightState, boolean isForward) {
+        return 0d;
+    }
+
+    /**
+     * Gives an adjustment to the denominator of the fractional similarity score equation for the given state pair. This
+     * adjustment, together with {@code #getNumeratorAdjustment}, must ensure that state similarity scores stay within
+     * the range [-1,1].
+     * 
+     * @param leftState A LHS state.
+     * @param rightState A RHS state.
+     * @param Whether the state similarity score equation is for the forward or the backward direction.
+     * @return An adjustment to the denominator of the fractional similarity score equation for the given state pair.
+     */
+    protected double getDenominatorAdjustment(State<S> leftState, State<S> rightState, boolean isForward) {
+        return 0d;
+    }
 
     /**
      * Counts the number of transitions in {@code first} for which there does not exist any transition in {@code second}

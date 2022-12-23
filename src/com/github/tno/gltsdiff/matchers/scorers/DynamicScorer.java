@@ -18,9 +18,9 @@ import com.github.tno.gltsdiff.glts.LTS;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 
 /**
- * Contains functionality for computing state similarity scores that makes a trade-off between computational intensity
- * and the quality of the computed scores. Different scoring algorithms can be used for different input LTSs, e.g. based
- * on their sizes (numbers of states) from "heavyweight" (for smaller LTSs) to "lightweight" (for larger LTSs).
+ * Scorer that computes state similarity scores that makes a trade-off between computational intensity and the quality
+ * of the computed scores. Different scoring algorithms can be used for different input LTSs, e.g. based on their sizes
+ * (numbers of states) from "heavyweight" (for smaller LTSs) to "lightweight" (for larger LTSs).
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
@@ -91,11 +91,11 @@ public class DynamicScorer<S, T, U extends LTS<S, T>> implements SimilarityScore
         int nrOfStates = Math.max(lhs.size(), rhs.size());
 
         if (nrOfStates <= 45) {
-            return new WalkinshawGlobalScorer<>(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner);
+            return new WalkinshawGlobalLTSScorer<>(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner);
         } else if (nrOfStates <= 500) {
-            return new WalkinshawLocalScorer<>(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner, 5);
+            return new WalkinshawLocalLTSScorer<>(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner, 5);
         } else {
-            return new WalkinshawLocalScorer<>(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner, 1);
+            return new WalkinshawLocalLTSScorer<>(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner, 1);
         }
     }
 
