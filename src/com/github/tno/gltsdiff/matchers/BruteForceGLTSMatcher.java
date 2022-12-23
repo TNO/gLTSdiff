@@ -33,10 +33,11 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 /**
- * A brute force matching algorithm for {@link GLTS GLTSs} that calculates a best possible maximal (LHS, RHS)-state matching. The results are
- * <i>best possible</i> (or optimal) in the sense that matchings are computed with the objective to maximize the number
- * of transitions that would be combined in the final merged GLTS. Or, equivalently, it minimizes the number of
- * uncombined transitions. Moreover, the computed matching is guaranteed not to introduce any tangles.
+ * A brute force matching algorithm for {@link GLTS GLTSs} that calculates a best possible maximal (LHS, RHS)-state
+ * matching. The results are <i>best possible</i> (or optimal) in the sense that matchings are computed with the
+ * objective to maximize the number of transitions that would be combined in the final merged GLTS. Or, equivalently, it
+ * minimizes the number of uncombined transitions. Moreover, the computed matching is guaranteed not to introduce any
+ * tangles.
  * <p>
  * This algorithm explores all the possible choices of relevant state matchings, making it brute force. The worst case
  * time complexity is therefore O(N!) with N = min{|LHS|, |RHS|}, where |LHS| and |RHS| are the number of states in the
@@ -69,7 +70,9 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
-    public BruteForceGLTSMatcher(U lhs, U rhs, Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner) {
+    public BruteForceGLTSMatcher(U lhs, U rhs, Combiner<S> statePropertyCombiner,
+            Combiner<T> transitionPropertyCombiner)
+    {
         this.lhs = lhs;
         this.rhs = rhs;
         this.statePropertyCombiner = statePropertyCombiner;
