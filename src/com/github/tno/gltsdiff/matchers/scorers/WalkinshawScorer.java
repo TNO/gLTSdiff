@@ -21,7 +21,6 @@ import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.util.Pair;
 
 import com.github.tno.gltsdiff.glts.GLTS;
-import com.github.tno.gltsdiff.glts.LTS;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.Transition;
 import com.github.tno.gltsdiff.matchers.Matcher;

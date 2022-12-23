@@ -30,21 +30,25 @@ public class WalkinshawGlobalLTSScorer<S, T, U extends LTS<S, T>> extends Walkin
 
     @Override
     protected double getNumeratorAdjustment(State<S> leftState, State<S> rightState, boolean isForward) {
+        double adjustment = super.getNumeratorAdjustment(leftState, rightState, isForward);
+
         // Adjust the numerator if backward scores are computed and 'leftState' and 'rightState' are both initial.
         if (!isForward && lhs.isInitialState(leftState) && rhs.isInitialState(rightState)) {
-            return 1d;
+            adjustment += 1d;
         }
 
-        return 0d;
+        return adjustment;
     }
 
     @Override
     protected double getDenominatorAdjustment(State<S> leftState, State<S> rightState, boolean isForward) {
+        double adjustment = super.getDenominatorAdjustment(leftState, rightState, isForward);
+
         // Adjust the denominator if backward scores are computed and 'leftState' and/or 'rightState' is initial.
         if (!isForward && (lhs.isInitialState(leftState) || rhs.isInitialState(rightState))) {
-            return 1d;
+            adjustment += 1d;
         }
 
-        return 0d;
+        return adjustment;
     }
 }
