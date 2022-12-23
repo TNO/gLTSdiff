@@ -20,7 +20,7 @@ import org.apache.commons.math3.linear.BlockRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.util.Pair;
 
-import com.github.tno.gltsdiff.glts.LTS;
+import com.github.tno.gltsdiff.glts.GLTS;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.Transition;
 import com.github.tno.gltsdiff.matchers.Matcher;
@@ -41,9 +41,9 @@ import com.google.common.base.Preconditions;
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
- * @param <U> The type of LTSs.
+ * @param <U> The type of GLTSs.
  */
-public abstract class WalkinshawScorer<S, T, U extends LTS<S, T>> implements SimilarityScorer<S, T, U> {
+public abstract class WalkinshawScorer<S, T, U extends GLTS<S, T>> implements SimilarityScorer<S, T, U> {
     /**
      * This is the ratio in the range [0,1] that determines how much the similarity scores of far-away states influence
      * the final similarity scores.
@@ -59,10 +59,10 @@ public abstract class WalkinshawScorer<S, T, U extends LTS<S, T>> implements Sim
      */
     protected final double attenuationFactor = 0.6d;
 
-    /** The left-hand-side LTS, which has at least one state. */
+    /** The left-hand-side GLTS, which has at least one state. */
     protected final U lhs;
 
-    /** The right-hand-side LTS, which has at least one state. */
+    /** The right-hand-side GLTS, which has at least one state. */
     protected final U rhs;
 
     /** The combiner for state properties. */
@@ -74,8 +74,8 @@ public abstract class WalkinshawScorer<S, T, U extends LTS<S, T>> implements Sim
     /**
      * Instantiates a new Walkinshaw similarity scorer.
      * 
-     * @param lhs The left-hand-side LTS, which has at least one state.
-     * @param rhs The right-hand-side LTS, which has at least one state.
+     * @param lhs The left-hand-side GLTS, which has at least one state.
+     * @param rhs The right-hand-side GLTS, which has at least one state.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
