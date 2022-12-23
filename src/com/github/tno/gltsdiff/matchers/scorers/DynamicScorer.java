@@ -14,23 +14,23 @@ import java.util.function.BiFunction;
 
 import org.apache.commons.math3.linear.RealMatrix;
 
-import com.github.tno.gltsdiff.glts.LTS;
+import com.github.tno.gltsdiff.glts.GLTS;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 
 /**
  * Scorer that computes state similarity scores that makes a trade-off between computational intensity and the quality
- * of the computed scores. Different scoring algorithms can be used for different input LTSs, e.g. based on their sizes
- * (numbers of states) from "heavyweight" (for smaller LTSs) to "lightweight" (for larger LTSs).
+ * of the computed scores. Different scoring algorithms can be used for different input GLTSs, e.g. based on their sizes
+ * (numbers of states) from "heavyweight" (for smaller GLTSs) to "lightweight" (for larger GLTSs).
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
- * @param <U> The type of LTSs.
+ * @param <U> The type of GLTSs.
  */
-public class DynamicScorer<S, T, U extends LTS<S, T>> implements SimilarityScorer<S, T, U> {
-    /** The left-hand-side LTS, which has at least one state. */
+public class DynamicScorer<S, T, U extends GLTS<S, T>> implements SimilarityScorer<S, T, U> {
+    /** The left-hand-side GLTS, which has at least one state. */
     protected final U lhs;
 
-    /** The right-hand-side LTS, which has at least one state. */
+    /** The right-hand-side GLTS, which has at least one state. */
     protected final U rhs;
 
     /** The combiner for state properties. */
@@ -39,14 +39,14 @@ public class DynamicScorer<S, T, U extends LTS<S, T>> implements SimilarityScore
     /** The combiner for transition properties. */
     protected final Combiner<T> transitionPropertyCombiner;
 
-    /** The scoring algorithm creator. Given the input LTSs and appropriate combiners, creates a suitable algorithm. */
+    /** The scoring algorithm creator. Given the input GLTSs and appropriate combiners, creates a suitable algorithm. */
     private final BiFunction<U, U, BiFunction<Combiner<S>, Combiner<T>, SimilarityScorer<S, T, U>>> scoringAlgorithmCreator;
 
     /**
      * Instantiates a new dynamic scoring algorithm, that uses a default configuration of scoring algorithms.
      * 
-     * @param lhs The left-hand-side LTS, which has at least one state.
-     * @param rhs The right-hand-side LTS, which has at least one state.
+     * @param lhs The left-hand-side GLTS, which has at least one state.
+     * @param rhs The right-hand-side GLTS, which has at least one state.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
@@ -58,11 +58,11 @@ public class DynamicScorer<S, T, U extends LTS<S, T>> implements SimilarityScore
     /**
      * Instantiates a new dynamic scoring algorithm.
      * 
-     * @param lhs The left-hand-side LTS, which has at least one state.
-     * @param rhs The right-hand-side LTS, which has at least one state.
+     * @param lhs The left-hand-side GLTS, which has at least one state.
+     * @param rhs The right-hand-side GLTS, which has at least one state.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
-     * @param scoringAlgorithmCreator The scoring algorithm creator. Given the input LTSs and appropriate combiners,
+     * @param scoringAlgorithmCreator The scoring algorithm creator. Given the input GLTSs and appropriate combiners,
      *     creates a suitable algorithm.
      */
     public DynamicScorer(U lhs, U rhs, Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner,
@@ -85,17 +85,17 @@ public class DynamicScorer<S, T, U extends LTS<S, T>> implements SimilarityScore
         return rhs;
     }
 
-    private static final <S, T, U extends LTS<S, T>> SimilarityScorer<S, T, U> defaultScoringAlgorithmCreator(U lhs,
+    private static final <S, T, U extends GLTS<S, T>> SimilarityScorer<S, T, U> defaultScoringAlgorithmCreator(U lhs,
             U rhs, Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner)
     {
         int nrOfStates = Math.max(lhs.size(), rhs.size());
 
         if (nrOfStates <= 45) {
-            return new WalkinshawGlobalLTSScorer<>(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner);
+            return new WalkinshawGlobalGLTSScorer<>(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner);
         } else if (nrOfStates <= 500) {
-            return new WalkinshawLocalLTSScorer<>(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner, 5);
+            return new WalkinshawLocalGLTSScorer<>(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner, 5);
         } else {
-            return new WalkinshawLocalLTSScorer<>(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner, 1);
+            return new WalkinshawLocalGLTSScorer<>(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner, 1);
         }
     }
 
