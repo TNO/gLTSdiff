@@ -30,10 +30,10 @@ import com.github.tno.gltsdiff.operators.combiners.Combiner;
  */
 public class DynamicGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matcher<S, T, U> {
     /** The left-hand-side GLTS. */
-    private final U lhs;
+    protected final U lhs;
 
     /** The right-hand-side GLTS. */
-    private final U rhs;
+    protected final U rhs;
 
     /** The combiner for state properties. */
     protected final Combiner<S> statePropertyCombiner;
