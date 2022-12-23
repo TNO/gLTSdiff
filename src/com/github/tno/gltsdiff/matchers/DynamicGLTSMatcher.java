@@ -28,7 +28,7 @@ import com.github.tno.gltsdiff.operators.combiners.Combiner;
  * @param <T> The type of transition properties.
  * @param <U> The type of GLTSs.
  */
-public class DynamicMatcher<S, T, U extends GLTS<S, T>> implements Matcher<S, T, U> {
+public class DynamicGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matcher<S, T, U> {
     /** The left-hand-side GLTS. */
     private final U lhs;
 
@@ -54,7 +54,7 @@ public class DynamicMatcher<S, T, U extends GLTS<S, T>> implements Matcher<S, T,
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
-    public DynamicMatcher(U lhs, U rhs, Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner) {
+    public DynamicGLTSMatcher(U lhs, U rhs, Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner) {
         this(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner,
                 (l, r) -> (s, t) -> defaultMatchingAlgorithmCreator(l, r, s, t));
     }
@@ -69,7 +69,7 @@ public class DynamicMatcher<S, T, U extends GLTS<S, T>> implements Matcher<S, T,
      * @param matchingAlgorithmCreator The matching algorithm creator. Given the input GLTSs and appropriate combiners,
      *     creates a suitable algorithm.
      */
-    public DynamicMatcher(U lhs, U rhs, Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner,
+    public DynamicGLTSMatcher(U lhs, U rhs, Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner,
             BiFunction<U, U, BiFunction<Combiner<S>, Combiner<T>, Matcher<S, T, U>>> matchingAlgorithmCreator)
     {
         this.lhs = lhs;
