@@ -23,30 +23,32 @@ import java.util.stream.Stream;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.util.Pair;
 
-import com.github.tno.gltsdiff.glts.LTS;
+import com.github.tno.gltsdiff.glts.GLTS;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.matchers.scorers.SimilarityScorer;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.utils.GLTSUtils;
 import com.github.tno.gltsdiff.utils.Maps;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
 
 /**
- * Functionality for computing (LHS, RHS)-state matchings based on heuristics proposed by Walkinshaw et al. (TOSEM 2013;
- * see Section 4.3.1). However, this implementation has been generalized with respect to the approach of Walkinshaw et
- * al. by a more general notion of combinability (see {@link Combiner}). Transitions are now considered to be "common"
- * if they have combinable properties, rather than the stronger condition that they must be equal.
+ * Functionality for computing (LHS, RHS)-state matchings for {@link GLTS GLTSs} based on heuristics proposed by
+ * Walkinshaw et al. (TOSEM 2013; see Section 4.3.1). However, this implementation has been generalized with respect to
+ * the approach of Walkinshaw et al. by a more general notion of combinability (see {@link Combiner}). Transitions are
+ * now considered to be "common" if they have combinable properties, rather than the stronger condition that they must
+ * be equal.
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
- * @param <U> The type of LTSs.
+ * @param <U> The type of GLTSs.
  */
-public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher<S, T, U> {
-    /** The left-hand-side LTS. */
-    private final U lhs;
+public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatcher<S, T, U> {
+    /** The left-hand-side GLTS. */
+    protected final U lhs;
 
-    /** The right-hand-side LTS. */
-    private final U rhs;
+    /** The right-hand-side GLTS. */
+    protected final U rhs;
 
     /**
      * Of all the possible pairs of (LHS, RHS)-states, Walkinshaw et al. propose the heuristic to only consider the top
@@ -79,15 +81,15 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
     private final Combiner<T> transitionPropertyCombiner;
 
     /**
-     * Instantiates a new Walkinshaw matcher.
+     * Instantiates a new Walkinshaw matcher for GLTSs.
      * 
-     * @param lhs The left-hand-side LTS.
-     * @param rhs The right-hand-side LTS.
+     * @param lhs The left-hand-side GLTS.
+     * @param rhs The right-hand-side GLTS.
      * @param scoring The algorithm for computing state similarity scores.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
-    public WalkinshawMatcher(U lhs, U rhs, SimilarityScorer<S, T, U> scoring, Combiner<S> statePropertyCombiner,
+    public WalkinshawGLTSMatcher(U lhs, U rhs, SimilarityScorer<S, T, U> scoring, Combiner<S> statePropertyCombiner,
             Combiner<T> transitionPropertyCombiner)
     {
         super(scoring);
@@ -206,41 +208,24 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
             }
         }
 
-        // It might be that, at this point, no landmarks have been found. If that is the case, try to identify a
-        // "fallback" landmark that is defined as the pair of best scoring initial states.
-
+        // It might be that no landmarks were found. In that case, try to identify fallback landmarks.
         if (landmarks.isEmpty()) {
-            // Iterate over all combinations of initial states, and keep track of the highest scoring combination.
-            Pair<State<S>, State<S>> bestCurrentPair = null;
-
-            for (State<S> leftInitialState: lhs.getInitialStates()) {
-                for (State<S> rightInitialState: rhs.getInitialStates()) {
-                    Pair<State<S>, State<S>> pair = Pair.create(leftInitialState, rightInitialState);
-
-                    if (!isCompatible(pair, scores)) {
-                        continue;
-                    }
-
-                    if (bestCurrentPair == null) {
-                        bestCurrentPair = pair;
-                    }
-
-                    if (scores.apply(pair.getFirst(), pair.getSecond()) > scores.apply(bestCurrentPair.getFirst(),
-                            bestCurrentPair.getSecond()))
-                    {
-                        bestCurrentPair = pair;
-                    }
-                }
-            }
-
-            // If there turns out to be a highest scoring pair of compatible initial (LHS, RHS)-states,
-            // then that will be our landmark. (Otherwise the final merged LTS shall not contain any combined states.)
-            if (bestCurrentPair != null) {
-                landmarks.add(bestCurrentPair);
-            }
+            landmarks.addAll(getFallbackLandmarks(scores));
         }
 
         return landmarks;
+    }
+
+    /**
+     * Gives a set of fallback landmarks, which is used in case no ordinary landmark can be found.
+     * 
+     * @param scores A scoring function that expresses for all (LHS, RHS)-state pairs how structurally similar they are.
+     *     All state similarity scores must either be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
+     * @return A set of non-{@code null} fallback landmarks. These fallback landmarks are guaranteed not to overlap (any
+     *     LHS/RHS state is involved in at most one landmark), and be compatible according to {@link #isCompatible}.
+     */
+    protected Set<Pair<State<S>, State<S>>> getFallbackLandmarks(BiFunction<State<S>, State<S>, Double> scores) {
+        return ImmutableSet.of();
     }
 
     /**
@@ -343,7 +328,7 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
 
     /**
      * Given a set of landmarks, determines which (LHS, RHS)-states should be matched to one another. These matched
-     * states can then later be merged into a single state when computing the final merged LTS.
+     * states can then later be merged into a single state when computing the final merged GLTS.
      * <p>
      * More details about the algorithm and its heuristics can be found on page 17 in the article of Walkinshaw et al.,
      * in particular Algorithm 1 and the accompanying explanation.
@@ -413,7 +398,7 @@ public class WalkinshawMatcher<S, T, U extends LTS<S, T>> extends ScoringMatcher
      *     be {@link Double#POSITIVE_INFINITY}.
      * @return {@code true} if the given state pair is compatible, {@code false} otherwise.
      */
-    private boolean isCompatible(Pair<State<S>, State<S>> statePair, BiFunction<State<S>, State<S>, Double> scores) {
+    protected boolean isCompatible(Pair<State<S>, State<S>> statePair, BiFunction<State<S>, State<S>, Double> scores) {
         State<S> leftState = statePair.getFirst();
         State<S> rightState = statePair.getSecond();
 

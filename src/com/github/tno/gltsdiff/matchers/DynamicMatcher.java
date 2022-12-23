@@ -94,7 +94,7 @@ public class DynamicMatcher<S, T, U extends LTS<S, T>> implements Matcher<S, T, 
                 transitionPropertyCombiner);
 
         if (lhs.size() > 45 || rhs.size() > 45) {
-            return new WalkinshawMatcher<>(lhs, rhs, scorer, statePropertyCombiner, transitionPropertyCombiner);
+            return new WalkinshawLTSMatcher<>(lhs, rhs, scorer, statePropertyCombiner, transitionPropertyCombiner);
         } else {
             return new KuhnMunkresMatcher<>(lhs, rhs, scorer, statePropertyCombiner);
         }
