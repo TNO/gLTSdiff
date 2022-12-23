@@ -38,7 +38,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 /**
- * Contains functionality for computing global similarity scores for pairs of (LHS, RHS)-states. These scores are
+ * Contains functionality for computing global similarity scores for pairs of (LHS, RHS)-states in {@link GLTS GLTSs}. These scores are
  * computed by transforming the problem of finding global similarity scores to a problem of solving a system of linear
  * equations, as proposed by Walkinshaw et al. in their TOSEM 2013 article. However, this implementation generalizes the
  * approach of Walkinshaw et al. by a more general concept of combinability (see {@link Combiner}).
@@ -59,7 +59,7 @@ import com.google.common.collect.HashBiMap;
  */
 public class WalkinshawGlobalGLTSScorer<S, T, U extends GLTS<S, T>> extends WalkinshawScorer<S, T, U> {
     /**
-     * Instantiates a new Walkinshaw global scorer.
+     * Instantiates a new Walkinshaw global scorer for GLTSs.
      * 
      * @param lhs The left-hand-side GLTS, which has at least one state.
      * @param rhs The right-hand-side GLTS, which has at least one state.
