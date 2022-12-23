@@ -91,7 +91,7 @@ public class DynamicScorer<S, T, U extends LTS<S, T>> implements SimilarityScore
         int nrOfStates = Math.max(lhs.size(), rhs.size());
 
         if (nrOfStates <= 45) {
-            return new WalkinshawGlobalGLTSScorer<>(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner);
+            return new WalkinshawGlobalLTSScorer<>(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner);
         } else if (nrOfStates <= 500) {
             return new WalkinshawLocalLTSScorer<>(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner, 5);
         } else {

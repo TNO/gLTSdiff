@@ -38,10 +38,11 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 /**
- * Contains functionality for computing global similarity scores for pairs of (LHS, RHS)-states in {@link GLTS GLTSs}. These scores are
- * computed by transforming the problem of finding global similarity scores to a problem of solving a system of linear
- * equations, as proposed by Walkinshaw et al. in their TOSEM 2013 article. However, this implementation generalizes the
- * approach of Walkinshaw et al. by a more general concept of combinability (see {@link Combiner}).
+ * Contains functionality for computing global similarity scores for pairs of (LHS, RHS)-states in {@link GLTS GLTSs}.
+ * These scores are computed by transforming the problem of finding global similarity scores to a problem of solving a
+ * system of linear equations, as proposed by Walkinshaw et al. in their TOSEM 2013 article. However, this
+ * implementation generalizes the approach of Walkinshaw et al. by a more general concept of combinability (see
+ * {@link Combiner}).
  * <p>
  * Note that, since computing global similarity scores requires solving systems of linear equations, the complexity of
  * this computation is about O((|LHS|*|RHS|)^3), with |LHS| and |RHS| the number of states in the LHS and RHS,
@@ -49,8 +50,8 @@ import com.google.common.collect.HashBiMap;
  * instead, like for example {@link WalkinshawLocalGLTSScorer}.
  * </p>
  * <p>
- * However, {@link WalkinshawGlobalGLTSScorer} has shown to perform well in practice even with big GLTSs (say, a few dozens
- * of states each) as long as they are sparse. That is, as long as states typically only have a few neighbors.
+ * However, {@link WalkinshawGlobalGLTSScorer} has shown to perform well in practice even with big GLTSs (say, a few
+ * dozens of states each) as long as they are sparse. That is, as long as states typically only have a few neighbors.
  * </p>
  *
  * @param <S> The type of state properties.
