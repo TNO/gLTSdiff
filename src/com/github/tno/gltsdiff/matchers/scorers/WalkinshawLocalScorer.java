@@ -188,21 +188,11 @@ public class WalkinshawLocalScorer<S, T, U extends GLTS<S, T>> extends Walkinsha
 
         // First calculate its denominator. Details are in the paper.
 
-        // If 'leftState' and/or 'rightState' is initial and if initial state arrows should be accounted for,
-        // then adjust the denominator by 'initialStateAdjustment' to indicate that there are initial states.
-        boolean isLeftStateInitial = lhs.isInitialState(leftState);
-        boolean isRightStateInitial = rhs.isInitialState(rightState);
-        int initialStateAdjustment = 0;
-
-        if (accountForInitialStateArrows && (isLeftStateInitial || isRightStateInitial)) {
-            initialStateAdjustment = 1;
-        }
-
         // Note that, with respect to the original paper we change the notion of transition properties
         // "that do not match each other" to be transition properties "that do not combine with each other".
-        long denominator = 2 * (numberOfUncombinableTransitions(leftTransitions, rightTransitions)
+        double denominator = 2 * (numberOfUncombinableTransitions(leftTransitions, rightTransitions)
                 + numberOfUncombinableTransitions(rightTransitions, leftTransitions) + neighbors.size()
-                + initialStateAdjustment);
+                + getDenominatorAdjustment(leftState, rightState));
 
         // Shortcut to improve performance.
         if (denominator == 0) {
@@ -210,7 +200,7 @@ public class WalkinshawLocalScorer<S, T, U extends GLTS<S, T>> extends Walkinsha
         }
 
         // Second, calculate its numerator. Details are in the paper.
-        double numerator = 0;
+        double numerator = getNumeratorAdjustment(leftState, rightState);
 
         for (Pair<State<S>, State<S>> neighbor: neighbors) {
             int lhsIdx = neighbor.getFirst().getId();
@@ -218,13 +208,33 @@ public class WalkinshawLocalScorer<S, T, U extends GLTS<S, T>> extends Walkinsha
             numerator += 1d + attenuationFactor * scores.getEntry(lhsIdx, rhsIdx);
         }
 
-        // If initial state arrows should be accounted for and if 'leftState' and 'rightState' are both initial,
-        // then increase the numerator by 1 to increase the similarity score for this state pair.
-        if (accountForInitialStateArrows && isLeftStateInitial && isRightStateInitial) {
-            numerator += 1d;
-        }
-
         // Calculate the new score.
         return numerator / denominator;
+    }
+
+    /**
+     * Gives an adjustment to the numerator of the fractional similarity score equation for the given state pair. This
+     * adjustment, together with {@code #getDenominatorAdjustment}, must ensure that state similarity scores stay within
+     * the range [-1,1].
+     * 
+     * @param leftState A LHS state.
+     * @param rightState A RHS state.
+     * @return An adjustment to the numerator of the fractional similarity score equation for the given state pair.
+     */
+    protected double getNumeratorAdjustment(State<S> leftState, State<S> rightState) {
+        return 0d;
+    }
+
+    /**
+     * Gives an adjustment to the denominator of the fractional similarity score equation for the given state pair. This
+     * adjustment, together with {@code #getNumeratorAdjustment}, must ensure that state similarity scores stay within
+     * the range [-1,1].
+     * 
+     * @param leftState A LHS state.
+     * @param rightState A RHS state.
+     * @return An adjustment to the denominator of the fractional similarity score equation for the given state pair.
+     */
+    protected double getDenominatorAdjustment(State<S> leftState, State<S> rightState) {
+        return 0d;
     }
 }
