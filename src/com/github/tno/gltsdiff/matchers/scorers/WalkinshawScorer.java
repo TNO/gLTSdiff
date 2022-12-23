@@ -191,54 +191,6 @@ public abstract class WalkinshawScorer<S, T, U extends GLTS<S, T>> implements Si
     }
 
     /**
-     * A default adjustment to the numerator of state similarity scores for LTSs, that takes initial state information
-     * into account.
-     * 
-     * @param <S> The type of state properties.
-     * @param <T> The type of transition properties.
-     * @param lhs The left-hand-side LTS.
-     * @param rhs The right-hand-side LTS.
-     * @param leftState A state of {@code lhs}.
-     * @param rightState A state of {@code rhs}.
-     * @param isForward Whether the state similarity score equation is for the forward or the backward direction.
-     * @return An adjustment to the numerator of the fractional similarity score equation for the given state pair.
-     */
-    protected static <S, T> double getDefaultNumeratorAdjustmentForLTSs(LTS<S, T> lhs, LTS<S, T> rhs,
-            State<S> leftState, State<S> rightState, boolean isForward)
-    {
-        // Adjust the numerator if backward scores are computed and 'leftState' and 'rightState' are both initial.
-        if (!isForward && lhs.isInitialState(leftState) && rhs.isInitialState(rightState)) {
-            return 1d;
-        }
-
-        return 0d;
-    }
-
-    /**
-     * A default adjustment to the denominator of state similarity scores for LTSs, that takes initial state information
-     * into account.
-     * 
-     * @param <S> The type of state properties.
-     * @param <T> The type of transition properties.
-     * @param lhs The left-hand-side LTS.
-     * @param rhs The right-hand-side LTS.
-     * @param leftState A state of {@code lhs}.
-     * @param rightState A state of {@code rhs}.
-     * @param isForward Whether the state similarity score equation is for the forward or the backward direction.
-     * @return An adjustment to the denominator of the fractional similarity score equation for the given state pair.
-     */
-    protected static <S, T> double getDefaultDenominatorAdjustmentForLTSs(LTS<S, T> lhs, LTS<S, T> rhs,
-            State<S> leftState, State<S> rightState, boolean isForward)
-    {
-        // Adjust the denominator if backward scores are computed and 'leftState' and/or 'rightState' is initial.
-        if (!isForward && (lhs.isInitialState(leftState) || rhs.isInitialState(rightState))) {
-            return 1d;
-        }
-
-        return 0d;
-    }
-
-    /**
      * Counts the number of transitions in {@code first} for which there does not exist any transition in {@code second}
      * with a transition property that is combinable.
      * 

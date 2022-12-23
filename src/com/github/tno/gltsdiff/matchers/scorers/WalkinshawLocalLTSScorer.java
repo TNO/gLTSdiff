@@ -45,11 +45,21 @@ public class WalkinshawLocalLTSScorer<S, T, U extends LTS<S, T>> extends Walkins
 
     @Override
     protected double getNumeratorAdjustment(State<S> leftState, State<S> rightState, boolean isForward) {
-        return getDefaultNumeratorAdjustmentForLTSs(lhs, rhs, leftState, rightState, isForward);
+        // Adjust the numerator if backward scores are computed and 'leftState' and 'rightState' are both initial.
+        if (!isForward && lhs.isInitialState(leftState) && rhs.isInitialState(rightState)) {
+            return 1d;
+        }
+
+        return 0d;
     }
 
     @Override
     protected double getDenominatorAdjustment(State<S> leftState, State<S> rightState, boolean isForward) {
-        return getDefaultDenominatorAdjustmentForLTSs(lhs, rhs, leftState, rightState, isForward);
+        // Adjust the denominator if backward scores are computed and 'leftState' and/or 'rightState' is initial.
+        if (!isForward && (lhs.isInitialState(leftState) || rhs.isInitialState(rightState))) {
+            return 1d;
+        }
+
+        return 0d;
     }
 }
