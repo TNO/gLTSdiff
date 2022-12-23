@@ -21,6 +21,7 @@ import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.util.Pair;
 
 import com.github.tno.gltsdiff.glts.GLTS;
+import com.github.tno.gltsdiff.glts.LTS;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.Transition;
 import com.github.tno.gltsdiff.matchers.Matcher;
@@ -186,6 +187,52 @@ public abstract class WalkinshawScorer<S, T, U extends GLTS<S, T>> implements Si
      * @return An adjustment to the denominator of the fractional similarity score equation for the given state pair.
      */
     protected double getDenominatorAdjustment(State<S> leftState, State<S> rightState, boolean isForward) {
+        return 0d;
+    }
+
+    /**
+     * A default adjustment to the numerator of state similarity scores for LTSs.
+     * 
+     * @param <S> The type of state properties.
+     * @param <T> The type of transition properties.
+     * @param lhs The left-hand-side LTS.
+     * @param rhs The right-hand-side LTS.
+     * @param leftState A state of {@code lhs}.
+     * @param rightState A state of {@code rhs}.
+     * @param isForward Whether the state similarity score equation is for the forward or the backward direction.
+     * @return An adjustment to the numerator of the fractional similarity score equation for the given state pair.
+     */
+    protected static <S, T> double getDefaultNumeratorAdjustmentForLTSs(LTS<S, T> lhs, LTS<S, T> rhs,
+            State<S> leftState, State<S> rightState, boolean isForward)
+    {
+        // Adjust the numerator if backward scores are computed and 'leftState' and 'rightState' are both initial.
+        if (!isForward && lhs.isInitialState(leftState) && rhs.isInitialState(rightState)) {
+            return 1d;
+        }
+
+        return 0d;
+    }
+
+    /**
+     * A default adjustment to the denominator of state similarity scores for LTSs.
+     * 
+     * @param <S> The type of state properties.
+     * @param <T> The type of transition properties.
+     * @param lhs The left-hand-side LTS.
+     * @param rhs The right-hand-side LTS.
+     * @param leftState A state of {@code lhs}.
+     * @param rightState A state of {@code rhs}.
+     * @param isForward Whether the state similarity score equation is for the forward or the backward direction.
+     * @return An adjustment to the denominator of the fractional similarity score equation for the given state pair.
+     */
+    protected static <S, T> double getDefaultDenominatorAdjustmentForLTSs(LTS<S, T> lhs, LTS<S, T> rhs,
+            State<S> leftState, State<S> rightState, boolean isForward)
+    {
+        // Adjust the denominator if backward scores are computed and 'leftState' and/or 'rightState' is initial.
+        if (!isForward && (lhs.isInitialState(leftState) || rhs.isInitialState(rightState))) {
+            return 1d;
+        }
+
         return 0d;
     }
 
