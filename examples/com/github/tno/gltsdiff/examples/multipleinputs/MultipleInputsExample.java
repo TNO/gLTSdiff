@@ -8,7 +8,7 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.test;
+package com.github.tno.gltsdiff.examples.multipleinputs;
 
 import java.io.IOException;
 import java.util.Set;
@@ -22,7 +22,7 @@ import com.github.tno.gltsdiff.glts.AutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.SimpleAutomaton;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.Transition;
-import com.github.tno.gltsdiff.matchers.BruteForceMatcher;
+import com.github.tno.gltsdiff.matchers.BruteForceLTSMatcher;
 import com.github.tno.gltsdiff.mergers.DefaultMerger;
 import com.github.tno.gltsdiff.operators.combiners.AutomatonStatePropertyCombiner;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
@@ -35,9 +35,9 @@ import com.github.tno.gltsdiff.operators.printers.StringHtmlPrinter;
 import com.github.tno.gltsdiff.writers.AutomatonDotWriter;
 import com.google.common.collect.ImmutableSet;
 
-public class FeatureModelTest {
+public class MultipleInputsExample {
     public static void main(String[] args) throws IOException {
-        // Create the first automaton to compare.
+        // Create the first input automaton to compare.
         SimpleAutomaton<Pair<String, Set<Integer>>> first = new SimpleAutomaton<>();
         State<AutomatonStateProperty> f1 = first.addState(false);
         State<AutomatonStateProperty> f2 = first.addState(false);
@@ -46,7 +46,7 @@ public class FeatureModelTest {
         first.addTransition(f2, Pair.create("b", ImmutableSet.of(1)), f3);
         first.addTransition(f3, Pair.create("c", ImmutableSet.of(1)), f1);
 
-        // Create the second automaton to compare.
+        // Create the second input automaton to compare.
         SimpleAutomaton<Pair<String, Set<Integer>>> second = new SimpleAutomaton<>();
         State<AutomatonStateProperty> s1 = second.addState(false);
         State<AutomatonStateProperty> s2 = second.addState(false);
@@ -56,7 +56,7 @@ public class FeatureModelTest {
         second.addTransition(s3, Pair.create("c", ImmutableSet.of(2)), s1);
         second.addTransition(s3, Pair.create("d", ImmutableSet.of(2)), s1);
 
-        // Create the third automaton to compare.
+        // Create the third input automaton to compare.
         SimpleAutomaton<Pair<String, Set<Integer>>> third = new SimpleAutomaton<>();
         State<AutomatonStateProperty> t1 = third.addState(false);
         State<AutomatonStateProperty> t2 = third.addState(false);
@@ -76,7 +76,7 @@ public class FeatureModelTest {
         BinaryOperator<SimpleAutomaton<Pair<String, Set<Integer>>>> compare = (
                 left, right
         ) -> new StructureComparator<>(left, right,
-                new BruteForceMatcher<>(left, right, statePropertyCombiner, transitionPropertyCombiner),
+                new BruteForceLTSMatcher<>(left, right, statePropertyCombiner, transitionPropertyCombiner),
                 new DefaultMerger<>(left, right, statePropertyCombiner, transitionPropertyCombiner,
                         SimpleAutomaton::new)).compare();
 
@@ -84,10 +84,11 @@ public class FeatureModelTest {
         SimpleAutomaton<Pair<String, Set<Integer>>> result = Stream.of(first, second, third).reduce(compare).get();
 
         // Prepare DOT (HTML) printers for printing the result.
-        HtmlPrinter<Set<Integer>> setPrinter = new SetHtmlPrinter<>(new StringHtmlPrinter<>(), (l, r) -> l + "," + r);
-        HtmlPrinter<Pair<String, Set<Integer>>> pairPrinter = pair -> pair.getFirst() + "<br/>" + "{"
-                + setPrinter.print(pair.getSecond()) + "}";
-        HtmlPrinter<Transition<AutomatonStateProperty, Pair<String, Set<Integer>>>> printer = transition -> pairPrinter
+        HtmlPrinter<Set<Integer>> versionSetPrinter = new SetHtmlPrinter<>(new StringHtmlPrinter<>(),
+                (l, r) -> l + "," + r);
+        HtmlPrinter<Pair<String, Set<Integer>>> transitionPropertyPrinter = pair -> pair.getFirst() + "<br/>" + "{"
+                + versionSetPrinter.print(pair.getSecond()) + "}";
+        HtmlPrinter<Transition<AutomatonStateProperty, Pair<String, Set<Integer>>>> printer = transition -> transitionPropertyPrinter
                 .print(transition.getProperty());
 
         // Print the result to the console, in DOT format.
