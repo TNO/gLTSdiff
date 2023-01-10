@@ -8,7 +8,7 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.test;
+package com.github.tno.gltsdiff.examples.multipleinputs;
 
 import java.io.IOException;
 import java.util.Set;
