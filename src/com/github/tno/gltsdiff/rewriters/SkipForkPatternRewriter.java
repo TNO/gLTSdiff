@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-// Copyright (c) 2021-2022 Contributors to the GitHub community
+// Copyright (c) 2021-2023 Contributors to the GitHub community
 //
 // This program and the accompanying materials are made available
 // under the terms of the MIT License which is available at
