@@ -30,7 +30,7 @@ import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;
 import com.github.tno.gltsdiff.operators.combiners.PairCombiner;
 import com.github.tno.gltsdiff.operators.combiners.SetCombiner;
 import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
-import com.github.tno.gltsdiff.operators.printers.SetHtmlPrinter;
+import com.github.tno.gltsdiff.operators.printers.SetAccumulatingHtmlPrinter;
 import com.github.tno.gltsdiff.operators.printers.StringHtmlPrinter;
 import com.github.tno.gltsdiff.writers.AutomatonDotWriter;
 import com.google.common.collect.ImmutableSet;
@@ -84,7 +84,7 @@ public class MultipleInputsExample {
         SimpleAutomaton<Pair<String, Set<Integer>>> result = Stream.of(first, second, third).reduce(compare).get();
 
         // Prepare DOT (HTML) printers for printing the result.
-        HtmlPrinter<Set<Integer>> versionSetPrinter = new SetHtmlPrinter<>(new StringHtmlPrinter<>(),
+        HtmlPrinter<Set<Integer>> versionSetPrinter = new SetAccumulatingHtmlPrinter<>(new StringHtmlPrinter<>(),
                 (l, r) -> l + "," + r);
         HtmlPrinter<Pair<String, Set<Integer>>> transitionPropertyPrinter = pair -> pair.getFirst() + "<br/>" + "{"
                 + versionSetPrinter.print(pair.getSecond()) + "}";
