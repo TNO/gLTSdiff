@@ -16,11 +16,11 @@ import java.util.function.BinaryOperator;
 import com.google.common.base.Preconditions;
 
 /**
- * An HTML printer for sets of properties.
+ * An HTML printer for sets of properties, by means of accumulating printed elements.
  *
  * @param <T> The type of properties.
  */
-public class SetHtmlPrinter<T> implements HtmlPrinter<Set<T>> {
+public class SetAccumulatingHtmlPrinter<T> implements HtmlPrinter<Set<T>> {
     /** The printer for properties. */
     private final HtmlPrinter<T> propertyPrinter;
 
@@ -32,7 +32,7 @@ public class SetHtmlPrinter<T> implements HtmlPrinter<Set<T>> {
      * 
      * @param propertyPrinter The printer for properties.
      */
-    public SetHtmlPrinter(HtmlPrinter<T> propertyPrinter) {
+    public SetAccumulatingHtmlPrinter(HtmlPrinter<T> propertyPrinter) {
         this(propertyPrinter, (left, right) -> left + " " + right);
     }
 
@@ -42,7 +42,7 @@ public class SetHtmlPrinter<T> implements HtmlPrinter<Set<T>> {
      * @param propertyPrinter The printer for properties.
      * @param accumulator The accumulator for printed properties.
      */
-    public SetHtmlPrinter(HtmlPrinter<T> propertyPrinter, BinaryOperator<String> accumulator) {
+    public SetAccumulatingHtmlPrinter(HtmlPrinter<T> propertyPrinter, BinaryOperator<String> accumulator) {
         this.propertyPrinter = propertyPrinter;
         this.accumulator = accumulator;
     }
