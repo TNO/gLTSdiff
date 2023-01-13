@@ -20,7 +20,7 @@ import com.google.common.base.Preconditions;
  *
  * @param <T> The type of properties.
  */
-public class SetJoinHtmlPrinter<T> implements HtmlPrinter<Set<T>> {
+public class SetHtmlPrinter<T> implements HtmlPrinter<Set<T>> {
     /** The printer for properties. */
     private final HtmlPrinter<T> propertyPrinter;
 
@@ -39,7 +39,7 @@ public class SetJoinHtmlPrinter<T> implements HtmlPrinter<Set<T>> {
      * 
      * @param propertyPrinter The printer for properties.
      */
-    public SetJoinHtmlPrinter(HtmlPrinter<T> propertyPrinter) {
+    public SetHtmlPrinter(HtmlPrinter<T> propertyPrinter) {
         this(propertyPrinter, ", ", "{", "}");
     }
 
@@ -51,7 +51,7 @@ public class SetJoinHtmlPrinter<T> implements HtmlPrinter<Set<T>> {
      * @param prefix The prefix, as HTML.
      * @param suffix The suffix, as HTML.
      */
-    public SetJoinHtmlPrinter(HtmlPrinter<T> propertyPrinter, String delimiter, String prefix, String suffix) {
+    public SetHtmlPrinter(HtmlPrinter<T> propertyPrinter, String delimiter, String prefix, String suffix) {
         this.propertyPrinter = propertyPrinter;
         this.delimiter = delimiter;
         this.prefix = prefix;
