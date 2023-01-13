@@ -24,11 +24,11 @@ public class SetHtmlPrinter<T> implements HtmlPrinter<Set<T>> {
     /** The printer for properties. */
     private final HtmlPrinter<T> propertyPrinter;
 
-    /** The delimiter, as HTML. */
-    private final String delimiter;
-
     /** The prefix, as HTML. */
     private final String prefix;
+
+    /** The delimiter, as HTML. */
+    private final String delimiter;
 
     /** The suffix, as HTML. */
     private final String suffix;
@@ -40,21 +40,21 @@ public class SetHtmlPrinter<T> implements HtmlPrinter<Set<T>> {
      * @param propertyPrinter The printer for properties.
      */
     public SetHtmlPrinter(HtmlPrinter<T> propertyPrinter) {
-        this(propertyPrinter, ", ", "{", "}");
+        this(propertyPrinter, "{", ", ", "}");
     }
 
     /**
      * Instantiates a new property set printer.
      * 
      * @param propertyPrinter The printer for properties.
-     * @param delimiter The delimiter, as HTML.
      * @param prefix The prefix, as HTML.
+     * @param delimiter The delimiter, as HTML.
      * @param suffix The suffix, as HTML.
      */
-    public SetHtmlPrinter(HtmlPrinter<T> propertyPrinter, String delimiter, String prefix, String suffix) {
+    public SetHtmlPrinter(HtmlPrinter<T> propertyPrinter, String prefix, String delimiter, String suffix) {
         this.propertyPrinter = propertyPrinter;
-        this.delimiter = delimiter;
         this.prefix = prefix;
+        this.delimiter = delimiter;
         this.suffix = suffix;
     }
 
