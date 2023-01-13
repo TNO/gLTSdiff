@@ -126,6 +126,12 @@ public class GLTS<S, T> {
         return Collections.unmodifiableSet(statesSet);
     }
 
+    /** @return The set of all transitions of this GLTS, all of which are non-{@code null}. */
+    public Set<Transition<S, T>> getTransitions() {
+        return outgoingTransitions.values().stream().flatMap(ts -> ts.stream())
+                .collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
+    }
+
     /**
      * Gives all transitions that go out of the specified source state.
      * 
