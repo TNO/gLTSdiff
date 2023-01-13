@@ -84,8 +84,7 @@ public class MultipleInputsExample {
         SimpleAutomaton<Pair<String, Set<Integer>>> result = Stream.of(first, second, third).reduce(compare).get();
 
         // Prepare DOT (HTML) printers for printing the result.
-        HtmlPrinter<Set<Integer>> versionSetPrinter = new SetHtmlPrinter<>(new StringHtmlPrinter<>(),
-                (l, r) -> l + "," + r);
+        HtmlPrinter<Set<Integer>> versionSetPrinter = new SetHtmlPrinter<>(new StringHtmlPrinter<>(), "", ",", "");
         HtmlPrinter<Pair<String, Set<Integer>>> transitionPropertyPrinter = pair -> pair.getFirst() + "<br/>" + "{"
                 + versionSetPrinter.print(pair.getSecond()) + "}";
         HtmlPrinter<Transition<AutomatonStateProperty, Pair<String, Set<Integer>>>> printer = transition -> transitionPropertyPrinter
