@@ -12,10 +12,12 @@ package com.github.tno.gltsdiff.operators.combiners;
 
 import java.util.Optional;
 
+import com.google.common.base.Preconditions;
+
 /**
- * A combiner for optional properties. Two optionals are combinable if their inner properties are combinable. The
- * combination of two optionals is defined to be an optional with a combined inner property, or {@link Optional#empty()}
- * if there are no inner properties.
+ * A combiner for optional properties. Two optionals are always combinable. It is assumed that their inner properties
+ * are always combinable as well. The combination of two optionals is defined to be an optional with a combined inner
+ * property, or {@link Optional#empty()} if there are no inner properties.
  * 
  * @param <T> The type of inner properties.
  */
@@ -34,12 +36,13 @@ public class OptionalCombiner<T> extends Combiner<Optional<T>> {
 
     @Override
     protected boolean computeAreCombinable(Optional<T> left, Optional<T> right) {
-        return left.isPresent() && right.isPresent() ? combiner.areCombinable(left.get(), right.get()) : true;
+        return true;
     }
 
     @Override
     protected Optional<T> computeCombination(Optional<T> left, Optional<T> right) {
         if (left.isPresent() && right.isPresent()) {
+            Preconditions.checkArgument(combiner.areCombinable(left.get(), right.get()));
             return Optional.of(combiner.combine(left.get(), right.get()));
         } else if (left.isPresent()) {
             return left;
