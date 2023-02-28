@@ -26,12 +26,6 @@ import com.github.tno.gltsdiff.mergers.Merger;
  * @param <U> The type of GLTSs to compare and combine.
  */
 public class StructureComparator<S, T, U extends GLTS<S, T>> {
-    /** The left-hand-side GLTS. */
-    private final U lhs;
-
-    /** The right-hand-side GLTS. */
-    private final U rhs;
-
     /** The component that determines which (LHS, RHS)-state pairs should be merged into a single state. */
     private final Matcher<S, T, U> matcher;
 
@@ -39,33 +33,25 @@ public class StructureComparator<S, T, U extends GLTS<S, T>> {
     private final Merger<S, T, U> merger;
 
     /**
-     * Initializes a comparator for the graph structures of the specified LHS and RHS.
+     * Initializes a comparator.
      * 
-     * @param lhs The left-hand-side GLTS.
-     * @param rhs The right-hand-side GLTS.
      * @param matcher The component that determines which (LHS, RHS)-state pairs should be merged into a single state.
      * @param merger The component that merges LHS and RHS into a single GLTS.
      */
-    public StructureComparator(U lhs, U rhs, Matcher<S, T, U> matcher, Merger<S, T, U> merger) {
-        this.lhs = lhs;
-        this.rhs = rhs;
+    public StructureComparator(Matcher<S, T, U> matcher, Merger<S, T, U> merger) {
         this.matcher = matcher;
         this.merger = merger;
     }
 
-    /** @return The enclosed left-hand-side GLTS. */
-    public U getLhs() {
-        return lhs;
-    }
-
-    /** @return The enclosed right-hand-side GLTS. */
-    public U getRhs() {
-        return rhs;
-    }
-
-    /** @return The GLTS describing the combination of the LHS and RHS. */
-    public U compare() {
-        Map<State<S>, State<S>> matching = matcher.compute();
-        return merger.merge(matching);
+    /**
+     * Compare two GLTSs.
+     * 
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
+     * @return The GLTS describing the combination of the LHS and RHS.
+     */
+    public U compare(U lhs, U rhs) {
+        Map<State<S>, State<S>> matching = matcher.compute(lhs, rhs);
+        return merger.merge(lhs, rhs, matching);
     }
 }
