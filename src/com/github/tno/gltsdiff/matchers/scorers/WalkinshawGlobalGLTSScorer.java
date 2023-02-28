@@ -61,15 +61,11 @@ public class WalkinshawGlobalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walk
     /**
      * Instantiates a new Walkinshaw global scorer for GLTSs.
      * 
-     * @param lhs The left-hand-side GLTS, which has at least one state.
-     * @param rhs The right-hand-side GLTS, which has at least one state.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
-    public WalkinshawGlobalGLTSScorer(U lhs, U rhs, Combiner<S> statePropertyCombiner,
-            Combiner<T> transitionPropertyCombiner)
-    {
-        super(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner);
+    public WalkinshawGlobalGLTSScorer(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner) {
+        super(statePropertyCombiner, transitionPropertyCombiner);
     }
 
     /**
@@ -82,13 +78,15 @@ public class WalkinshawGlobalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walk
     }
 
     @Override
-    protected RealMatrix computeForwardSimilarityScores() {
-        return computeScores((glts, state) -> glts.getOutgoingTransitions(state), Transition::getTarget, true);
+    protected RealMatrix computeForwardSimilarityScores(U lhs, U rhs) {
+        return computeScores(lhs, rhs, (glts, state) -> glts.getOutgoingTransitions(state), Transition::getTarget,
+                true);
     }
 
     @Override
-    protected RealMatrix computeBackwardSimilarityScores() {
-        return computeScores((glts, state) -> glts.getIncomingTransitions(state), Transition::getSource, false);
+    protected RealMatrix computeBackwardSimilarityScores(U lhs, U rhs) {
+        return computeScores(lhs, rhs, (glts, state) -> glts.getIncomingTransitions(state), Transition::getSource,
+                false);
     }
 
     /**
@@ -104,6 +102,8 @@ public class WalkinshawGlobalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walk
      * described in that article by a more general concept of combinability (see {@link Combiner}).
      * </p>
      * 
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
      * @param relevantTransitions A function that, given an GLTS and a state of that GLTS, determines the list of
      *     transitions of the given state that are relevant for computing state similarity scores. This function should
      *     be unidirectional, in the sense that it should consistently give either all incoming transitions or all
@@ -116,13 +116,14 @@ public class WalkinshawGlobalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walk
      * @param isForward Whether the state similarity score equation is for the forward or the backward direction.
      * @return A matrix of state similarity scores, all of which are in the range [-1,1].
      */
-    private RealMatrix computeScores(BiFunction<U, State<S>, Collection<Transition<S, T>>> relevantTransitions,
+    private RealMatrix computeScores(U lhs, U rhs,
+            BiFunction<U, State<S>, Collection<Transition<S, T>>> relevantTransitions,
             Function<Transition<S, T>, State<S>> stateSelector, boolean isForward)
     {
         // Collect all statically known similarity scores, as well as all state pairs with statically unknown scores.
         Map<Pair<State<S>, State<S>>, Double> staticallyKnownScores = new LinkedHashMap<>();
-        Set<Pair<State<S>, State<S>>> statePairsWithUnknownScores = collectStaticallyKnownScores(staticallyKnownScores,
-                relevantTransitions, stateSelector, isForward);
+        Set<Pair<State<S>, State<S>>> statePairsWithUnknownScores = collectStaticallyKnownScores(lhs, rhs,
+                staticallyKnownScores, relevantTransitions, stateSelector, isForward);
 
         // Here it holds that the set of 'statePairsWithUnknownScores' unioned with the key set of
         // 'staticallyKnownScores' equals the set of all possible (LHS, RHS)-state pairs. Moreover, both these sets are
@@ -186,7 +187,8 @@ public class WalkinshawGlobalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walk
             double diagonal = coefficients.getEntry(statePairIndex, statePairIndex)
                     + 2 * (numberOfUncombinableTransitions(leftTransitions, rightTransitions)
                             + numberOfUncombinableTransitions(rightTransitions, leftTransitions)
-                            + neighborStatePairs.size() + getDenominatorAdjustment(leftState, rightState, isForward));
+                            + neighborStatePairs.size()
+                            + getDenominatorAdjustment(lhs, rhs, leftState, rightState, isForward));
 
             if (diagonal == 0.0d && neighborStatePairs.size() == 0) {
                 diagonal = 1.0d;
@@ -198,7 +200,7 @@ public class WalkinshawGlobalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walk
             double constant = neighborStatePairs.size()
                     + neighborStatePairs.stream().map(staticallyKnownScores::get).filter(score -> score != null)
                             .mapToDouble(score -> attenuationFactor * score).sum()
-                    + getNumeratorAdjustment(leftState, rightState, isForward);
+                    + getNumeratorAdjustment(lhs, rhs, leftState, rightState, isForward);
 
             constants.setEntry(statePairIndex, constant);
         }
@@ -230,6 +232,8 @@ public class WalkinshawGlobalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walk
     /**
      * Collects all (LHS, RHS)-state pairs with a state similarity score that can statically (efficiently) be computed.
      * 
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
      * @param staticallyKnownScores A mutable map from state pairs to statically known similarity scores, which will be
      *     updated by this method.
      * @param relevantTransitions A function that, given an GLTS and a state of that GLTS, determines the list of
@@ -245,7 +249,7 @@ public class WalkinshawGlobalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walk
      * @return A set of all state pairs with statically unknown scores. This method guarantees that this returned set,
      *     unioned with the key set of {@code staticallyKnownScores}, equals the set of all possible state pairs.
      */
-    private Set<Pair<State<S>, State<S>>> collectStaticallyKnownScores(
+    private Set<Pair<State<S>, State<S>>> collectStaticallyKnownScores(U lhs, U rhs,
             Map<Pair<State<S>, State<S>>, Double> staticallyKnownScores,
             BiFunction<U, State<S>, Collection<Transition<S, T>>> relevantTransitions,
             Function<Transition<S, T>, State<S>> stateSelector, boolean isForward)
@@ -310,8 +314,8 @@ public class WalkinshawGlobalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walk
             pairsToExplore.remove(statePair);
 
             // Try to statically determine the similarity score of 'statePair'.
-            Optional<Double> possibleScore = tryToStaticallyDetermineSimilarityScore(statePair, staticallyKnownScores,
-                    relevantTransitions, stateSelector, isForward);
+            Optional<Double> possibleScore = tryToStaticallyDetermineSimilarityScore(lhs, rhs, statePair,
+                    staticallyKnownScores, relevantTransitions, stateSelector, isForward);
 
             if (possibleScore.isPresent()) {
                 // Register that 'statePair' is now a state pair with a statically known score.
@@ -338,6 +342,8 @@ public class WalkinshawGlobalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walk
      * <li>Any state pair has a statically known score, if all its common neighbors have statically known scores.</li>
      * </ul>
      * 
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
      * @param statePair The state pair for which to attempt to statically determine the similarity score.
      * @param staticallyKnownScores A map from state pairs to statically known similarity scores, which will be updated
      *     by this method.
@@ -354,7 +360,7 @@ public class WalkinshawGlobalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walk
      * @return A similarity score in the range [-1,1] in case it was statically determined, or {@link Optional#empty}
      *     otherwise.
      */
-    private Optional<Double> tryToStaticallyDetermineSimilarityScore(Pair<State<S>, State<S>> statePair,
+    private Optional<Double> tryToStaticallyDetermineSimilarityScore(U lhs, U rhs, Pair<State<S>, State<S>> statePair,
             Map<Pair<State<S>, State<S>>, Double> staticallyKnownScores,
             BiFunction<U, State<S>, Collection<Transition<S, T>>> relevantTransitions,
             Function<Transition<S, T>, State<S>> stateSelector, boolean isForward)
@@ -382,12 +388,12 @@ public class WalkinshawGlobalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walk
             // The similarity score is a fraction. First we determine its numerator. Details are in the paper.
             double numerator = neighborStatePairs.stream()
                     .mapToDouble(pair -> 1d + attenuationFactor * staticallyKnownScores.get(pair)).sum()
-                    + getNumeratorAdjustment(leftState, rightState, isForward);
+                    + getNumeratorAdjustment(lhs, rhs, leftState, rightState, isForward);
 
             // Then we determine the denominator of the similarity score.
             double denominator = 2d * (numberOfUncombinableTransitions(leftTransitions, rightTransitions)
                     + numberOfUncombinableTransitions(rightTransitions, leftTransitions) + neighborStatePairs.size()
-                    + getDenominatorAdjustment(leftState, rightState, isForward));
+                    + getDenominatorAdjustment(lhs, rhs, leftState, rightState, isForward));
 
             // Determine and return the similarity score of 'statePair'.
             return denominator == 0d ? Optional.of(0d) : Optional.of(numerator / denominator);

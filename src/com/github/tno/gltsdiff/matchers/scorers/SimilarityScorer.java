@@ -23,12 +23,6 @@ import com.github.tno.gltsdiff.glts.GLTS;
  * @param <U> The type of GLTSs.
  */
 public interface SimilarityScorer<S, T, U extends GLTS<S, T>> {
-    /** @return The left-hand-side GLTS. */
-    public U getLhs();
-
-    /** @return The right-hand-side GLTS. */
-    public U getRhs();
-
     /**
      * Computes a matrix of (LHS, RHS)-state similarity scores. The rows correspond to LHS states, columns to RHS
      * states, and cells to a score that expresses how similar the (LHS, RHS)-state pair is.
@@ -38,7 +32,9 @@ public interface SimilarityScorer<S, T, U extends GLTS<S, T>> {
      * to be monotone: the higher the score, the higher the degree of similarity.
      * </p>
      * 
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
      * @return The computed matrix of similarity scores for every pair of (LHS, RHS)-states.
      */
-    public RealMatrix compute();
+    public RealMatrix compute(U lhs, U rhs);
 }

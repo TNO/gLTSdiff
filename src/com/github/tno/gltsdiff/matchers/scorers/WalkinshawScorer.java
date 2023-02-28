@@ -59,12 +59,6 @@ public abstract class WalkinshawScorer<S, T, U extends GLTS<S, T>> implements Si
      */
     protected final double attenuationFactor = 0.6d;
 
-    /** The left-hand-side GLTS, which has at least one state. */
-    protected final U lhs;
-
-    /** The right-hand-side GLTS, which has at least one state. */
-    protected final U rhs;
-
     /** The combiner for state properties. */
     protected final Combiner<S> statePropertyCombiner;
 
@@ -74,36 +68,23 @@ public abstract class WalkinshawScorer<S, T, U extends GLTS<S, T>> implements Si
     /**
      * Instantiates a new Walkinshaw similarity scorer.
      * 
-     * @param lhs The left-hand-side GLTS, which has at least one state.
-     * @param rhs The right-hand-side GLTS, which has at least one state.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
-    public WalkinshawScorer(U lhs, U rhs, Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner) {
-        Preconditions.checkArgument(lhs.size() > 0, "Expected the LHS to have at least one state.");
-        Preconditions.checkArgument(rhs.size() > 0, "Expected the RHS to have at least one state.");
-
-        this.lhs = lhs;
-        this.rhs = rhs;
+    public WalkinshawScorer(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner) {
         this.statePropertyCombiner = statePropertyCombiner;
         this.transitionPropertyCombiner = transitionPropertyCombiner;
     }
 
     @Override
-    public U getLhs() {
-        return lhs;
-    }
+    public RealMatrix compute(U lhs, U rhs) {
+        // Check inputs.
+        Preconditions.checkArgument(lhs.size() > 0, "Expected the LHS to have at least one state.");
+        Preconditions.checkArgument(rhs.size() > 0, "Expected the RHS to have at least one state.");
 
-    @Override
-    public U getRhs() {
-        return rhs;
-    }
-
-    @Override
-    public RealMatrix compute() {
         // Calculate forward and backward similarity scores.
-        RealMatrix forwardScores = computeForwardSimilarityScores();
-        RealMatrix backwardScores = computeBackwardSimilarityScores();
+        RealMatrix forwardScores = computeForwardSimilarityScores(lhs, rhs);
+        RealMatrix backwardScores = computeBackwardSimilarityScores(lhs, rhs);
 
         // Ensure that the scoring matrices have the right dimensions.
         Preconditions.checkArgument(forwardScores.getRowDimension() == lhs.size(),
@@ -150,28 +131,34 @@ public abstract class WalkinshawScorer<S, T, U extends GLTS<S, T>> implements Si
     }
 
     /**
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
      * @return The computed {@code lhs.size()} times {@code rhs.size()} matrix of forward state similarity scores, all
      *     of which are in the range [-1,1], where any negative score indicates an incompatible state pair.
      */
-    protected abstract RealMatrix computeForwardSimilarityScores();
+    protected abstract RealMatrix computeForwardSimilarityScores(U lhs, U rhs);
 
     /**
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
      * @return The computed {@code lhs.size()} times {@code rhs.size()} matrix of backward state similarity scores, all
      *     of which are in the range [-1,1], where any negative score indicates an incompatible state pair.
      */
-    protected abstract RealMatrix computeBackwardSimilarityScores();
+    protected abstract RealMatrix computeBackwardSimilarityScores(U lhs, U rhs);
 
     /**
      * Gives an adjustment to the numerator of the fractional similarity score equation for the given state pair. This
      * adjustment, together with {@code #getDenominatorAdjustment}, must ensure that state similarity scores stay within
      * the range [-1,1].
      * 
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
      * @param leftState A LHS state.
      * @param rightState A RHS state.
      * @param Whether the state similarity score equation is for the forward or the backward direction.
      * @return An adjustment to the numerator of the fractional similarity score equation for the given state pair.
      */
-    protected double getNumeratorAdjustment(State<S> leftState, State<S> rightState, boolean isForward) {
+    protected double getNumeratorAdjustment(U lhs, U rhs, State<S> leftState, State<S> rightState, boolean isForward) {
         return 0d;
     }
 
@@ -180,12 +167,16 @@ public abstract class WalkinshawScorer<S, T, U extends GLTS<S, T>> implements Si
      * adjustment, together with {@code #getNumeratorAdjustment}, must ensure that state similarity scores stay within
      * the range [-1,1].
      * 
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
      * @param leftState A LHS state.
      * @param rightState A RHS state.
      * @param Whether the state similarity score equation is for the forward or the backward direction.
      * @return An adjustment to the denominator of the fractional similarity score equation for the given state pair.
      */
-    protected double getDenominatorAdjustment(State<S> leftState, State<S> rightState, boolean isForward) {
+    protected double getDenominatorAdjustment(U lhs, U rhs, State<S> leftState, State<S> rightState,
+            boolean isForward)
+    {
         return 0d;
     }
 
