@@ -12,7 +12,6 @@ package com.github.tno.gltsdiff.examples.multipleinputs;
 
 import java.io.IOException;
 import java.util.Set;
-import java.util.function.BinaryOperator;
 import java.util.stream.Stream;
 
 import org.apache.commons.math3.util.Pair;
@@ -73,15 +72,13 @@ public class MultipleInputsExample {
                 new SetCombiner<>(new EqualityCombiner<>()));
 
         // Define a helper function to (more) easily compare the three automata.
-        BinaryOperator<SimpleAutomaton<Pair<String, Set<Integer>>>> compare = (
-                left, right
-        ) -> new StructureComparator<>(left, right,
-                new BruteForceLTSMatcher<>(left, right, statePropertyCombiner, transitionPropertyCombiner),
-                new DefaultMerger<>(left, right, statePropertyCombiner, transitionPropertyCombiner,
-                        SimpleAutomaton::new)).compare();
+        StructureComparator<AutomatonStateProperty, Pair<String, Set<Integer>>, SimpleAutomaton<Pair<String, Set<Integer>>>> comparator = new StructureComparator<>(
+                new BruteForceLTSMatcher<>(statePropertyCombiner, transitionPropertyCombiner),
+                new DefaultMerger<>(statePropertyCombiner, transitionPropertyCombiner, SimpleAutomaton::new));
 
         // Apply structural comparison to the three input automata.
-        SimpleAutomaton<Pair<String, Set<Integer>>> result = Stream.of(first, second, third).reduce(compare).get();
+        SimpleAutomaton<Pair<String, Set<Integer>>> result = Stream.of(first, second, third).reduce(comparator::compare)
+                .get();
 
         // Prepare DOT (HTML) printers for printing the result.
         HtmlPrinter<Set<Integer>> versionSetPrinter = new SetHtmlPrinter<>(new StringHtmlPrinter<>(), "", ",", "");
@@ -91,6 +88,6 @@ public class MultipleInputsExample {
                 .print(transition.getProperty());
 
         // Print the result to the console, in DOT format.
-        new AutomatonDotWriter<>(result, printer).write(System.out);
+        new AutomatonDotWriter<>(printer).write(result, System.out);
     }
 }
