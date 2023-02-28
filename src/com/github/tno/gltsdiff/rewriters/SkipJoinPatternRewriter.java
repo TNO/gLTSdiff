@@ -164,7 +164,7 @@ public class SkipJoinPatternRewriter<T>
             return false;
         }
 
-        // The 'leftTarget' and 'rightTarget' must have combinable properties.
+        // The 'leftSource' and 'rightSource' must have combinable properties.
         if (!statePropertyCombiner.areCombinable(leftSource.getProperty(), rightSource.getProperty())) {
             return false;
         }
