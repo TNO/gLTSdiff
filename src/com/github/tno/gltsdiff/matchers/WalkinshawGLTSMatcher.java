@@ -33,7 +33,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 
 /**
- * Functionality for heuristically computing (LHS, RHS)-state matchings for {@link GLTS GLTSs} based landmarks,
+ * Functionality for heuristically computing (LHS, RHS)-state matchings for {@link GLTS GLTSs} based on landmarks,
  * 'obviously' matching state pairs, as proposed by Walkinshaw et al. (TOSEM 2013; see Section 4.3.1). However, this
  * implementation has been generalized with respect to the approach of Walkinshaw et al. by a more general notion of
  * combinability (see {@link Combiner}). Transitions are now considered to be "common" if they have combinable
@@ -51,9 +51,9 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
     protected final U rhs;
 
     /**
-     * The landmark threshold value, i.e., the fraction of best scoring landmark pairs to consider. That is, of all the
-     * possible pairs of (LHS, RHS)-states, only the top so-many scoring pairs are considered. For example, 0.25 means
-     * the top 25%.
+     * The landmark threshold value, i.e., the fraction of best scoring state pairs to consider as landmarks. That is,
+     * of all the possible pairs of (LHS, RHS)-states, only the top so-many scoring pairs are considered. For example,
+     * 0.25 means the top 25%.
      * 
      * <p>
      * This threshold can be tweaked a bit if the state matchings appear too arbitrary, but should stay within the
@@ -107,8 +107,8 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
      * @param scoring The algorithm for computing state similarity scores.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
-     * @param landmarkThreshold The landmark threshold value, i.e., the fraction of best scoring landmark pairs to
-     *     consider. That is, of all the possible pairs of (LHS, RHS)-states, only the top so-many scoring pairs are
+     * @param landmarkThreshold The landmark threshold value, i.e., the fraction of best scoring state pairs to consider
+     *     as landmarks. That is, of all the possible pairs of (LHS, RHS)-states, only the top so-many scoring pairs are
      *     considered. For example, 0.25 means the top 25%. This threshold can be tweaked a bit if the state matchings
      *     appear too arbitrary, but should stay within the interval [0,1]. A threshold of 0 would mean that no
      *     landmarks will be picked. A threshold of 1.0 would would mean that all state combinations are potential
