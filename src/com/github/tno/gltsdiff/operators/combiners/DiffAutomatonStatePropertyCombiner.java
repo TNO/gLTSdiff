@@ -17,9 +17,9 @@ import com.github.tno.gltsdiff.glts.DiffKind;
 
 /**
  * A combiner for {@link DiffAutomatonStateProperty difference automaton state properties}. Any two such properties are
- * combinable if they agree on state acceptance (i.e., they either both indicate acceptance or both indicate
- * non-acceptance). Combining two such properties results in a difference automaton state property with a combined state
- * difference kind, and combined initial state (difference) information.
+ * combinable if they agree on states being accepting (i.e., both states are accepting or both states are
+ * non-accepting). Combining two such properties results in a difference automaton state property with a combined state
+ * difference kind, combined initial state (difference) information, and their equal state acceptance information.
  */
 public class DiffAutomatonStatePropertyCombiner extends Combiner<DiffAutomatonStateProperty> {
     /** The combiner for difference kinds. */
