@@ -35,12 +35,6 @@ import com.google.common.base.Preconditions;
  * @param <U> The type of GLTSs to merge.
  */
 public class DefaultMerger<S, T, U extends GLTS<S, T>> extends AbstractMerger<S, T, U> {
-    /** The left-hand-side GLTS. */
-    private final U lhs;
-
-    /** The right-hand-side GLTS. */
-    private final U rhs;
-
     /** The combiner for state properties. */
     private final Combiner<S> statePropertyCombiner;
 
@@ -53,35 +47,21 @@ public class DefaultMerger<S, T, U extends GLTS<S, T>> extends AbstractMerger<S,
     /**
      * Instantiates a new default merger.
      * 
-     * @param lhs The left-hand-side GLTS.
-     * @param rhs The right-hand-side GLTS.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      * @param instantiator The supplier for instantiating new GLTSs.
      */
-    public DefaultMerger(U lhs, U rhs, Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner,
+    public DefaultMerger(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner,
             Supplier<U> instantiator)
     {
         super(statePropertyCombiner);
-        this.lhs = lhs;
-        this.rhs = rhs;
         this.statePropertyCombiner = statePropertyCombiner;
         this.transitionCombiner = new SetCombiner<>(new TransitionCombiner<>(transitionPropertyCombiner));
         this.instantiator = instantiator;
     }
 
     @Override
-    public U getLhs() {
-        return lhs;
-    }
-
-    @Override
-    public U getRhs() {
-        return rhs;
-    }
-
-    @Override
-    protected U mergeInternal(Map<State<S>, State<S>> matching) {
+    protected U mergeInternal(U lhs, U rhs, Map<State<S>, State<S>> matching) {
         U diff = instantiator.get();
 
         // 1. Define all states of 'diff'.

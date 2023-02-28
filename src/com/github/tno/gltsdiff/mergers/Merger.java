@@ -23,16 +23,12 @@ import com.github.tno.gltsdiff.glts.State;
  * @param <U> The type of GLTSs to merge.
  */
 public interface Merger<S, T, U extends GLTS<S, T>> {
-    /** @return The left-hand-side GLTS. */
-    public U getLhs();
-
-    /** @return The right-hand-side GLTS. */
-    public U getRhs();
-
     /**
      * Merges the LHS and RHS into a single GLTS. The given (LHS, RHS)-state matching determines which LHS states are to
      * be merged with which RHS states.
      * 
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
      * @param matching A matching from LHS states to RHS states. This matching should be proper in the sense that:
      *     <ul>
      *     <li>All keys are states in the LHS.</li>
@@ -42,5 +38,5 @@ public interface Merger<S, T, U extends GLTS<S, T>> {
      *     </ul>
      * @return The GLTS that is the merge of the LHS and the RHS.
      */
-    public U merge(Map<State<S>, State<S>> matching);
+    public U merge(U lhs, U rhs, Map<State<S>, State<S>> matching);
 }
