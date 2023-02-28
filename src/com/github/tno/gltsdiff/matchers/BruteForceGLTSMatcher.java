@@ -48,12 +48,6 @@ import com.google.common.collect.Sets;
  * @param <U> The type of GLTSs.
  */
 public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matcher<S, T, U> {
-    /** The left-hand-side GLTS. */
-    protected final U lhs;
-
-    /** The right-hand-side GLTS. */
-    protected final U rhs;
-
     /** The combiner for state properties. */
     protected final Combiner<S> statePropertyCombiner;
 
@@ -63,38 +57,26 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
     /**
      * Instantiates a new brute force matcher for GLTSs.
      * 
-     * @param lhs The left-hand-side GLTS.
-     * @param rhs The right-hand-side GLTS.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
-    public BruteForceGLTSMatcher(U lhs, U rhs, Combiner<S> statePropertyCombiner,
-            Combiner<T> transitionPropertyCombiner)
-    {
-        this.lhs = lhs;
-        this.rhs = rhs;
+    public BruteForceGLTSMatcher(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner) {
         this.statePropertyCombiner = statePropertyCombiner;
         this.transitionPropertyCombiner = transitionPropertyCombiner;
-    }
-
-    @Override
-    public U getLhs() {
-        return lhs;
-    }
-
-    @Override
-    public U getRhs() {
-        return rhs;
     }
 
     /**
      * Determines the best possible matching out of a set {@code candidateMatches} of possible candidate matchings.
      * 
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
      * @param candidateMatches A set of all state pairs to consider as potential matches.
      * @return The best possible maximal matching out of all the potential matches in {@code candidateMatches}.
      */
-    private Set<Pair<State<S>, State<S>>> findAnOptimalMatching(Set<Pair<State<S>, State<S>>> candidateMatches) {
-        return findAnOptimalMatching(new LinkedHashSet<>(), candidateMatches).getSecond();
+    private Set<Pair<State<S>, State<S>>> findAnOptimalMatching(U lhs, U rhs,
+            Set<Pair<State<S>, State<S>>> candidateMatches)
+    {
+        return findAnOptimalMatching(lhs, rhs, new LinkedHashSet<>(), candidateMatches).getSecond();
     }
 
     /**
@@ -105,26 +87,28 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
      * depend on the Java Virtual Machine that is used, and its settings.
      * </p>
      * 
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
      * @param fixedMatches The set of matches that are already fixed.
      * @param candidateMatches A set of all state pairs to still consider as potential matches.
      * @return A pair consisting of the best possible maximal matching out of all the potential matches in
      *     {@code candidateMatches} that contains at least {@code fixedMatches}, together with the number of combined
      *     transitions that the merge of the LHS and RHS would have as result of using this matching.
      */
-    private Pair<Integer, Set<Pair<State<S>, State<S>>>> findAnOptimalMatching(
+    private Pair<Integer, Set<Pair<State<S>, State<S>>>> findAnOptimalMatching(U lhs, U rhs,
             Set<Pair<State<S>, State<S>>> fixedMatches, Set<Pair<State<S>, State<S>>> candidateMatches)
     {
         // Remove all impossible candidate matchings.
         candidateMatches = Sets.difference(candidateMatches, getConflictingPairs(fixedMatches, candidateMatches));
 
         // Fixate all matchings that are forced.
-        Set<Pair<State<S>, State<S>>> forcedMatches = getForcedMatches(candidateMatches);
+        Set<Pair<State<S>, State<S>>> forcedMatches = getForcedMatches(lhs, rhs, candidateMatches);
         candidateMatches = Sets.difference(candidateMatches, forcedMatches);
         fixedMatches = Sets.union(fixedMatches, forcedMatches);
 
         // If there are no more candidate matchings left to consider, then return the current matching.
         if (candidateMatches.isEmpty()) {
-            return Pair.create(optimizationObjective(fixedMatches), fixedMatches);
+            return Pair.create(optimizationObjective(lhs, rhs, fixedMatches), fixedMatches);
         }
 
         // Otherwise, recursively explore all possible matchings that can be obtained from 'candidateMatches', to search
@@ -153,7 +137,7 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
             Set<Pair<State<S>, State<S>>> candidateSingleton = ImmutableSet.of(Pair.create(lhsState, rhsState));
             Set<Pair<State<S>, State<S>>> newFixedMatches = Sets.union(fixedMatches, candidateSingleton);
             Set<Pair<State<S>, State<S>>> newCandidateMatches = Sets.difference(candidateMatches, candidateSingleton);
-            Pair<Integer, Set<Pair<State<S>, State<S>>>> result = findAnOptimalMatching(newFixedMatches,
+            Pair<Integer, Set<Pair<State<S>, State<S>>>> result = findAnOptimalMatching(lhs, rhs, newFixedMatches,
                     newCandidateMatches);
 
             // If the matching found is better than the current best matching, then keep track of it.
@@ -166,7 +150,8 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
         Set<Pair<State<S>, State<S>>> candidatesToDiscard = candidateMap.get(rhsState).stream()
                 .map(lhsState -> Pair.create(lhsState, rhsState)).collect(Collectors.toCollection(LinkedHashSet::new));
         Set<Pair<State<S>, State<S>>> newCandidateMatches = Sets.difference(candidateMatches, candidatesToDiscard);
-        Pair<Integer, Set<Pair<State<S>, State<S>>>> result = findAnOptimalMatching(fixedMatches, newCandidateMatches);
+        Pair<Integer, Set<Pair<State<S>, State<S>>>> result = findAnOptimalMatching(lhs, rhs, fixedMatches,
+                newCandidateMatches);
 
         if (currentBestMatching.getFirst() < result.getFirst()) {
             currentBestMatching = result;
@@ -176,8 +161,8 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
     }
 
     @Override
-    public Map<State<S>, State<S>> compute() {
-        Set<Pair<State<S>, State<S>>> matching = findAnOptimalMatching(allStatePairsWithPotential());
+    public Map<State<S>, State<S>> compute(U lhs, U rhs) {
+        Set<Pair<State<S>, State<S>>> matching = findAnOptimalMatching(lhs, rhs, allStatePairsWithPotential(lhs, rhs));
         return matching.stream()
                 .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond, Maps.throwingMerger(), LinkedHashMap::new));
     }
@@ -219,10 +204,12 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
      * that both occur only once in {@code candidates}. This is a linear-time O(|{@code candidates}|) algorithm.
      * </p>
      * 
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
      * @param candidates The input set of candidates.
      * @return A subset of {@code candidates} consisting of all forced matchings according to the above definition.
      */
-    private Set<Pair<State<S>, State<S>>> getForcedMatches(Set<Pair<State<S>, State<S>>> candidates) {
+    private Set<Pair<State<S>, State<S>>> getForcedMatches(U lhs, U rhs, Set<Pair<State<S>, State<S>>> candidates) {
         // For every LHS and RHS state, count how often they occur in 'candidates'.
         Map<State<S>, Integer> lhsStateCounts = new LinkedHashMap<>(lhs.size());
         Map<State<S>, Integer> rhsStateCounts = new LinkedHashMap<>(rhs.size());
@@ -254,11 +241,13 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
      * The function may be adjusted by {@link #getOptimizationObjectiveAdjustment}.
      * </p>
      *
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
      * @param fixed The input set of fixed (LHS, RHS)-state matchings.
      * @return The number of transitions in the LHS and RHS that would collapse into a combined transition if all state
      *     pairs in {@code fixed} were matched and merged, with adjustments applied.
      */
-    private int optimizationObjective(Set<Pair<State<S>, State<S>>> fixed) {
+    private int optimizationObjective(U lhs, U rhs, Set<Pair<State<S>, State<S>>> fixed) {
         int count = 0;
 
         for (Pair<State<S>, State<S>> pair: fixed) {
@@ -268,7 +257,7 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
                     .count();
 
             // Apply configurable adjustment.
-            count += getOptimizationObjectiveAdjustment(pair.getFirst(), pair.getSecond());
+            count += getOptimizationObjectiveAdjustment(lhs, rhs, pair.getFirst(), pair.getSecond());
         }
 
         return count;
@@ -277,11 +266,13 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
     /**
      * Gives an adjustment to the {@link #optimizationObjective objective function} for the given state pair.
      *
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
      * @param leftState A LHS state.
      * @param rightState A RHS state.
      * @return An adjustment to the objective function for the given state pair.
      */
-    protected int getOptimizationObjectiveAdjustment(State<S> leftState, State<S> rightState) {
+    protected int getOptimizationObjectiveAdjustment(U lhs, U rhs, State<S> leftState, State<S> rightState) {
         return 0;
     }
 
@@ -293,12 +284,14 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
      * be matched to one another, since their matchings would be invalid or would lead to tangles.
      * </p>
      * 
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
      * @param lhsState The input LHS state.
      * @param rhsState The input RHS state.
      * @return {@code true} if the state pair ({@code lhsState}, {@code rhsState}) has potential according to the above
      *     definition, {@code false} otherwise.
      */
-    private boolean hasPotential(State<S> lhsState, State<S> rhsState) {
+    private boolean hasPotential(U lhs, U rhs, State<S> lhsState, State<S> rhsState) {
         if (!statePropertyCombiner.areCombinable(lhsState.getProperty(), rhsState.getProperty())) {
             return false;
         }
@@ -309,13 +302,17 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
                 || GLTSUtils.hasCommonOutgoingTransitions(lhs, rhs, transitionPropertyCombiner, statePair);
     }
 
-    /** @return The set of all (LHS, RHS)-state pairs with potential according to {@link #hasPotential(S, S)}. */
-    private Set<Pair<State<S>, State<S>>> allStatePairsWithPotential() {
+    /**
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
+     * @return The set of all (LHS, RHS)-state pairs with potential according to {@link #hasPotential(S, S)}.
+     */
+    private Set<Pair<State<S>, State<S>>> allStatePairsWithPotential(U lhs, U rhs) {
         Set<Pair<State<S>, State<S>>> pairs = new LinkedHashSet<>(lhs.size() * rhs.size());
 
         for (State<S> lhsState: lhs.getStates()) {
             for (State<S> rhsState: rhs.getStates()) {
-                if (hasPotential(lhsState, rhsState)) {
+                if (hasPotential(lhs, rhs, lhsState, rhsState)) {
                     pairs.add(Pair.create(lhsState, rhsState));
                 }
             }

@@ -44,12 +44,6 @@ import com.google.common.collect.ImmutableSet;
  * @param <U> The type of GLTSs.
  */
 public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatcher<S, T, U> {
-    /** The left-hand-side GLTS. */
-    protected final U lhs;
-
-    /** The right-hand-side GLTS. */
-    protected final U rhs;
-
     /**
      * The landmark threshold value, i.e., the fraction of best scoring state pairs to consider as landmarks. That is,
      * of all the possible pairs of (LHS, RHS)-states, only the top so-many scoring pairs are considered. For example,
@@ -87,23 +81,19 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
     /**
      * Instantiates a new Walkinshaw matcher for GLTSs. Uses a landmark threshold of 0.25 and a landmark ratio of 1.5.
      * 
-     * @param lhs The left-hand-side GLTS.
-     * @param rhs The right-hand-side GLTS.
      * @param scoring The algorithm for computing state similarity scores.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
-    public WalkinshawGLTSMatcher(U lhs, U rhs, SimilarityScorer<S, T, U> scoring, Combiner<S> statePropertyCombiner,
+    public WalkinshawGLTSMatcher(SimilarityScorer<S, T, U> scoring, Combiner<S> statePropertyCombiner,
             Combiner<T> transitionPropertyCombiner)
     {
-        this(lhs, rhs, scoring, statePropertyCombiner, transitionPropertyCombiner, 0.25d, 1.5d);
+        this(scoring, statePropertyCombiner, transitionPropertyCombiner, 0.25d, 1.5d);
     }
 
     /**
      * Instantiates a new Walkinshaw matcher for GLTSs.
      * 
-     * @param lhs The left-hand-side GLTS.
-     * @param rhs The right-hand-side GLTS.
      * @param scoring The algorithm for computing state similarity scores.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
@@ -121,32 +111,22 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
      *     conflicting matches. In such a scenario, lowering this ratio might help. It does not make sense to have it
      *     lower than 1.0.
      */
-    public WalkinshawGLTSMatcher(U lhs, U rhs, SimilarityScorer<S, T, U> scoring, Combiner<S> statePropertyCombiner,
+    public WalkinshawGLTSMatcher(SimilarityScorer<S, T, U> scoring, Combiner<S> statePropertyCombiner,
             Combiner<T> transitionPropertyCombiner, double landmarkThreshold, double landmarkRatio)
     {
         super(scoring);
-        this.lhs = lhs;
-        this.rhs = rhs;
         this.statePropertyCombiner = statePropertyCombiner;
         this.transitionPropertyCombiner = transitionPropertyCombiner;
         this.landmarkThreshold = landmarkThreshold;
         this.landmarkRatio = landmarkRatio;
     }
 
-    @Override
-    public U getLhs() {
-        return lhs;
-    }
-
-    @Override
-    public U getRhs() {
-        return rhs;
-    }
-
     /**
      * Identifies a set of landmarks. A landmark is a pair of (LHS, RHS)-states that are compatible with respect to
      * {@link #isCompatible}, and make a very clear match with respect to the given state similarity scoring function.
      * 
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
      * @param scores A scoring function that expresses for all (LHS, RHS)-state pairs how structurally similar they are.
      *     All state similarity scores must either be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
      * @return A set of compatible state pairs that are clear matches with respect to {@code scores}.
@@ -161,12 +141,14 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
      *     according to {@link #isCompatible}.
      *     </p>
      */
-    private Set<Pair<State<S>, State<S>>> identifyLandmarks(BiFunction<State<S>, State<S>, Double> scores) {
+    private Set<Pair<State<S>, State<S>>> identifyLandmarks(U lhs, U rhs,
+            BiFunction<State<S>, State<S>, Double> scores)
+    {
         // First determine and collect the best so-many scoring state pairs. We will only consider these.
         int nrOfPairsToConsider = (int)Math.ceil(landmarkThreshold * lhs.size() * rhs.size());
 
         List<Pair<Pair<State<S>, State<S>>, Double>> bestScoringPairs = //
-                getScorePairs(scores).stream() // Get compatible state pairs.
+                getScorePairs(lhs, rhs, scores).stream() // Get compatible state pairs.
                         .sorted((s1, s2) -> s2.getSecond().compareTo(s1.getSecond())) // Sort on scores in desc. order.
                         .limit(nrOfPairsToConsider) // Only take the best so-many scoring pairs.
                         .collect(Collectors.toList());
@@ -244,7 +226,7 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
 
         // It might be that no landmarks were found. In that case, try to identify fallback landmarks.
         if (landmarks.isEmpty()) {
-            landmarks.addAll(getFallbackLandmarks(scores));
+            landmarks.addAll(getFallbackLandmarks(lhs, rhs, scores));
         }
 
         return landmarks;
@@ -253,12 +235,16 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
     /**
      * Gives a set of fallback landmarks, which is used in case no ordinary landmark can be found.
      * 
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
      * @param scores A scoring function that expresses for all (LHS, RHS)-state pairs how structurally similar they are.
      *     All state similarity scores must either be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
      * @return A set of non-{@code null} fallback landmarks. These fallback landmarks are guaranteed not to overlap (any
      *     LHS/RHS state is involved in at most one landmark), and be compatible according to {@link #isCompatible}.
      */
-    protected Set<Pair<State<S>, State<S>>> getFallbackLandmarks(BiFunction<State<S>, State<S>, Double> scores) {
+    protected Set<Pair<State<S>, State<S>>> getFallbackLandmarks(U lhs, U rhs,
+            BiFunction<State<S>, State<S>, Double> scores)
+    {
         return ImmutableSet.of();
     }
 
@@ -273,13 +259,15 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
      * properties.
      * </p>
      *
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
      * @param statePair The state pair for which to collect all surrounding state pairs.
      * @param scores A scoring function that expresses for all (LHS, RHS)-state pairs how structurally similar they are.
      *     All state similarity scores must either be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
      * @return The set of surrounding state pairs of {@code statePair} that are compatible with respect to
      *     {@link #isCompatible}.
      */
-    private Set<Pair<State<S>, State<S>>> surroundingPairs(Pair<State<S>, State<S>> statePair,
+    private Set<Pair<State<S>, State<S>>> surroundingPairs(U lhs, U rhs, Pair<State<S>, State<S>> statePair,
             BiFunction<State<S>, State<S>, Double> scores)
     {
         Stream<Pair<State<S>, State<S>>> predecessors = GLTSUtils
@@ -312,14 +300,16 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
      * pair is said to be <i>relevant</i> in this context if it surrounds an element of {@code statePairs} and is
      * disjoint from {@code statePairs}.
      * 
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
      * @param statePairs The set of (LHS, RHS)-state pairs for which relevant neighboring are to be found.
      * @param scores A scoring function that expresses for all (LHS, RHS)-state pairs how structurally similar they are.
      *     All state similarity scores must either be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
      * @return The set of relevant neighboring state pairs of {@code statePairs} that are compatible with respect to
      *     {@link #isCompatible}.
      */
-    private Set<Pair<State<S>, State<S>>> relevantNeighboringPairs(Set<Pair<State<S>, State<S>>> statePairs,
-            BiFunction<State<S>, State<S>, Double> scores)
+    private Set<Pair<State<S>, State<S>>> relevantNeighboringPairs(U lhs, U rhs,
+            Set<Pair<State<S>, State<S>>> statePairs, BiFunction<State<S>, State<S>, Double> scores)
     {
         Set<Pair<State<S>, State<S>>> foundPairs = new LinkedHashSet<>();
 
@@ -330,7 +320,7 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
 
         for (Pair<State<S>, State<S>> statePair: statePairs) {
             // Find all compatible (LHS, RHS)-state pairs that surround 'statePair'.
-            Set<Pair<State<S>, State<S>>> surrPairs = surroundingPairs(statePair, scores);
+            Set<Pair<State<S>, State<S>>> surrPairs = surroundingPairs(lhs, rhs, statePair, scores);
 
             // Collect any surrounding pairs that have states that already occur in 'statePairs'.
             Set<Pair<State<S>, State<S>>> relevantPairs = surrPairs.stream()
@@ -368,17 +358,19 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
      * in particular Algorithm 1 and the accompanying explanation.
      * </p>
      * 
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
      * @param landmarks The set of input landmarks.
      * @param scores A similarity scoring function. All state similarity scores must either be within the range [0,1] or
      *     be {@link Double#POSITIVE_INFINITY}.
      * @return The set of state pairs to match to one another, which are all guaranteed to be compatible with respect to
      *     {@link #isCompatible}.
      */
-    private Set<Pair<State<S>, State<S>>> identifyKeyPairs(Set<Pair<State<S>, State<S>>> landmarks,
+    private Set<Pair<State<S>, State<S>>> identifyKeyPairs(U lhs, U rhs, Set<Pair<State<S>, State<S>>> landmarks,
             BiFunction<State<S>, State<S>, Double> scores)
     {
         Set<Pair<State<S>, State<S>>> keyPairs = new LinkedHashSet<>(landmarks);
-        Set<Pair<State<S>, State<S>>> neighPairs = relevantNeighboringPairs(keyPairs, scores);
+        Set<Pair<State<S>, State<S>>> neighPairs = relevantNeighboringPairs(lhs, rhs, keyPairs, scores);
 
         while (!neighPairs.isEmpty()) {
             while (!neighPairs.isEmpty()) {
@@ -393,7 +385,7 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
                 neighPairs = removeConflicts(neighPairs, highestScoringPair);
             }
 
-            neighPairs = relevantNeighboringPairs(keyPairs, scores);
+            neighPairs = relevantNeighboringPairs(lhs, rhs, keyPairs, scores);
         }
 
         return keyPairs;
@@ -403,11 +395,15 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
      * Converts a similarity scoring function into a list of (LHS, RHS)-state pairs, with their similarity scores,
      * thereby including only state pairs that are compatible with respect to {@link #isCompatible}.
      * 
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
      * @param scores A similarity scoring function. All state similarity scores must either be within the range [0,1] or
      *     be {@link Double#POSITIVE_INFINITY}.
      * @return The conversion result, containing only (LHS, RHS)-state pairs that are compatible.
      */
-    private List<Pair<Pair<State<S>, State<S>>, Double>> getScorePairs(BiFunction<State<S>, State<S>, Double> scores) {
+    private List<Pair<Pair<State<S>, State<S>>, Double>> getScorePairs(U lhs, U rhs,
+            BiFunction<State<S>, State<S>, Double> scores)
+    {
         List<Pair<Pair<State<S>, State<S>>, Double>> pairs = new ArrayList<>(lhs.size() * rhs.size());
 
         for (State<S> leftState: lhs.getStates()) {
@@ -441,13 +437,13 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
     }
 
     @Override
-    protected Map<State<S>, State<S>> computeInternal(RealMatrix scores) {
+    protected Map<State<S>, State<S>> computeInternal(U lhs, U rhs, RealMatrix scores) {
         // Define a function that gives the similarity score of every pair of (LHS, RHS)-states.
         BiFunction<State<S>, State<S>, Double> getScore = (l, r) -> scores.getEntry(l.getId(), r.getId());
 
         // Construct a matching by using Walkinshaw's approach.
-        Set<Pair<State<S>, State<S>>> landmarks = identifyLandmarks(getScore);
-        Set<Pair<State<S>, State<S>>> matches = identifyKeyPairs(landmarks, getScore);
+        Set<Pair<State<S>, State<S>>> landmarks = identifyLandmarks(lhs, rhs, getScore);
+        Set<Pair<State<S>, State<S>>> matches = identifyKeyPairs(lhs, rhs, landmarks, getScore);
 
         // All matched pairs of states should be compatible.
         for (Pair<State<S>, State<S>> statePair: matches) {

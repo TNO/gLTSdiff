@@ -33,20 +33,20 @@ public class WalkinshawLTSMatcher<S, T, U extends LTS<S, T>> extends WalkinshawG
     /**
      * Instantiates a new Walkinshaw matcher for LTSs.
      * 
-     * @param lhs The left-hand-side LTS.
-     * @param rhs The right-hand-side LTS.
      * @param scoring The algorithm for computing state similarity scores.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
-    public WalkinshawLTSMatcher(U lhs, U rhs, SimilarityScorer<S, T, U> scoring, Combiner<S> statePropertyCombiner,
+    public WalkinshawLTSMatcher(SimilarityScorer<S, T, U> scoring, Combiner<S> statePropertyCombiner,
             Combiner<T> transitionPropertyCombiner)
     {
-        super(lhs, rhs, scoring, statePropertyCombiner, transitionPropertyCombiner);
+        super(scoring, statePropertyCombiner, transitionPropertyCombiner);
     }
 
     @Override
-    protected Set<Pair<State<S>, State<S>>> getFallbackLandmarks(BiFunction<State<S>, State<S>, Double> scores) {
+    protected Set<Pair<State<S>, State<S>>> getFallbackLandmarks(U lhs, U rhs,
+            BiFunction<State<S>, State<S>, Double> scores)
+    {
         Pair<State<S>, State<S>> bestCurrentPair = null;
 
         // Iterate over all combinations of initial states, and keep track of the highest scoring combination.
@@ -75,6 +75,6 @@ public class WalkinshawLTSMatcher<S, T, U extends LTS<S, T>> extends WalkinshawG
             return ImmutableSet.of(bestCurrentPair);
         }
 
-        return super.getFallbackLandmarks(scores);
+        return super.getFallbackLandmarks(lhs, rhs, scores);
     }
 }

@@ -29,83 +29,51 @@ import com.github.tno.gltsdiff.operators.combiners.Combiner;
  * @param <U> The type of GLTSs.
  */
 public class DynamicGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matcher<S, T, U> {
-    /** The left-hand-side GLTS. */
-    protected final U lhs;
-
-    /** The right-hand-side GLTS. */
-    protected final U rhs;
-
-    /** The combiner for state properties. */
-    protected final Combiner<S> statePropertyCombiner;
-
-    /** The combiner for transition properties. */
-    protected final Combiner<T> transitionPropertyCombiner;
-
-    /**
-     * The matching algorithm creator. Given the input GLTSs and appropriate combiners, creates a suitable algorithm.
-     */
-    private final BiFunction<U, U, BiFunction<Combiner<S>, Combiner<T>, Matcher<S, T, U>>> matchingAlgorithmCreator;
+    /** The matching algorithm to use. */
+    private final Matcher<S, T, U> matcher;
 
     /**
      * Instantiates a new dynamic matcher for GLTSs, that uses a default configuration of matching algorithms.
      * 
-     * @param lhs The left-hand-side GLTS.
-     * @param rhs The right-hand-side GLTS.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
-    public DynamicGLTSMatcher(U lhs, U rhs, Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner) {
-        this(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner,
-                (l, r) -> (s, t) -> defaultMatchingAlgorithmCreator(l, r, s, t));
+    public DynamicGLTSMatcher(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner) {
+        this(statePropertyCombiner, transitionPropertyCombiner, (s, t) -> defaultMatchingAlgorithmCreator(s, t));
     }
 
     /**
      * Instantiates a new dynamic matcher for GLTSs.
      * 
-     * @param lhs The left-hand-side GLTS.
-     * @param rhs The right-hand-side GLTS.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
-     * @param matchingAlgorithmCreator The matching algorithm creator. Given the input GLTSs and appropriate combiners,
-     *     creates a suitable algorithm.
+     * @param matchingAlgorithmCreator The matching algorithm creator. Given appropriate combiners, creates a suitable
+     *     algorithm.
      */
-    public DynamicGLTSMatcher(U lhs, U rhs, Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner,
-            BiFunction<U, U, BiFunction<Combiner<S>, Combiner<T>, Matcher<S, T, U>>> matchingAlgorithmCreator)
+    public DynamicGLTSMatcher(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner,
+            BiFunction<Combiner<S>, Combiner<T>, Matcher<S, T, U>> matchingAlgorithmCreator)
     {
-        this.lhs = lhs;
-        this.rhs = rhs;
-        this.statePropertyCombiner = statePropertyCombiner;
-        this.transitionPropertyCombiner = transitionPropertyCombiner;
-        this.matchingAlgorithmCreator = matchingAlgorithmCreator;
+        this.matcher = matchingAlgorithmCreator.apply(statePropertyCombiner, transitionPropertyCombiner);
     }
 
-    @Override
-    public U getLhs() {
-        return lhs;
-    }
-
-    @Override
-    public U getRhs() {
-        return rhs;
-    }
-
-    private static final <S, T, U extends GLTS<S, T>> Matcher<S, T, U> defaultMatchingAlgorithmCreator(U lhs, U rhs,
-            Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner)
+    private static final <S, T, U extends GLTS<S, T>> Matcher<S, T, U>
+            defaultMatchingAlgorithmCreator(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner)
     {
-        SimilarityScorer<S, T, U> scorer = new DynamicGLTSScorer<>(lhs, rhs, statePropertyCombiner,
+        SimilarityScorer<S, T, U> scorer = new DynamicGLTSScorer<>(statePropertyCombiner, transitionPropertyCombiner);
+        Matcher<S, T, U> walkinshawMatcher = new WalkinshawGLTSMatcher<>(scorer, statePropertyCombiner,
                 transitionPropertyCombiner);
-
-        if (lhs.size() > 45 || rhs.size() > 45) {
-            return new WalkinshawGLTSMatcher<>(lhs, rhs, scorer, statePropertyCombiner, transitionPropertyCombiner);
-        } else {
-            return new KuhnMunkresMatcher<>(lhs, rhs, scorer, statePropertyCombiner);
-        }
+        Matcher<S, T, U> kuhnMunkresMatcher = new KuhnMunkresMatcher<>(scorer, statePropertyCombiner);
+        return (lhs, rhs) -> {
+            if (lhs.size() > 45 || rhs.size() > 45) {
+                return walkinshawMatcher.compute(lhs, rhs);
+            } else {
+                return kuhnMunkresMatcher.compute(lhs, rhs);
+            }
+        };
     }
 
     @Override
-    public Map<State<S>, State<S>> compute() {
-        Matcher<S, T, U> algorithm = matchingAlgorithmCreator.apply(lhs, rhs).apply(statePropertyCombiner,
-                transitionPropertyCombiner);
-        return algorithm.compute();
+    public Map<State<S>, State<S>> compute(U lhs, U rhs) {
+        return matcher.compute(lhs, rhs);
     }
 }
