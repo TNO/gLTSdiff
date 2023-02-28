@@ -33,11 +33,11 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 
 /**
- * Functionality for computing (LHS, RHS)-state matchings for {@link GLTS GLTSs} based on heuristics proposed by
- * Walkinshaw et al. (TOSEM 2013; see Section 4.3.1). However, this implementation has been generalized with respect to
- * the approach of Walkinshaw et al. by a more general notion of combinability (see {@link Combiner}). Transitions are
- * now considered to be "common" if they have combinable properties, rather than the stronger condition that they must
- * be equal.
+ * Functionality for heuristically computing (LHS, RHS)-state matchings for {@link GLTS GLTSs} based on landmarks,
+ * 'obviously' matching state pairs, as proposed by Walkinshaw et al. (TOSEM 2013; see Section 4.3.1). However, this
+ * implementation has been generalized with respect to the approach of Walkinshaw et al. by a more general notion of
+ * combinability (see {@link Combiner}). Transitions are now considered to be "common" if they have combinable
+ * properties, rather than the stronger condition that they must be equal.
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
@@ -51,28 +51,32 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
     protected final U rhs;
 
     /**
-     * Of all the possible pairs of (LHS, RHS)-states, Walkinshaw et al. propose the heuristic to only consider the top
-     * so-many scoring pairs, which is this threshold. (For example, 0.25d means the top 25%).
+     * The landmark threshold value, i.e., the fraction of best scoring state pairs to consider as landmarks. That is,
+     * of all the possible pairs of (LHS, RHS)-states, only the top so-many scoring pairs are considered. For example,
+     * 0.25 means the top 25%.
+     * 
      * <p>
      * This threshold can be tweaked a bit if the state matchings appear too arbitrary, but should stay within the
-     * interval [0,1]. A threshold of 0 would mean that no landmarks will be picked. A threshold of 1 would would mean
-     * that all state combinations are potential landmarks. Any value lower than {@code 0.1d} or higher than
-     * {@code 0.5d} will likely give undesired results.
+     * interval [0,1]. A threshold of 0 would mean that no landmarks will be picked. A threshold of 1.0 would would mean
+     * that all state combinations are potential landmarks. Any value lower than 0.1 or higher than 0.5 will likely give
+     * undesired results.
      * </p>
      */
-    private final double landmarkThreshold = 0.25d;
+    private final double landmarkThreshold;
 
     /**
-     * If, during state matching, there are multiple (conflicting) candidate matches to be considered, Walkinshaw et al.
-     * propose to continue with the highest of these candidate matches but only if it is significantly better than any
+     * The landmark ratio, indicating the ratio that a candidate landmark should be better than another one, to be
+     * considered. That is, if during state matching, there are multiple (conflicting) candidate matches to be
+     * considered, continue with the highest of these candidate matches, but only if it is significantly better than any
      * other candidate, where the significance is determined by this ratio.
+     * 
      * <p>
      * This factor can be tweaked a bit if the matching results turn out unsatisfactory, or if there happen to be many
      * conflicting matches. In such a scenario, lowering this ratio might help. It does not make sense to have it lower
-     * than {@code 1.0d}.
+     * than 1.0.
      * </p>
      */
-    private final double landmarkRatio = 1.5d;
+    private final double landmarkRatio;
 
     /** The combiner for state properties. */
     private final Combiner<S> statePropertyCombiner;
@@ -81,7 +85,7 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
     private final Combiner<T> transitionPropertyCombiner;
 
     /**
-     * Instantiates a new Walkinshaw matcher for GLTSs.
+     * Instantiates a new Walkinshaw matcher for GLTSs. Uses a landmark threshold of 0.25 and a landmark ratio of 1.5.
      * 
      * @param lhs The left-hand-side GLTS.
      * @param rhs The right-hand-side GLTS.
@@ -92,11 +96,41 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
     public WalkinshawGLTSMatcher(U lhs, U rhs, SimilarityScorer<S, T, U> scoring, Combiner<S> statePropertyCombiner,
             Combiner<T> transitionPropertyCombiner)
     {
+        this(lhs, rhs, scoring, statePropertyCombiner, transitionPropertyCombiner, 0.25d, 1.5d);
+    }
+
+    /**
+     * Instantiates a new Walkinshaw matcher for GLTSs.
+     * 
+     * @param lhs The left-hand-side GLTS.
+     * @param rhs The right-hand-side GLTS.
+     * @param scoring The algorithm for computing state similarity scores.
+     * @param statePropertyCombiner The combiner for state properties.
+     * @param transitionPropertyCombiner The combiner for transition properties.
+     * @param landmarkThreshold The landmark threshold value, i.e., the fraction of best scoring state pairs to consider
+     *     as landmarks. That is, of all the possible pairs of (LHS, RHS)-states, only the top so-many scoring pairs are
+     *     considered. For example, 0.25 means the top 25%. This threshold can be tweaked a bit if the state matchings
+     *     appear too arbitrary, but should stay within the interval [0,1]. A threshold of 0 would mean that no
+     *     landmarks will be picked. A threshold of 1.0 would would mean that all state combinations are potential
+     *     landmarks. Any value lower than 0.1 or higher than 0.5 will likely give undesired results.
+     * @param landmarkRatio The landmark ratio, indicating the ratio that a candidate landmark should be better than
+     *     another one, to be considered. That is, if during state matching, there are multiple (conflicting) candidate
+     *     matches to be considered, continue with the highest of these candidate matches, but only if it is
+     *     significantly better than any other candidate, where the significance is determined by this ratio. This
+     *     factor can be tweaked a bit if the matching results turn out unsatisfactory, or if there happen to be many
+     *     conflicting matches. In such a scenario, lowering this ratio might help. It does not make sense to have it
+     *     lower than 1.0.
+     */
+    public WalkinshawGLTSMatcher(U lhs, U rhs, SimilarityScorer<S, T, U> scoring, Combiner<S> statePropertyCombiner,
+            Combiner<T> transitionPropertyCombiner, double landmarkThreshold, double landmarkRatio)
+    {
         super(scoring);
         this.lhs = lhs;
         this.rhs = rhs;
         this.statePropertyCombiner = statePropertyCombiner;
         this.transitionPropertyCombiner = transitionPropertyCombiner;
+        this.landmarkThreshold = landmarkThreshold;
+        this.landmarkRatio = landmarkRatio;
     }
 
     @Override
