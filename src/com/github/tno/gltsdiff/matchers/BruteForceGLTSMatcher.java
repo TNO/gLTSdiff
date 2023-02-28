@@ -101,8 +101,8 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
      * Determines the best possible matching out of a set {@code candidateMatches} of possible candidate matchings, that
      * contains at least all the matchings in {@code fixedMatches} (which are thus fixed).
      * <p>
-     * Note that, since this method is recursive, stack depth issues may occur if the input GLTSs are very big (e.g., in
-     * the order of tens of thousands of states).
+     * Note that, since this method is recursive, stack depth issues may occur for larger input GLTSs. The exact limits
+     * depend on the Java Virtual Machine that is used, and its settings.
      * </p>
      * 
      * @param fixedMatches The set of matches that are already fixed.
