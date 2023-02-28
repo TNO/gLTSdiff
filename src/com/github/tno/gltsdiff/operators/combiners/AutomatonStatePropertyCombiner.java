@@ -14,17 +14,18 @@ import com.github.tno.gltsdiff.glts.AutomatonStateProperty;
 
 /**
  * A combiner for {@link AutomatonStateProperty automaton state properties}. Any two such properties can be combined if
- * they agree on state acceptance (i.e., they either both indicate acceptance or both indicate non-acceptance).
- * Combining two such properties results in an automaton state property with combined initial state information.
+ * they agree on states being initial and accepting (i.e., either both states are initial and accepting or both states
+ * are not initial and not accepting). Combining two such properties results in an automaton state property with their
+ * equal initial state and state acceptance information.
  */
 public class AutomatonStatePropertyCombiner extends Combiner<AutomatonStateProperty> {
     @Override
     protected boolean computeAreCombinable(AutomatonStateProperty left, AutomatonStateProperty right) {
-        return left.isAccepting() == right.isAccepting();
+        return left.isInitial() == right.isInitial() && left.isAccepting() == right.isAccepting();
     }
 
     @Override
     protected AutomatonStateProperty computeCombination(AutomatonStateProperty left, AutomatonStateProperty right) {
-        return new AutomatonStateProperty(left.isInitial() || right.isInitial(), left.isAccepting());
+        return new AutomatonStateProperty(left.isInitial(), left.isAccepting());
     }
 }
