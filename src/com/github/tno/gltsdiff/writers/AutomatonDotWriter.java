@@ -26,26 +26,24 @@ public class AutomatonDotWriter<S, T, U extends Automaton<S, T>> extends LTSDotW
     static final String SHAPE_DOUBLE_CIRCLE = "doublecircle";
 
     /**
-     * Instantiates a writer for the given automaton, which prints state identifiers as state labels.
+     * Instantiates a writer for automata, which prints state identifiers as state labels.
      * 
-     * @param automaton The automaton to be written.
      * @param transitionLabelPrinter A printer for printing transition labels.
      */
-    public AutomatonDotWriter(U automaton, HtmlPrinter<Transition<S, T>> transitionLabelPrinter) {
-        super(automaton, transitionLabelPrinter);
+    public AutomatonDotWriter(HtmlPrinter<Transition<S, T>> transitionLabelPrinter) {
+        super(transitionLabelPrinter);
     }
 
     /**
-     * Instantiates a writer for the given automaton.
+     * Instantiates a writer for the automata.
      * 
-     * @param automaton The automaton to be written.
      * @param stateLabelPrinter A printer for printing state labels.
      * @param transitionLabelPrinter A printer for printing transition labels.
      */
-    public AutomatonDotWriter(U automaton, HtmlPrinter<State<S>> stateLabelPrinter,
+    public AutomatonDotWriter(HtmlPrinter<State<S>> stateLabelPrinter,
             HtmlPrinter<Transition<S, T>> transitionLabelPrinter)
     {
-        super(automaton, stateLabelPrinter, transitionLabelPrinter);
+        super(stateLabelPrinter, transitionLabelPrinter);
     }
 
     @Override
@@ -54,7 +52,7 @@ public class AutomatonDotWriter<S, T, U extends Automaton<S, T>> extends LTSDotW
     }
 
     @Override
-    protected String stateShape(State<S> state) {
-        return glts.isAcceptingState(state) ? SHAPE_DOUBLE_CIRCLE : super.stateShape(state);
+    protected String stateShape(U automaton, State<S> state) {
+        return automaton.isAcceptingState(state) ? SHAPE_DOUBLE_CIRCLE : super.stateShape(automaton, state);
     }
 }

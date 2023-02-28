@@ -37,26 +37,24 @@ public class DiffAutomatonDotWriter<T, U extends DiffAutomaton<T>>
     private final HtmlPrinter<DiffKind> diffKindColorPrinter = new DiffKindHtmlPrinter();
 
     /**
-     * Instantiates a writer for the given difference automaton, which prints state identifiers as state labels.
+     * Instantiates a writer for difference automata, which prints state identifiers as state labels.
      * 
-     * @param automaton The difference automaton to be written.
      * @param transitionLabelPrinter A printer for printing transition labels.
      */
-    public DiffAutomatonDotWriter(U automaton, HtmlPrinter<DiffProperty<T>> transitionLabelPrinter) {
-        super(automaton, transition -> transitionLabelPrinter.print(transition.getProperty()));
+    public DiffAutomatonDotWriter(HtmlPrinter<DiffProperty<T>> transitionLabelPrinter) {
+        super(transition -> transitionLabelPrinter.print(transition.getProperty()));
     }
 
     /**
-     * Instantiates a writer for the given difference automaton.
+     * Instantiates a writer for difference automata.
      * 
-     * @param automaton The difference automaton to be written.
      * @param stateLabelPrinter A printer for printing state labels.
      * @param transitionLabelPrinter A printer for printing transition labels.
      */
-    public DiffAutomatonDotWriter(U automaton, HtmlPrinter<State<DiffAutomatonStateProperty>> stateLabelPrinter,
+    public DiffAutomatonDotWriter(HtmlPrinter<State<DiffAutomatonStateProperty>> stateLabelPrinter,
             HtmlPrinter<DiffProperty<T>> transitionLabelPrinter)
     {
-        super(automaton, stateLabelPrinter, transition -> transitionLabelPrinter.print(transition.getProperty()));
+        super(stateLabelPrinter, transition -> transitionLabelPrinter.print(transition.getProperty()));
     }
 
     @Override
@@ -65,25 +63,25 @@ public class DiffAutomatonDotWriter<T, U extends DiffAutomaton<T>>
     }
 
     @Override
-    protected String stateStyle(State<DiffAutomatonStateProperty> state) {
+    protected String stateStyle(U automaton, State<DiffAutomatonStateProperty> state) {
         switch (state.getProperty().getStateDiffKind()) {
             case ADDED:
             case REMOVED:
                 return STYLE_FILLED;
             case UNCHANGED:
-                return super.stateStyle(state);
+                return super.stateStyle(automaton, state);
             default:
                 throw new RuntimeException("Unknown difference kind.");
         }
     }
 
     @Override
-    protected String stateColor(State<DiffAutomatonStateProperty> state) {
+    protected String stateColor(U automaton, State<DiffAutomatonStateProperty> state) {
         return diffKindColorPrinter.print(state.getProperty().getStateDiffKind());
     }
 
     @Override
-    protected String stateFontColor(State<DiffAutomatonStateProperty> state) {
+    protected String stateFontColor(U automaton, State<DiffAutomatonStateProperty> state) {
         switch (state.getProperty().getStateDiffKind()) {
             case ADDED:
             case REMOVED:
@@ -96,13 +94,13 @@ public class DiffAutomatonDotWriter<T, U extends DiffAutomaton<T>>
     }
 
     @Override
-    protected String transitionColor(Transition<DiffAutomatonStateProperty, DiffProperty<T>> transition) {
+    protected String transitionColor(U automaton, Transition<DiffAutomatonStateProperty, DiffProperty<T>> transition) {
         return diffKindColorPrinter.print(transition.getProperty().getDiffKind());
     }
 
     @Override
-    protected String initialStateColor(State<DiffAutomatonStateProperty> initialState) {
-        Preconditions.checkArgument(glts.isInitialState(initialState), "Expected an initial state.");
+    protected String initialStateColor(U automaton, State<DiffAutomatonStateProperty> initialState) {
+        Preconditions.checkArgument(automaton.isInitialState(initialState), "Expected an initial state.");
         return diffKindColorPrinter.print(initialState.getProperty().getInitDiffKind());
     }
 }
