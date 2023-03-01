@@ -43,10 +43,12 @@ public abstract class AbstractMerger<S, T, U extends GLTS<S, T>> implements Merg
     /**
      * Checks whether the given matching is proper.
      * 
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
      * @param matching The matching that is to be validated.
      * @throws IllegalArgumentException In case the matching is found to be improper.
      */
-    protected void checkPreconditions(Map<State<S>, State<S>> matching) throws IllegalArgumentException {
+    protected void checkPreconditions(U lhs, U rhs, Map<State<S>, State<S>> matching) throws IllegalArgumentException {
         Set<State<S>> leftStates = new LinkedHashSet<>();
         Set<State<S>> rightStates = new LinkedHashSet<>();
 
@@ -54,8 +56,8 @@ public abstract class AbstractMerger<S, T, U extends GLTS<S, T>> implements Merg
             State<S> leftState = assignment.getKey();
             State<S> rightState = assignment.getValue();
 
-            Preconditions.checkArgument(getLhs().getStates().contains(leftState), "All keys must be LHS states.");
-            Preconditions.checkArgument(getRhs().getStates().contains(rightState), "All values must be RHS states.");
+            Preconditions.checkArgument(lhs.getStates().contains(leftState), "All keys must be LHS states.");
+            Preconditions.checkArgument(rhs.getStates().contains(rightState), "All values must be RHS states.");
             Preconditions.checkArgument(!leftStates.contains(leftState), "All keys must be disjoint.");
             Preconditions.checkArgument(!rightStates.contains(rightState), "All values must be disjoint.");
             Preconditions.checkArgument(
@@ -68,15 +70,17 @@ public abstract class AbstractMerger<S, T, U extends GLTS<S, T>> implements Merg
     }
 
     @Override
-    public U merge(Map<State<S>, State<S>> matching) throws IllegalArgumentException {
-        checkPreconditions(matching);
-        return mergeInternal(matching);
+    public U merge(U lhs, U rhs, Map<State<S>, State<S>> matching) throws IllegalArgumentException {
+        checkPreconditions(lhs, rhs, matching);
+        return mergeInternal(lhs, rhs, matching);
     }
 
     /**
      * Merges the LHS and RHS into a single GLTS. The given (LHS, RHS)-state matching determines which LHS states are to
      * be merged with which RHS states.
      * 
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
      * @param matching A matching from LHS states to RHS states. This matching should be proper in the sense that:
      *     <ul>
      *     <li>All keys are states in the LHS.</li>
@@ -86,5 +90,5 @@ public abstract class AbstractMerger<S, T, U extends GLTS<S, T>> implements Merg
      *     </ul>
      * @return The GLTS that is the merge of the LHS and the RHS.
      */
-    protected abstract U mergeInternal(Map<State<S>, State<S>> matching);
+    protected abstract U mergeInternal(U lhs, U rhs, Map<State<S>, State<S>> matching);
 }

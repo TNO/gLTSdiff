@@ -16,8 +16,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.BiFunction;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
@@ -52,42 +52,22 @@ import com.google.common.collect.HashBiMap;
  * @param <U> The type of GLTSs.
  */
 public class KuhnMunkresMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatcher<S, T, U> {
-    /** The left-hand-side GLTS. */
-    private final U lhs;
-
-    /** The right-hand-side GLTS. */
-    private final U rhs;
-
     /** The combiner for state properties. */
     private final Combiner<S> statePropertyCombiner;
 
     /**
-     * Constructs a new state matcher, for computing maximal (LHS, RHS)-state matchings.
+     * Constructs a Kuhn-Munkres state matcher.
      * 
-     * @param lhs The left-hand-side GLTS.
-     * @param rhs The right-hand-side GLTS.
      * @param scoring The algorithm for computing state similarity scores.
      * @param statePropertyCombiner The combiner for state properties.
      */
-    public KuhnMunkresMatcher(U lhs, U rhs, SimilarityScorer<S, T, U> scoring, Combiner<S> statePropertyCombiner) {
+    public KuhnMunkresMatcher(SimilarityScorer<S, T, U> scoring, Combiner<S> statePropertyCombiner) {
         super(scoring);
-        this.lhs = lhs;
-        this.rhs = rhs;
         this.statePropertyCombiner = statePropertyCombiner;
     }
 
     @Override
-    public U getLhs() {
-        return lhs;
-    }
-
-    @Override
-    public U getRhs() {
-        return rhs;
-    }
-
-    @Override
-    protected Map<State<S>, State<S>> computeInternal(RealMatrix scores) {
+    protected Map<State<S>, State<S>> computeInternal(U lhs, U rhs, RealMatrix scores) {
         // Declare the matrix that will be given as input to the Kuhn-Munkres algorithm.
         // The algorithm only works on square matrices. So the matrix needs to be suitably big.
         int matrixSize = Math.max(lhs.size(), rhs.size());
@@ -116,8 +96,8 @@ public class KuhnMunkresMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatch
         BiFunction<State<S>, State<S>, Double> getScore = (l, r) -> scores.getEntry(l.getId(), r.getId());
 
         // Check whether a solution already exists before executing the algorithm.
-        Map<State<S>, State<S>> matching = convert(constructMatching(matrix), getScore);
-        if (isComplete(matching, getScore)) {
+        Map<State<S>, State<S>> matching = convert(lhs, rhs, constructMatching(matrix), getScore);
+        if (isComplete(lhs, rhs, matching, getScore)) {
             return truncate(matching, getScore);
         }
 
@@ -132,8 +112,8 @@ public class KuhnMunkresMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatch
         step1(matrix);
 
         // Check whether the first step revealed a minimal matching.
-        matching = convert(constructMatching(matrix), getScore);
-        if (isComplete(matching, getScore)) {
+        matching = convert(lhs, rhs, constructMatching(matrix), getScore);
+        if (isComplete(lhs, rhs, matching, getScore)) {
             return truncate(matching, getScore);
         }
 
@@ -141,19 +121,19 @@ public class KuhnMunkresMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatch
         step2(matrix);
 
         // Check whether the second step revealed a minimal matching.
-        matching = convert(constructMatching(matrix), getScore);
-        if (isComplete(matching, getScore)) {
+        matching = convert(lhs, rhs, constructMatching(matrix), getScore);
+        if (isComplete(lhs, rhs, matching, getScore)) {
             return truncate(matching, getScore);
         }
 
         while (true) {
             // If not, perform step 3 and 4 of the algorithm.
-            Pair<Set<Integer>, Set<Integer>> lines = step3(matrix);
+            Pair<Set<Integer>, Set<Integer>> lines = step3(lhs, rhs, matrix);
             step4(matrix, lines.getFirst(), lines.getSecond());
 
             // Check whether the 3rd and 4th step revealed a minimal matching, which is guaranteed to happen eventually.
-            matching = convert(constructMatching(matrix), getScore);
-            if (isComplete(matching, getScore)) {
+            matching = convert(lhs, rhs, constructMatching(matrix), getScore);
+            if (isComplete(lhs, rhs, matching, getScore)) {
                 break;
             }
         }
@@ -225,13 +205,15 @@ public class KuhnMunkresMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatch
      * Finds a minimal number of horizontal and vertical lines over the given matrix that together cover all the entries
      * in the matrix that are {@code 0.0d}. This operation does not modify {@code matrix}.
      * 
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
      * @param matrix The matrix of score assignments, whose entries are either within the range [0,1] or are
      *     {@link Double#POSITIVE_INFINITY}.
      * @return The horizontal (row) and vertical (column) lines, that each come as a set of integers representing the
      *     row/column index. So the returned structure is a pair of sets of integers, where the first set contains the
      *     row lines and the second set contains the column lines.
      */
-    private Pair<Set<Integer>, Set<Integer>> step3(RealMatrix matrix) {
+    private Pair<Set<Integer>, Set<Integer>> step3(U lhs, U rhs, RealMatrix matrix) {
         // Match as many (LHS, RHS)-states as possible.
         Map<Integer, Integer> matching = constructMatching(matrix);
 
@@ -367,12 +349,16 @@ public class KuhnMunkresMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatch
     /**
      * Determines whether the given matching is a complete (LHS, RHS)-matching, in the sense that it cannot be extended.
      * 
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
      * @param matching The (LHS, RHS)-state matching to check.
      * @param scores The similarity scoring function for (LHS, RHS)-state pairs. All state similarity scores must either
      *     be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
      * @return {@code true} if {@code matching} is complete and cannot be extended further, {@code false} otherwise.
      */
-    private boolean isComplete(Map<State<S>, State<S>> matching, BiFunction<State<S>, State<S>, Double> scores) {
+    private boolean isComplete(U lhs, U rhs, Map<State<S>, State<S>> matching,
+            BiFunction<State<S>, State<S>, Double> scores)
+    {
         Set<State<S>> leftStates = new LinkedHashSet<>(lhs.getStates());
         Set<State<S>> rightStates = new LinkedHashSet<>(rhs.getStates());
 
@@ -391,6 +377,8 @@ public class KuhnMunkresMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatch
     /**
      * Converts a given matching that is constructed for the Kuhn-Munkres matrix, to a matching on (LHS, RHS)-states.
      * 
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
      * @param matching The (LHS, RHS)-state matching to convert, where all states are represented by their identifiers.
      *     All matched pairs of states must have combinable state properties, as well as a finite similarity score with
      *     respect to {@code scores}.
@@ -398,7 +386,7 @@ public class KuhnMunkresMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatch
      *     be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
      * @return The converted (LHS, RHS)-state matching.
      */
-    private Map<State<S>, State<S>> convert(Map<Integer, Integer> matching,
+    private Map<State<S>, State<S>> convert(U lhs, U rhs, Map<Integer, Integer> matching,
             BiFunction<State<S>, State<S>, Double> scores)
     {
         Map<State<S>, State<S>> stateMatching = new LinkedHashMap<>();

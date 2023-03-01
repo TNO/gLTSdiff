@@ -26,20 +26,16 @@ public class WalkinshawGlobalLTSScorer<S, T, U extends LTS<S, T>> extends Walkin
     /**
      * Instantiates a new Walkinshaw global scorer for LTSs.
      * 
-     * @param lhs The left-hand-side LTS, which has at least one state.
-     * @param rhs The right-hand-side LTS, which has at least one state.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
-    public WalkinshawGlobalLTSScorer(U lhs, U rhs, Combiner<S> statePropertyCombiner,
-            Combiner<T> transitionPropertyCombiner)
-    {
-        super(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner);
+    public WalkinshawGlobalLTSScorer(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner) {
+        super(statePropertyCombiner, transitionPropertyCombiner);
     }
 
     @Override
-    protected double getNumeratorAdjustment(State<S> leftState, State<S> rightState, boolean isForward) {
-        double adjustment = super.getNumeratorAdjustment(leftState, rightState, isForward);
+    protected double getNumeratorAdjustment(U lhs, U rhs, State<S> leftState, State<S> rightState, boolean isForward) {
+        double adjustment = super.getNumeratorAdjustment(lhs, rhs, leftState, rightState, isForward);
 
         // Adjust the numerator if backward scores are computed and 'leftState' and 'rightState' are both initial.
         if (!isForward && lhs.isInitialState(leftState) && rhs.isInitialState(rightState)) {
@@ -50,8 +46,10 @@ public class WalkinshawGlobalLTSScorer<S, T, U extends LTS<S, T>> extends Walkin
     }
 
     @Override
-    protected double getDenominatorAdjustment(State<S> leftState, State<S> rightState, boolean isForward) {
-        double adjustment = super.getDenominatorAdjustment(leftState, rightState, isForward);
+    protected double getDenominatorAdjustment(U lhs, U rhs, State<S> leftState, State<S> rightState,
+            boolean isForward)
+    {
+        double adjustment = super.getDenominatorAdjustment(lhs, rhs, leftState, rightState, isForward);
 
         // Adjust the denominator if backward scores are computed and 'leftState' and/or 'rightState' is initial.
         if (!isForward && (lhs.isInitialState(leftState) || rhs.isInitialState(rightState))) {

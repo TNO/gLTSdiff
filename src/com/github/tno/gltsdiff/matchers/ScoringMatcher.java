@@ -42,11 +42,11 @@ public abstract class ScoringMatcher<S, T, U extends GLTS<S, T>> implements Matc
     }
 
     @Override
-    public Map<State<S>, State<S>> compute() throws IllegalArgumentException {
-        RealMatrix scores = scoring.compute();
-        Preconditions.checkArgument(scores.getRowDimension() == getLhs().size());
-        Preconditions.checkArgument(scores.getColumnDimension() == getRhs().size());
-        return computeInternal(normalize(scores));
+    public Map<State<S>, State<S>> compute(U lhs, U rhs) throws IllegalArgumentException {
+        RealMatrix scores = scoring.compute(lhs, rhs);
+        Preconditions.checkArgument(scores.getRowDimension() == lhs.size());
+        Preconditions.checkArgument(scores.getColumnDimension() == rhs.size());
+        return computeInternal(lhs, rhs, normalize(scores));
     }
 
     /**
@@ -117,6 +117,8 @@ public abstract class ScoringMatcher<S, T, U extends GLTS<S, T>> implements Matc
      * Given a matrix {@code scores} containing similarity scores for (LHS, RHS)-state pairs, computes which LHS states
      * should be matched onto which RHS states. The computed matching comes as a mapping from LHS states to RHS states.
      * 
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
      * @param scores A matrix of (LHS, RHS)-state similarity scores. The rows correspond to LHS states, columns to RHS
      *     states, and cells to a score that expresses how similar the (LHS, RHS)-state pair is. State similarity scores
      *     must either be in the range [0,1], or be {@link Double#NEGATIVE_INFINITY}, in which case the state pair is
@@ -131,5 +133,5 @@ public abstract class ScoringMatcher<S, T, U extends GLTS<S, T>> implements Matc
      *     <li>All matched states have combinable properties.</li>
      *     </ul>
      */
-    protected abstract Map<State<S>, State<S>> computeInternal(RealMatrix scores);
+    protected abstract Map<State<S>, State<S>> computeInternal(U lhs, U rhs, RealMatrix scores);
 }

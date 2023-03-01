@@ -48,43 +48,39 @@ public class WalkinshawLocalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walki
     /**
      * Instantiates a new Walkinshaw local similarity scorer for GLTSs, that performs only a single refinement.
      * 
-     * @param lhs The left-hand-side GLTS, which has at least one state.
-     * @param rhs The right-hand-side GLTS, which has at least one state.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
-    public WalkinshawLocalGLTSScorer(U lhs, U rhs, Combiner<S> statePropertyCombiner,
-            Combiner<T> transitionPropertyCombiner)
-    {
-        this(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner, 1);
+    public WalkinshawLocalGLTSScorer(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner) {
+        this(statePropertyCombiner, transitionPropertyCombiner, 1);
     }
 
     /**
      * Instantiates a new Walkinshaw local similarity scorer for GLTSs.
      * 
-     * @param lhs The left-hand-side GLTS, which has at least one state.
-     * @param rhs The right-hand-side GLTS, which has at least one state.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      * @param nrOfRefinements The number of refinements to perform, which must be at least 1.
      */
-    public WalkinshawLocalGLTSScorer(U lhs, U rhs, Combiner<S> statePropertyCombiner,
-            Combiner<T> transitionPropertyCombiner, int nrOfRefinements)
+    public WalkinshawLocalGLTSScorer(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner,
+            int nrOfRefinements)
     {
-        super(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner);
+        super(statePropertyCombiner, transitionPropertyCombiner);
         this.nrOfRefinements = nrOfRefinements;
 
         Preconditions.checkArgument(nrOfRefinements > 0, "Expected a positive number of refinements.");
     }
 
     @Override
-    protected RealMatrix computeForwardSimilarityScores() {
-        return computeScores((glts, state) -> glts.getOutgoingTransitions(state), Transition::getTarget, true);
+    protected RealMatrix computeForwardSimilarityScores(U lhs, U rhs) {
+        return computeScores(lhs, rhs, (glts, state) -> glts.getOutgoingTransitions(state), Transition::getTarget,
+                true);
     }
 
     @Override
-    protected RealMatrix computeBackwardSimilarityScores() {
-        return computeScores((glts, state) -> glts.getIncomingTransitions(state), Transition::getSource, false);
+    protected RealMatrix computeBackwardSimilarityScores(U lhs, U rhs) {
+        return computeScores(lhs, rhs, (glts, state) -> glts.getIncomingTransitions(state), Transition::getSource,
+                false);
     }
 
     /**
@@ -101,6 +97,8 @@ public class WalkinshawLocalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walki
      * {@link WalkinshawGlobalGLTSScorer} can be approximated more closely.
      * </p>
      * 
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
      * @param relevantTransitions A function that, given an GLTS and a state of that GLTS, determines the list of
      *     transitions of the given state that are relevant for computing state similarity scores. This function should
      *     be unidirectional, in the sense that it should consistently give either all incoming transitions or all
@@ -113,7 +111,7 @@ public class WalkinshawLocalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walki
      * @param isForward Whether the state similarity score equation is for the forward or the backward direction.
      * @return A matrix of local state similarity scores, all of which are in the range [-1,1].
      */
-    private RealMatrix computeScores(BiFunction<U, State<S>, List<Transition<S, T>>> relevantTransitions,
+    private RealMatrix computeScores(U lhs, U rhs, BiFunction<U, State<S>, List<Transition<S, T>>> relevantTransitions,
             Function<Transition<S, T>, State<S>> stateSelector, boolean isForward)
     {
         // Define an initial similarity score matrix with score 0 for every (LHS, RHS)-state pair.
@@ -127,7 +125,7 @@ public class WalkinshawLocalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walki
             for (State<S> leftState: lhs.getStates()) {
                 for (State<S> rightState: rhs.getStates()) {
                     // Refine the similarity score of the current state pair.
-                    double refinedScore = similarityScore(leftState, rightState, scores, relevantTransitions,
+                    double refinedScore = similarityScore(lhs, rhs, leftState, rightState, scores, relevantTransitions,
                             stateSelector, isForward);
 
                     // Store the refined similarity score in 'refinedScores'.
@@ -146,6 +144,8 @@ public class WalkinshawLocalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walki
      * them as indicated by Equation (6) in the TOSEM 2013 article of Walkinshaw et al., where the similarity scores of
      * all state pairs on the right-hand side of this equation are resolved using {@code scores}.
      * 
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
      * @param leftState A LHS state.
      * @param rightState A RHS state.
      * @param scores The current matrix of similarity scores that is to be refined.
@@ -161,7 +161,7 @@ public class WalkinshawLocalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walki
      * @param isForward Whether the state similarity score equation is for the forward or the backward direction.
      * @return A state similarity score for the given pair of (LHS, RHS)-states, in the range [-1,1].
      */
-    private double similarityScore(State<S> leftState, State<S> rightState, RealMatrix scores,
+    private double similarityScore(U lhs, U rhs, State<S> leftState, State<S> rightState, RealMatrix scores,
             BiFunction<U, State<S>, List<Transition<S, T>>> relevantTransitions,
             Function<Transition<S, T>, State<S>> stateSelector, boolean isForward)
     {
@@ -189,7 +189,7 @@ public class WalkinshawLocalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walki
         // "that do not match each other" to be transition properties "that do not combine with each other".
         double denominator = 2 * (numberOfUncombinableTransitions(leftTransitions, rightTransitions)
                 + numberOfUncombinableTransitions(rightTransitions, leftTransitions) + neighbors.size()
-                + getDenominatorAdjustment(leftState, rightState, isForward));
+                + getDenominatorAdjustment(lhs, rhs, leftState, rightState, isForward));
 
         // Shortcut to improve performance.
         if (denominator == 0) {
@@ -197,7 +197,7 @@ public class WalkinshawLocalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walki
         }
 
         // Second, calculate its numerator. Details are in the paper.
-        double numerator = getNumeratorAdjustment(leftState, rightState, isForward);
+        double numerator = getNumeratorAdjustment(lhs, rhs, leftState, rightState, isForward);
 
         for (Pair<State<S>, State<S>> neighbor: neighbors) {
             int lhsIdx = neighbor.getFirst().getId();

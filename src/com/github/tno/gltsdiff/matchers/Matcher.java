@@ -23,15 +23,11 @@ import com.github.tno.gltsdiff.glts.State;
  * @param <U> The type of GLTSs.
  */
 public interface Matcher<S, T, U extends GLTS<S, T>> {
-    /** @return The left-hand-side (LHS) GLTS. */
-    public U getLhs();
-
-    /** @return The right-hand-side (RHS) GLTS. */
-    public U getRhs();
-
     /**
      * Computes a matching from LHS states to RHS states.
      * 
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
      * @return A matching from LHS to RHS states that satisfies the following properties:
      *     <ul>
      *     <li>All states in the key set of the returned matching are LHS states.</li>
@@ -40,5 +36,5 @@ public interface Matcher<S, T, U extends GLTS<S, T>> {
      *     <li>All matched states have combinable properties.</li>
      *     </ul>
      */
-    public Map<State<S>, State<S>> compute();
+    public Map<State<S>, State<S>> compute(U lhs, U rhs);
 }

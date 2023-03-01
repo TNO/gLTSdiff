@@ -26,35 +26,29 @@ public class WalkinshawLocalLTSScorer<S, T, U extends LTS<S, T>> extends Walkins
     /**
      * Instantiates a new Walkinshaw local similarity scorer for LTSs, that performs only a single refinement.
      * 
-     * @param lhs The left-hand-side LTS, which has at least one state.
-     * @param rhs The right-hand-side LTS, which has at least one state.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
-    public WalkinshawLocalLTSScorer(U lhs, U rhs, Combiner<S> statePropertyCombiner,
-            Combiner<T> transitionPropertyCombiner)
-    {
-        super(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner);
+    public WalkinshawLocalLTSScorer(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner) {
+        super(statePropertyCombiner, transitionPropertyCombiner);
     }
 
     /**
      * Instantiates a new Walkinshaw local similarity scorer for LTSs.
      * 
-     * @param lhs The left-hand-side GTS, which has at least one state.
-     * @param rhs The right-hand-side LTS, which has at least one state.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      * @param nrOfRefinements The number of refinements to perform, which must be at least 1.
      */
-    public WalkinshawLocalLTSScorer(U lhs, U rhs, Combiner<S> statePropertyCombiner,
-            Combiner<T> transitionPropertyCombiner, int nrOfRefinements)
+    public WalkinshawLocalLTSScorer(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner,
+            int nrOfRefinements)
     {
-        super(lhs, rhs, statePropertyCombiner, transitionPropertyCombiner, nrOfRefinements);
+        super(statePropertyCombiner, transitionPropertyCombiner, nrOfRefinements);
     }
 
     @Override
-    protected double getNumeratorAdjustment(State<S> leftState, State<S> rightState, boolean isForward) {
-        double adjustment = super.getNumeratorAdjustment(leftState, rightState, isForward);
+    protected double getNumeratorAdjustment(U lhs, U rhs, State<S> leftState, State<S> rightState, boolean isForward) {
+        double adjustment = super.getNumeratorAdjustment(lhs, rhs, leftState, rightState, isForward);
 
         // Adjust the numerator if backward scores are computed and 'leftState' and 'rightState' are both initial.
         if (!isForward && lhs.isInitialState(leftState) && rhs.isInitialState(rightState)) {
@@ -65,8 +59,10 @@ public class WalkinshawLocalLTSScorer<S, T, U extends LTS<S, T>> extends Walkins
     }
 
     @Override
-    protected double getDenominatorAdjustment(State<S> leftState, State<S> rightState, boolean isForward) {
-        double adjustment = super.getDenominatorAdjustment(leftState, rightState, isForward);
+    protected double getDenominatorAdjustment(U lhs, U rhs, State<S> leftState, State<S> rightState,
+            boolean isForward)
+    {
+        double adjustment = super.getDenominatorAdjustment(lhs, rhs, leftState, rightState, isForward);
 
         // Adjust the denominator if backward scores are computed and 'leftState' and/or 'rightState' is initial.
         if (!isForward && (lhs.isInitialState(leftState) || rhs.isInitialState(rightState))) {

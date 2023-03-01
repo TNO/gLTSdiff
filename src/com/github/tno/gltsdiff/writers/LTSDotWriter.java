@@ -28,26 +28,22 @@ import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
  */
 public class LTSDotWriter<S, T, U extends LTS<S, T>> extends GLTSDotWriter<S, T, U> {
     /**
-     * Instantiates a writer for the given LTS, which prints state identifiers as state labels.
+     * Instantiates a writer for LTSs, which prints state identifiers as state labels.
      * 
-     * @param lts The LTS to be written.
      * @param transitionLabelPrinter A printer for printing transition labels.
      */
-    public LTSDotWriter(U lts, HtmlPrinter<Transition<S, T>> transitionLabelPrinter) {
-        super(lts, transitionLabelPrinter);
+    public LTSDotWriter(HtmlPrinter<Transition<S, T>> transitionLabelPrinter) {
+        super(transitionLabelPrinter);
     }
 
     /**
-     * Instantiates a writer for the given LTS.
+     * Instantiates a writer for the LTSs.
      * 
-     * @param lts The LTS to be written.
      * @param stateLabelPrinter A printer for printing state labels.
      * @param transitionLabelPrinter A printer for printing transition labels.
      */
-    public LTSDotWriter(U lts, HtmlPrinter<State<S>> stateLabelPrinter,
-            HtmlPrinter<Transition<S, T>> transitionLabelPrinter)
-    {
-        super(lts, stateLabelPrinter, transitionLabelPrinter);
+    public LTSDotWriter(HtmlPrinter<State<S>> stateLabelPrinter, HtmlPrinter<Transition<S, T>> transitionLabelPrinter) {
+        super(stateLabelPrinter, transitionLabelPrinter);
     }
 
     @Override
@@ -56,32 +52,32 @@ public class LTSDotWriter<S, T, U extends LTS<S, T>> extends GLTSDotWriter<S, T,
     }
 
     @Override
-    protected void writeTransitions(Writer writer) throws IOException {
+    protected void writeTransitions(U lts, Writer writer) throws IOException {
         // Write all initial state arrows.
-        for (State<S> state: sortStates(glts.getInitialStates())) {
-            writeInitialTransition(writer, state);
+        for (State<S> state: sortStates(lts, lts.getInitialStates())) {
+            writeInitialTransition(lts, writer, state);
         }
 
         // Write all transitions.
-        super.writeTransitions(writer);
+        super.writeTransitions(lts, writer);
     }
 
     @Override
-    protected Comparator<State<S>> getStateComparator() {
+    protected Comparator<State<S>> getStateComparator(U lts) {
         return Comparator
                 // First compare initial state information (descending order: first true, then false).
-                .comparing((State<S> state) -> !glts.isInitialState(state))
+                .comparing((State<S> state) -> !lts.isInitialState(state))
                 // Then compare states in the default way.
-                .thenComparing(super.getStateComparator());
+                .thenComparing(super.getStateComparator(lts));
     }
 
-    private void writeInitialTransition(Writer writer, State<S> initialTransition) throws IOException {
+    private void writeInitialTransition(U lts, Writer writer, State<S> initialTransition) throws IOException {
         String initialTransitionId = stateId(initialTransition);
         writer.write(String.format("\t__init%s [label=<> shape=\"none\"];", initialTransitionId));
         writer.write(System.lineSeparator());
 
         writer.write(String.format("\t__init%s -> %s", initialTransitionId, initialTransitionId));
-        optionalWrite(" [color=\"%s\"]", skipDefaultColor(initialStateColor(initialTransition)), writer);
+        optionalWrite(" [color=\"%s\"]", skipDefaultColor(initialStateColor(lts, initialTransition)), writer);
         writer.write(";");
         writer.write(System.lineSeparator());
     }
