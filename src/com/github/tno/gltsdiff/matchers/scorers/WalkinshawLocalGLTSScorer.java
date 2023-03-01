@@ -46,17 +46,18 @@ public class WalkinshawLocalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walki
     private final int nrOfRefinements;
 
     /**
-     * Instantiates a new Walkinshaw local similarity scorer for GLTSs, that performs only a single refinement.
+     * Instantiates a new Walkinshaw local similarity scorer for GLTSs, that performs only a single refinement. Uses an
+     * attenuation factor of 0.6.
      * 
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
     public WalkinshawLocalGLTSScorer(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner) {
-        this(statePropertyCombiner, transitionPropertyCombiner, 1);
+        this(statePropertyCombiner, transitionPropertyCombiner, 1, 0.6d);
     }
 
     /**
-     * Instantiates a new Walkinshaw local similarity scorer for GLTSs.
+     * Instantiates a new Walkinshaw local similarity scorer for GLTSs. Uses an attenuation factor of 0.6.
      * 
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
@@ -65,7 +66,26 @@ public class WalkinshawLocalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walki
     public WalkinshawLocalGLTSScorer(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner,
             int nrOfRefinements)
     {
-        super(statePropertyCombiner, transitionPropertyCombiner);
+        this(statePropertyCombiner, transitionPropertyCombiner, nrOfRefinements, 0.6d);
+    }
+
+    /**
+     * Instantiates a new Walkinshaw local similarity scorer for GLTSs.
+     * 
+     * @param statePropertyCombiner The combiner for state properties.
+     * @param transitionPropertyCombiner The combiner for transition properties.
+     * @param nrOfRefinements The number of refinements to perform, which must be at least 1.
+     * @param attenuationFactor The attenuation factor, the ratio in the range [0,1] that determines how much the
+     *     similarity scores of far-away states influence the final similarity scores. This factor can be tweaked a bit
+     *     if the comparison results come out unsatisfactory. A ratio of 0 would mean that only local similarity scores
+     *     are used. Note that, if one is only interested in local similarity, {@link WalkinshawLocalGLTSScorer} should
+     *     be used instead, which gives the same result but is much faster. A ratio of 1 would mean that far-away state
+     *     similarities contribute equally much as local ones.
+     */
+    public WalkinshawLocalGLTSScorer(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner,
+            int nrOfRefinements, double attenuationFactor)
+    {
+        super(statePropertyCombiner, transitionPropertyCombiner, attenuationFactor);
         this.nrOfRefinements = nrOfRefinements;
 
         Preconditions.checkArgument(nrOfRefinements > 0, "Expected a positive number of refinements.");
