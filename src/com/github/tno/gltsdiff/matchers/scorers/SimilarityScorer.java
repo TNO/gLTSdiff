@@ -15,8 +15,8 @@ import org.apache.commons.math3.linear.RealMatrix;
 import com.github.tno.gltsdiff.glts.GLTS;
 
 /**
- * A scoring algorithm for computing similarity scores for every pair of (LHS, RHS)-states, indicating how similar their
- * surrounding structure is.
+ * A scorer, a scoring algorithm for computing similarity scores for every pair of (LHS, RHS)-states, indicating how
+ * similar their surrounding structure is.
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.

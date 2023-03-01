@@ -86,7 +86,7 @@ public abstract class WalkinshawScorer<S, T, U extends GLTS<S, T>> implements Si
         RealMatrix forwardScores = computeForwardSimilarityScores(lhs, rhs);
         RealMatrix backwardScores = computeBackwardSimilarityScores(lhs, rhs);
 
-        // Ensure that the scoring matrices have the right dimensions.
+        // Ensure that the score matrices have the right dimensions.
         Preconditions.checkArgument(forwardScores.getRowDimension() == lhs.size(),
                 "Expected the number of rows in the forward score matrix to equal the number of LHS states.");
         Preconditions.checkArgument(forwardScores.getColumnDimension() == rhs.size(),

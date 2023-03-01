@@ -33,14 +33,14 @@ public class WalkinshawLTSMatcher<S, T, U extends LTS<S, T>> extends WalkinshawG
     /**
      * Instantiates a new Walkinshaw matcher for LTSs.
      * 
-     * @param scoring The algorithm for computing state similarity scores.
+     * @param scorer The algorithm for computing state similarity scores.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
-    public WalkinshawLTSMatcher(SimilarityScorer<S, T, U> scoring, Combiner<S> statePropertyCombiner,
+    public WalkinshawLTSMatcher(SimilarityScorer<S, T, U> scorer, Combiner<S> statePropertyCombiner,
             Combiner<T> transitionPropertyCombiner)
     {
-        super(scoring, statePropertyCombiner, transitionPropertyCombiner);
+        super(scorer, statePropertyCombiner, transitionPropertyCombiner);
     }
 
     @Override
