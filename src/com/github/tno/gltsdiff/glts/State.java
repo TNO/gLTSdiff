@@ -50,7 +50,7 @@ public class State<S> {
     }
 
     /**
-     * Replaces the enclosed state property.
+     * Replace the state's property.
      * 
      * @param property The new non-{@code null} state property.
      */

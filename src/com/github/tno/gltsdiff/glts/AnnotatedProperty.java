@@ -24,7 +24,7 @@ import com.google.common.collect.ImmutableSet;
  * @param <U> The type of annotations.
  */
 public class AnnotatedProperty<T, U> {
-    /** The non-{@code null} enclosed property. */
+    /** The non-{@code null} property. */
     private final T property;
 
     /** The non-{@code null} set of non-{@code null} annotations. */
@@ -33,7 +33,7 @@ public class AnnotatedProperty<T, U> {
     /**
      * Instantiates a new annotated property without annotations.
      * 
-     * @param property The non-{@code null} enclosed property.
+     * @param property The non-{@code null} property.
      */
     public AnnotatedProperty(T property) {
         this(property, ImmutableSet.of());
@@ -42,7 +42,7 @@ public class AnnotatedProperty<T, U> {
     /**
      * Instantiates a new annotated property.
      * 
-     * @param property The non-{@code null} enclosed property.
+     * @param property The non-{@code null} property.
      * @param annotations The non-{@code null} set of non-{@code null} annotations.
      */
     public AnnotatedProperty(T property, Set<U> annotations) {
@@ -54,7 +54,7 @@ public class AnnotatedProperty<T, U> {
         this.annotations = annotations;
     }
 
-    /** @return The non-{@code null} enclosed property. */
+    /** @return The non-{@code null} property. */
     public T getProperty() {
         return property;
     }
