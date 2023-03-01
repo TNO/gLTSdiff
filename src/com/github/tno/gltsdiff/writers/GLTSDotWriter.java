@@ -91,7 +91,6 @@ public class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
     }
 
     /**
-     * @param glts The GLTS.
      * @return The name of the digraph to be written in DOT format.
      */
     protected String getDigraphName() {
