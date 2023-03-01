@@ -87,6 +87,9 @@ public abstract class WalkinshawScorer<S, T, U extends GLTS<S, T>> implements Si
     public WalkinshawScorer(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner,
             double attenuationFactor)
     {
+        Preconditions.checkArgument(0 <= attenuationFactor && attenuationFactor <= 1,
+                "Expected attenuation factor to be in the range [0,1].");
+
         this.statePropertyCombiner = statePropertyCombiner;
         this.transitionPropertyCombiner = transitionPropertyCombiner;
         this.attenuationFactor = attenuationFactor;
