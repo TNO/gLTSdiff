@@ -21,32 +21,32 @@ import com.google.common.base.Preconditions;
  * @param <T> The type of inner properties.
  */
 public final class DiffProperty<T> {
-    /** The non-{@code null} enclosed property. */
+    /** The non-{@code null} property. */
     private final T property;
 
-    /** The non-{@code null} enclosed difference kind. */
+    /** The non-{@code null} difference kind. */
     private final DiffKind diffKind;
 
     /**
      * Constructs a new difference property.
      * 
-     * @param property The non-{@code null} enclosed property.
-     * @param diffKind The non-{@code null} enclosed difference kind.
+     * @param property The non-{@code null} property.
+     * @param diffKind The non-{@code null} difference kind.
      */
     public DiffProperty(T property, DiffKind diffKind) {
-        Preconditions.checkNotNull(property, "Expected a non-null enclosed property.");
+        Preconditions.checkNotNull(property, "Expected a non-null property.");
         Preconditions.checkNotNull(diffKind, "Expected a non-null difference kind.");
 
         this.property = property;
         this.diffKind = diffKind;
     }
 
-    /** @return The non-{@code null} enclosed property. */
+    /** @return The non-{@code null} property. */
     public T getProperty() {
         return property;
     }
 
-    /** @return The non-{@code null} enclosed difference kind. */
+    /** @return The non-{@code null} difference kind. */
     public DiffKind getDiffKind() {
         return diffKind;
     }
