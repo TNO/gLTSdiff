@@ -45,9 +45,9 @@ import com.google.common.collect.HashBiMap;
  * <p>
  * Note that, since computing global similarity scores requires solving systems of linear equations, the complexity of
  * this computation is about O((|LHS|*|RHS|)^3), with |LHS| and |RHS| the number of states in the LHS and RHS,
- * respectively. So when performance problems are encountered, consider switching to a more lightweight scoring system
- * instead, like for example {@link WalkinshawLocalGLTSScorer}. However, {@link WalkinshawGlobalGLTSScorer} has shown to
- * perform well in practice even with larger GLTSs, as long as they are sparse, i.e., states only have a few neighbors.
+ * respectively. So when performance problems are encountered, consider switching to a more lightweight scorer instead,
+ * like for example {@link WalkinshawLocalGLTSScorer}. However, {@link WalkinshawGlobalGLTSScorer} has shown to perform
+ * well in practice even with larger GLTSs, as long as they are sparse, i.e., states only have a few neighbors.
  * </p>
  *
  * @param <S> The type of state properties.

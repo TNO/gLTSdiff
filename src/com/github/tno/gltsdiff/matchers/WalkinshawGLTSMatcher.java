@@ -81,20 +81,20 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
     /**
      * Instantiates a new Walkinshaw matcher for GLTSs. Uses a landmark threshold of 0.25 and a landmark ratio of 1.5.
      * 
-     * @param scoring The algorithm for computing state similarity scores.
+     * @param scorer The algorithm for computing state similarity scores.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
-    public WalkinshawGLTSMatcher(SimilarityScorer<S, T, U> scoring, Combiner<S> statePropertyCombiner,
+    public WalkinshawGLTSMatcher(SimilarityScorer<S, T, U> scorer, Combiner<S> statePropertyCombiner,
             Combiner<T> transitionPropertyCombiner)
     {
-        this(scoring, statePropertyCombiner, transitionPropertyCombiner, 0.25d, 1.5d);
+        this(scorer, statePropertyCombiner, transitionPropertyCombiner, 0.25d, 1.5d);
     }
 
     /**
      * Instantiates a new Walkinshaw matcher for GLTSs.
      * 
-     * @param scoring The algorithm for computing state similarity scores.
+     * @param scorer The algorithm for computing state similarity scores.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      * @param landmarkThreshold The landmark threshold value, i.e., the fraction of best scoring state pairs to consider
@@ -111,10 +111,10 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
      *     conflicting matches. In such a scenario, lowering this ratio might help. It does not make sense to have it
      *     lower than 1.0.
      */
-    public WalkinshawGLTSMatcher(SimilarityScorer<S, T, U> scoring, Combiner<S> statePropertyCombiner,
+    public WalkinshawGLTSMatcher(SimilarityScorer<S, T, U> scorer, Combiner<S> statePropertyCombiner,
             Combiner<T> transitionPropertyCombiner, double landmarkThreshold, double landmarkRatio)
     {
-        super(scoring);
+        super(scorer);
         this.statePropertyCombiner = statePropertyCombiner;
         this.transitionPropertyCombiner = transitionPropertyCombiner;
         this.landmarkThreshold = landmarkThreshold;
@@ -144,13 +144,13 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
     private Set<Pair<State<S>, State<S>>> identifyLandmarks(U lhs, U rhs,
             BiFunction<State<S>, State<S>, Double> scores)
     {
-        // First determine and collect the best so-many scoring state pairs. We will only consider these.
+        // First determine and collect the so-many best scoring state pairs. We will only consider these.
         int nrOfPairsToConsider = (int)Math.ceil(landmarkThreshold * lhs.size() * rhs.size());
 
         List<Pair<Pair<State<S>, State<S>>, Double>> bestScoringPairs = //
                 getScorePairs(lhs, rhs, scores).stream() // Get compatible state pairs.
                         .sorted((s1, s2) -> s2.getSecond().compareTo(s1.getSecond())) // Sort on scores in desc. order.
-                        .limit(nrOfPairsToConsider) // Only take the best so-many scoring pairs.
+                        .limit(nrOfPairsToConsider) // Only take the so-many best scoring pairs.
                         .collect(Collectors.toList());
 
         // Out of 'bestScoringStatePairs' construct a map from LHS states to the list of compatible RHS states
@@ -361,8 +361,8 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
      * @param landmarks The set of input landmarks.
-     * @param scores A similarity scoring function. All state similarity scores must either be within the range [0,1] or
-     *     be {@link Double#POSITIVE_INFINITY}.
+     * @param scores A scoring function that expresses for all (LHS, RHS)-state pairs how structurally similar they are.
+     *     All state similarity scores must either be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
      * @return The set of state pairs to match to one another, which are all guaranteed to be compatible with respect to
      *     {@link #isCompatible}.
      */
@@ -397,8 +397,8 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
      * 
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
-     * @param scores A similarity scoring function. All state similarity scores must either be within the range [0,1] or
-     *     be {@link Double#POSITIVE_INFINITY}.
+     * @param scores A scoring function that expresses for all (LHS, RHS)-state pairs how structurally similar they are.
+     *     All state similarity scores must either be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
      * @return The conversion result, containing only (LHS, RHS)-state pairs that are compatible.
      */
     private List<Pair<Pair<State<S>, State<S>>, Double>> getScorePairs(U lhs, U rhs,
@@ -424,8 +424,8 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
      * is compatible if it has a finite score, and has combinable state properties.
      * 
      * @param statePair The state pair to check.
-     * @param scores A similarity scoring function. All state similarity scores must either be within the range [0,1] or
-     *     be {@link Double#POSITIVE_INFINITY}.
+     * @param scores A scoring function that expresses for all (LHS, RHS)-state pairs how structurally similar they are.
+     *     All state similarity scores must either be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
      * @return {@code true} if the given state pair is compatible, {@code false} otherwise.
      */
     protected boolean isCompatible(Pair<State<S>, State<S>> statePair, BiFunction<State<S>, State<S>, Double> scores) {

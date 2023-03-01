@@ -30,20 +30,20 @@ import com.google.common.base.Preconditions;
  */
 public abstract class ScoringMatcher<S, T, U extends GLTS<S, T>> implements Matcher<S, T, U> {
     /** The algorithm for computing state similarity scores. */
-    private final SimilarityScorer<S, T, U> scoring;
+    private final SimilarityScorer<S, T, U> scorer;
 
     /**
      * Instantiates a new similarity scoring based matcher.
      * 
-     * @param scoring The algorithm for computing state similarity scores.
+     * @param scorer The algorithm for computing state similarity scores.
      */
-    public ScoringMatcher(SimilarityScorer<S, T, U> scoring) {
-        this.scoring = scoring;
+    public ScoringMatcher(SimilarityScorer<S, T, U> scorer) {
+        this.scorer = scorer;
     }
 
     @Override
     public Map<State<S>, State<S>> compute(U lhs, U rhs) throws IllegalArgumentException {
-        RealMatrix scores = scoring.compute(lhs, rhs);
+        RealMatrix scores = scorer.compute(lhs, rhs);
         Preconditions.checkArgument(scores.getRowDimension() == lhs.size());
         Preconditions.checkArgument(scores.getColumnDimension() == rhs.size());
         return computeInternal(lhs, rhs, normalize(scores));
@@ -55,7 +55,7 @@ public abstract class ScoringMatcher<S, T, U extends GLTS<S, T>> implements Matc
      * 
      * @param scores The matrix of state similarity scores that is to be normalized. All cells of this matrix must
      *     either be finite, or be {@link Double#NEGATIVE_INFINITY}.
-     * @return The normalized scoring matrix.
+     * @return The normalized score matrix.
      */
     protected RealMatrix normalize(RealMatrix scores) {
         // Empty matrices are trivially normalized.

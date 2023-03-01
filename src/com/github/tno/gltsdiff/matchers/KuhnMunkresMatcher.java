@@ -58,11 +58,11 @@ public class KuhnMunkresMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatch
     /**
      * Constructs a Kuhn-Munkres state matcher.
      * 
-     * @param scoring The algorithm for computing state similarity scores.
+     * @param scorer The algorithm for computing state similarity scores.
      * @param statePropertyCombiner The combiner for state properties.
      */
-    public KuhnMunkresMatcher(SimilarityScorer<S, T, U> scoring, Combiner<S> statePropertyCombiner) {
-        super(scoring);
+    public KuhnMunkresMatcher(SimilarityScorer<S, T, U> scorer, Combiner<S> statePropertyCombiner) {
+        super(scorer);
         this.statePropertyCombiner = statePropertyCombiner;
     }
 
