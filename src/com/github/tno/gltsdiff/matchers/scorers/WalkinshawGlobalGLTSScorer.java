@@ -59,13 +59,31 @@ public class WalkinshawGlobalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walk
     private boolean optimizeStaticallyDeterminableScores = true;
 
     /**
-     * Instantiates a new Walkinshaw global scorer for GLTSs.
+     * Instantiates a new Walkinshaw global scorer for GLTSs. Uses an attenuation factor of 0.6.
      * 
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
     public WalkinshawGlobalGLTSScorer(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner) {
-        super(statePropertyCombiner, transitionPropertyCombiner);
+        this(statePropertyCombiner, transitionPropertyCombiner, 0.6d);
+    }
+
+    /**
+     * Instantiates a new Walkinshaw global scorer for GLTSs.
+     * 
+     * @param statePropertyCombiner The combiner for state properties.
+     * @param transitionPropertyCombiner The combiner for transition properties.
+     * @param attenuationFactor The attenuation factor, the ratio in the range [0,1] that determines how much the
+     *     similarity scores of far-away states influence the final similarity scores. This factor can be tweaked a bit
+     *     if the comparison results come out unsatisfactory. A ratio of 0 would mean that only local similarity scores
+     *     are used. Note that, if one is only interested in local similarity, {@link WalkinshawLocalGLTSScorer} should
+     *     be used instead, which gives the same result but is much faster. A ratio of 1 would mean that far-away state
+     *     similarities contribute equally much as local ones.
+     */
+    public WalkinshawGlobalGLTSScorer(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner,
+            double attenuationFactor)
+    {
+        super(statePropertyCombiner, transitionPropertyCombiner, attenuationFactor);
     }
 
     /**
