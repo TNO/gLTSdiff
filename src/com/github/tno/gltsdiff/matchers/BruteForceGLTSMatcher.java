@@ -330,7 +330,7 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
      * @param set The input set to construct the map for.
      * @return A mapping from right elements of pairs in {@code set} to all left elements they are paired with.
      */
-    private <L, R> Multimap<R, L> projectToRight(Set<Pair<L, R>> set) {
+    private static <L, R> Multimap<R, L> projectToRight(Set<Pair<L, R>> set) {
         Multimap<R, L> rightMap = LinkedHashMultimap.create();
         set.forEach(pair -> rightMap.put(pair.getSecond(), pair.getFirst()));
         return rightMap;
@@ -344,7 +344,7 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
      * @param set The input set of pairs to unzip.
      * @return The unzipped pair of sets.
      */
-    private <L, R> Pair<Set<L>, Set<R>> unzip(Set<Pair<L, R>> set) {
+    private static <L, R> Pair<Set<L>, Set<R>> unzip(Set<Pair<L, R>> set) {
         Set<L> left = new LinkedHashSet<>(set.size());
         Set<R> right = new LinkedHashSet<>(set.size());
 

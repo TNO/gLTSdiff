@@ -377,7 +377,7 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
     /**
      * Internal utility function for unzipping a given {@code set} of pairs.
      */
-    private <A, B> Pair<Set<A>, Set<B>> unzip(Set<Pair<A, B>> set) {
+    private static <A, B> Pair<Set<A>, Set<B>> unzip(Set<Pair<A, B>> set) {
         Set<A> left = new LinkedHashSet<>();
         Set<B> right = new LinkedHashSet<>();
 
