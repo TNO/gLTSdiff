@@ -52,6 +52,15 @@ public class LTSDotWriter<S, T, U extends LTS<S, T>> extends GLTSDotWriter<S, T,
     }
 
     @Override
+    protected Comparator<State<S>> getStateComparator(U lts) {
+        return Comparator
+                // First compare initial state information (descending order: first true, then false).
+                .comparing((State<S> state) -> !lts.isInitialState(state))
+                // Then compare states in the default way.
+                .thenComparing(super.getStateComparator(lts));
+    }
+
+    @Override
     protected void writeTransitions(U lts, Writer writer) throws IOException {
         // Write all initial state arrows.
         for (State<S> state: sortStates(lts, lts.getInitialStates())) {
@@ -60,15 +69,6 @@ public class LTSDotWriter<S, T, U extends LTS<S, T>> extends GLTSDotWriter<S, T,
 
         // Write all transitions.
         super.writeTransitions(lts, writer);
-    }
-
-    @Override
-    protected Comparator<State<S>> getStateComparator(U lts) {
-        return Comparator
-                // First compare initial state information (descending order: first true, then false).
-                .comparing((State<S> state) -> !lts.isInitialState(state))
-                // Then compare states in the default way.
-                .thenComparing(super.getStateComparator(lts));
     }
 
     private void writeInitialTransition(U lts, Writer writer, State<S> initialTransition) throws IOException {

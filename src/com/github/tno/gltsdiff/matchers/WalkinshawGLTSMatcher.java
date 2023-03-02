@@ -44,6 +44,12 @@ import com.google.common.collect.ImmutableSet;
  * @param <U> The type of GLTSs.
  */
 public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatcher<S, T, U> {
+    /** The combiner for state properties. */
+    private final Combiner<S> statePropertyCombiner;
+
+    /** The combiner for transition properties. */
+    private final Combiner<T> transitionPropertyCombiner;
+
     /**
      * The landmark threshold value, i.e., the fraction of best scoring state pairs to consider as landmarks. That is,
      * of all the possible pairs of (LHS, RHS)-states, only the top so-many scoring pairs are considered. For example,
@@ -71,12 +77,6 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
      * </p>
      */
     private final double landmarkRatio;
-
-    /** The combiner for state properties. */
-    private final Combiner<S> statePropertyCombiner;
-
-    /** The combiner for transition properties. */
-    private final Combiner<T> transitionPropertyCombiner;
 
     /**
      * Instantiates a new Walkinshaw matcher for GLTSs. Uses a landmark threshold of 0.25 and a landmark ratio of 1.5.
@@ -119,6 +119,25 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
         this.transitionPropertyCombiner = transitionPropertyCombiner;
         this.landmarkThreshold = landmarkThreshold;
         this.landmarkRatio = landmarkRatio;
+    }
+
+    @Override
+    protected Map<State<S>, State<S>> computeInternal(U lhs, U rhs, RealMatrix scores) {
+        // Define a function that gives the similarity score of every pair of (LHS, RHS)-states.
+        BiFunction<State<S>, State<S>, Double> getScore = (l, r) -> scores.getEntry(l.getId(), r.getId());
+
+        // Construct a matching by using Walkinshaw's approach.
+        Set<Pair<State<S>, State<S>>> landmarks = identifyLandmarks(lhs, rhs, getScore);
+        Set<Pair<State<S>, State<S>>> matches = identifyKeyPairs(lhs, rhs, landmarks, getScore);
+
+        // All matched pairs of states should be compatible.
+        for (Pair<State<S>, State<S>> statePair: matches) {
+            Preconditions.checkArgument(isCompatible(statePair, getScore),
+                    "Expected all matched state pairs to be compatible.");
+        }
+
+        return matches.stream()
+                .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond, Maps.throwingMerger(), LinkedHashMap::new));
     }
 
     /**
@@ -233,6 +252,34 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
     }
 
     /**
+     * Converts a similarity scoring function into a list of (LHS, RHS)-state pairs, with their similarity scores,
+     * thereby including only state pairs that are compatible with respect to {@link #isCompatible}.
+     * 
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
+     * @param scores A scoring function that expresses for all (LHS, RHS)-state pairs how structurally similar they are.
+     *     All state similarity scores must either be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
+     * @return The conversion result, containing only (LHS, RHS)-state pairs that are compatible.
+     */
+    private List<Pair<Pair<State<S>, State<S>>, Double>> getScorePairs(U lhs, U rhs,
+            BiFunction<State<S>, State<S>, Double> scores)
+    {
+        List<Pair<Pair<State<S>, State<S>>, Double>> pairs = new ArrayList<>(lhs.size() * rhs.size());
+
+        for (State<S> leftState: lhs.getStates()) {
+            for (State<S> rightState: rhs.getStates()) {
+                Pair<State<S>, State<S>> statePair = Pair.create(leftState, rightState);
+
+                if (isCompatible(statePair, scores)) {
+                    pairs.add(Pair.create(statePair, scores.apply(leftState, rightState)));
+                }
+            }
+        }
+
+        return pairs;
+    }
+
+    /**
      * Gives a set of fallback landmarks, which is used in case no ordinary landmark can be found.
      * 
      * @param lhs The left-hand-side (LHS) GLTS.
@@ -246,108 +293,6 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
             BiFunction<State<S>, State<S>, Double> scores)
     {
         return ImmutableSet.of();
-    }
-
-    /**
-     * Gives the set of compatible (LHS, RHS)-state pairs that surround ({@code leftState}, {@code rightState}), where
-     * <i>surround</i> means: reachable from or by a transition with a combinable property. This function follows the
-     * definition of 'Surr_{leftState, rightState}' as proposed by Walkinshaw et al. (see page 17), but uses a notion of
-     * combinability instead of equality in determining reachable surrounding state pairs.
-     * <p>
-     * Intuitively, the set of surrounding (LHS, RHS)-state pairs is the set of all pairs of compatible states that
-     * ({@code leftState}, {@code rightState}) can "see" by following an incoming/outgoing edge with combinable
-     * properties.
-     * </p>
-     *
-     * @param lhs The left-hand-side (LHS) GLTS.
-     * @param rhs The right-hand-side (RHS) GLTS.
-     * @param statePair The state pair for which to collect all surrounding state pairs.
-     * @param scores A scoring function that expresses for all (LHS, RHS)-state pairs how structurally similar they are.
-     *     All state similarity scores must either be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
-     * @return The set of surrounding state pairs of {@code statePair} that are compatible with respect to
-     *     {@link #isCompatible}.
-     */
-    private Set<Pair<State<S>, State<S>>> surroundingPairs(U lhs, U rhs, Pair<State<S>, State<S>> statePair,
-            BiFunction<State<S>, State<S>, Double> scores)
-    {
-        Stream<Pair<State<S>, State<S>>> predecessors = GLTSUtils
-                .commonPredecessors(lhs, rhs, transitionPropertyCombiner, statePair).stream();
-        Stream<Pair<State<S>, State<S>>> successors = GLTSUtils
-                .commonSuccessors(lhs, rhs, transitionPropertyCombiner, statePair).stream();
-
-        // Return all compatible predecessors and successors.
-        return Stream.concat(predecessors, successors).filter(pair -> isCompatible(pair, scores))
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-
-    /**
-     * Internal utility function for unzipping a given {@code set} of pairs.
-     */
-    private <A, B> Pair<Set<A>, Set<B>> unzip(Set<Pair<A, B>> set) {
-        Set<A> left = new LinkedHashSet<>();
-        Set<B> right = new LinkedHashSet<>();
-
-        for (Pair<A, B> element: set) {
-            left.add(element.getFirst());
-            right.add(element.getSecond());
-        }
-
-        return Pair.create(left, right);
-    }
-
-    /**
-     * Determines all relevant neighboring (LHS, RHS)-state pairs for a given set of state pairs. A neighboring state
-     * pair is said to be <i>relevant</i> in this context if it surrounds an element of {@code statePairs} and is
-     * disjoint from {@code statePairs}.
-     * 
-     * @param lhs The left-hand-side (LHS) GLTS.
-     * @param rhs The right-hand-side (RHS) GLTS.
-     * @param statePairs The set of (LHS, RHS)-state pairs for which relevant neighboring are to be found.
-     * @param scores A scoring function that expresses for all (LHS, RHS)-state pairs how structurally similar they are.
-     *     All state similarity scores must either be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
-     * @return The set of relevant neighboring state pairs of {@code statePairs} that are compatible with respect to
-     *     {@link #isCompatible}.
-     */
-    private Set<Pair<State<S>, State<S>>> relevantNeighboringPairs(U lhs, U rhs,
-            Set<Pair<State<S>, State<S>>> statePairs, BiFunction<State<S>, State<S>, Double> scores)
-    {
-        Set<Pair<State<S>, State<S>>> foundPairs = new LinkedHashSet<>();
-
-        // Get all LHS and RHS states occurring in 'statePairs'.
-        Pair<Set<State<S>>, Set<State<S>>> unzippedPairs = unzip(statePairs);
-        Set<State<S>> leftStates = unzippedPairs.getFirst();
-        Set<State<S>> rightStates = unzippedPairs.getSecond();
-
-        for (Pair<State<S>, State<S>> statePair: statePairs) {
-            // Find all compatible (LHS, RHS)-state pairs that surround 'statePair'.
-            Set<Pair<State<S>, State<S>>> surrPairs = surroundingPairs(lhs, rhs, statePair, scores);
-
-            // Collect any surrounding pairs that have states that already occur in 'statePairs'.
-            Set<Pair<State<S>, State<S>>> relevantPairs = surrPairs.stream()
-                    .filter(p -> !leftStates.contains(p.getFirst()) && !rightStates.contains(p.getSecond()))
-                    .collect(Collectors.toCollection(LinkedHashSet::new));
-
-            foundPairs.addAll(relevantPairs);
-        }
-
-        return foundPairs;
-    }
-
-    /**
-     * Determines whether two given pairs of (LHS, RHS)-states are disjoint (do not overlap on states).
-     */
-    private boolean areDisjoint(Pair<State<S>, State<S>> left, Pair<State<S>, State<S>> right) {
-        return left.getFirst() != right.getFirst() && left.getSecond() != right.getSecond();
-    }
-
-    /**
-     * Filters-out all elements of {@code statePairs} that overlap with {@code pair}.
-     */
-    private Set<Pair<State<S>, State<S>>> removeConflicts(Set<Pair<State<S>, State<S>>> statePairs,
-            Pair<State<S>, State<S>> pair)
-    {
-        return statePairs.stream().filter(p -> areDisjoint(p, pair))
-                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     /**
@@ -392,31 +337,105 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
     }
 
     /**
-     * Converts a similarity scoring function into a list of (LHS, RHS)-state pairs, with their similarity scores,
-     * thereby including only state pairs that are compatible with respect to {@link #isCompatible}.
+     * Determines all relevant neighboring (LHS, RHS)-state pairs for a given set of state pairs. A neighboring state
+     * pair is said to be <i>relevant</i> in this context if it surrounds an element of {@code statePairs} and is
+     * disjoint from {@code statePairs}.
      * 
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
+     * @param statePairs The set of (LHS, RHS)-state pairs for which relevant neighboring are to be found.
      * @param scores A scoring function that expresses for all (LHS, RHS)-state pairs how structurally similar they are.
      *     All state similarity scores must either be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
-     * @return The conversion result, containing only (LHS, RHS)-state pairs that are compatible.
+     * @return The set of relevant neighboring state pairs of {@code statePairs} that are compatible with respect to
+     *     {@link #isCompatible}.
      */
-    private List<Pair<Pair<State<S>, State<S>>, Double>> getScorePairs(U lhs, U rhs,
-            BiFunction<State<S>, State<S>, Double> scores)
+    private Set<Pair<State<S>, State<S>>> relevantNeighboringPairs(U lhs, U rhs,
+            Set<Pair<State<S>, State<S>>> statePairs, BiFunction<State<S>, State<S>, Double> scores)
     {
-        List<Pair<Pair<State<S>, State<S>>, Double>> pairs = new ArrayList<>(lhs.size() * rhs.size());
+        Set<Pair<State<S>, State<S>>> foundPairs = new LinkedHashSet<>();
 
-        for (State<S> leftState: lhs.getStates()) {
-            for (State<S> rightState: rhs.getStates()) {
-                Pair<State<S>, State<S>> statePair = Pair.create(leftState, rightState);
+        // Get all LHS and RHS states occurring in 'statePairs'.
+        Pair<Set<State<S>>, Set<State<S>>> unzippedPairs = unzip(statePairs);
+        Set<State<S>> leftStates = unzippedPairs.getFirst();
+        Set<State<S>> rightStates = unzippedPairs.getSecond();
 
-                if (isCompatible(statePair, scores)) {
-                    pairs.add(Pair.create(statePair, scores.apply(leftState, rightState)));
-                }
-            }
+        for (Pair<State<S>, State<S>> statePair: statePairs) {
+            // Find all compatible (LHS, RHS)-state pairs that surround 'statePair'.
+            Set<Pair<State<S>, State<S>>> surrPairs = surroundingPairs(lhs, rhs, statePair, scores);
+
+            // Collect any surrounding pairs that have states that already occur in 'statePairs'.
+            Set<Pair<State<S>, State<S>>> relevantPairs = surrPairs.stream()
+                    .filter(p -> !leftStates.contains(p.getFirst()) && !rightStates.contains(p.getSecond()))
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
+
+            foundPairs.addAll(relevantPairs);
         }
 
-        return pairs;
+        return foundPairs;
+    }
+
+    /**
+     * Internal utility function for unzipping a given {@code set} of pairs.
+     */
+    private <A, B> Pair<Set<A>, Set<B>> unzip(Set<Pair<A, B>> set) {
+        Set<A> left = new LinkedHashSet<>();
+        Set<B> right = new LinkedHashSet<>();
+
+        for (Pair<A, B> element: set) {
+            left.add(element.getFirst());
+            right.add(element.getSecond());
+        }
+
+        return Pair.create(left, right);
+    }
+
+    /**
+     * Gives the set of compatible (LHS, RHS)-state pairs that surround ({@code leftState}, {@code rightState}), where
+     * <i>surround</i> means: reachable from or by a transition with a combinable property. This function follows the
+     * definition of 'Surr_{leftState, rightState}' as proposed by Walkinshaw et al. (see page 17), but uses a notion of
+     * combinability instead of equality in determining reachable surrounding state pairs.
+     * <p>
+     * Intuitively, the set of surrounding (LHS, RHS)-state pairs is the set of all pairs of compatible states that
+     * ({@code leftState}, {@code rightState}) can "see" by following an incoming/outgoing edge with combinable
+     * properties.
+     * </p>
+     *
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
+     * @param statePair The state pair for which to collect all surrounding state pairs.
+     * @param scores A scoring function that expresses for all (LHS, RHS)-state pairs how structurally similar they are.
+     *     All state similarity scores must either be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
+     * @return The set of surrounding state pairs of {@code statePair} that are compatible with respect to
+     *     {@link #isCompatible}.
+     */
+    private Set<Pair<State<S>, State<S>>> surroundingPairs(U lhs, U rhs, Pair<State<S>, State<S>> statePair,
+            BiFunction<State<S>, State<S>, Double> scores)
+    {
+        Stream<Pair<State<S>, State<S>>> predecessors = GLTSUtils
+                .commonPredecessors(lhs, rhs, transitionPropertyCombiner, statePair).stream();
+        Stream<Pair<State<S>, State<S>>> successors = GLTSUtils
+                .commonSuccessors(lhs, rhs, transitionPropertyCombiner, statePair).stream();
+
+        // Return all compatible predecessors and successors.
+        return Stream.concat(predecessors, successors).filter(pair -> isCompatible(pair, scores))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    /**
+     * Filters-out all elements of {@code statePairs} that overlap with {@code pair}.
+     */
+    private Set<Pair<State<S>, State<S>>> removeConflicts(Set<Pair<State<S>, State<S>>> statePairs,
+            Pair<State<S>, State<S>> pair)
+    {
+        return statePairs.stream().filter(p -> areDisjoint(p, pair))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    /**
+     * Determines whether two given pairs of (LHS, RHS)-states are disjoint (do not overlap on states).
+     */
+    private boolean areDisjoint(Pair<State<S>, State<S>> left, Pair<State<S>, State<S>> right) {
+        return left.getFirst() != right.getFirst() && left.getSecond() != right.getSecond();
     }
 
     /**
@@ -434,24 +453,5 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
 
         return Double.isFinite(scores.apply(leftState, rightState))
                 && statePropertyCombiner.areCombinable(leftState.getProperty(), rightState.getProperty());
-    }
-
-    @Override
-    protected Map<State<S>, State<S>> computeInternal(U lhs, U rhs, RealMatrix scores) {
-        // Define a function that gives the similarity score of every pair of (LHS, RHS)-states.
-        BiFunction<State<S>, State<S>, Double> getScore = (l, r) -> scores.getEntry(l.getId(), r.getId());
-
-        // Construct a matching by using Walkinshaw's approach.
-        Set<Pair<State<S>, State<S>>> landmarks = identifyLandmarks(lhs, rhs, getScore);
-        Set<Pair<State<S>, State<S>>> matches = identifyKeyPairs(lhs, rhs, landmarks, getScore);
-
-        // All matched pairs of states should be compatible.
-        for (Pair<State<S>, State<S>> statePair: matches) {
-            Preconditions.checkArgument(isCompatible(statePair, getScore),
-                    "Expected all matched state pairs to be compatible.");
-        }
-
-        return matches.stream()
-                .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond, Maps.throwingMerger(), LinkedHashMap::new));
     }
 }

@@ -65,6 +65,58 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
         this.transitionPropertyCombiner = transitionPropertyCombiner;
     }
 
+    @Override
+    public Map<State<S>, State<S>> compute(U lhs, U rhs) {
+        Set<Pair<State<S>, State<S>>> matching = findAnOptimalMatching(lhs, rhs, allStatePairsWithPotential(lhs, rhs));
+        return matching.stream()
+                .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond, Maps.throwingMerger(), LinkedHashMap::new));
+    }
+
+    /**
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
+     * @return The set of all (LHS, RHS)-state pairs with potential according to {@link #hasPotential(S, S)}.
+     */
+    private Set<Pair<State<S>, State<S>>> allStatePairsWithPotential(U lhs, U rhs) {
+        Set<Pair<State<S>, State<S>>> pairs = new LinkedHashSet<>(lhs.size() * rhs.size());
+
+        for (State<S> lhsState: lhs.getStates()) {
+            for (State<S> rhsState: rhs.getStates()) {
+                if (hasPotential(lhs, rhs, lhsState, rhsState)) {
+                    pairs.add(Pair.create(lhsState, rhsState));
+                }
+            }
+        }
+
+        return pairs;
+    }
+
+    /**
+     * Indicates whether {@code lhsState} and {@code rhsState} have potential to be matched to one another.
+     * <p>
+     * Any (LHS, RHS)-state pair is defined to have <i>potential</i> if (1) they have combinable state properties, and
+     * (2) have incoming or outgoing transition properties that are combinable. State pairs without potential are not to
+     * be matched to one another, since their matchings would be invalid or would lead to tangles.
+     * </p>
+     * 
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
+     * @param lhsState The input LHS state.
+     * @param rhsState The input RHS state.
+     * @return {@code true} if the state pair ({@code lhsState}, {@code rhsState}) has potential according to the above
+     *     definition, {@code false} otherwise.
+     */
+    private boolean hasPotential(U lhs, U rhs, State<S> lhsState, State<S> rhsState) {
+        if (!statePropertyCombiner.areCombinable(lhsState.getProperty(), rhsState.getProperty())) {
+            return false;
+        }
+
+        Pair<State<S>, State<S>> statePair = Pair.create(lhsState, rhsState);
+
+        return GLTSUtils.hasCommonIncomingTransitions(lhs, rhs, transitionPropertyCombiner, statePair)
+                || GLTSUtils.hasCommonOutgoingTransitions(lhs, rhs, transitionPropertyCombiner, statePair);
+    }
+
     /**
      * Determines the best possible matching out of a set {@code candidateMatches} of possible candidate matchings.
      * 
@@ -158,13 +210,6 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
         }
 
         return currentBestMatching;
-    }
-
-    @Override
-    public Map<State<S>, State<S>> compute(U lhs, U rhs) {
-        Set<Pair<State<S>, State<S>>> matching = findAnOptimalMatching(lhs, rhs, allStatePairsWithPotential(lhs, rhs));
-        return matching.stream()
-                .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond, Maps.throwingMerger(), LinkedHashMap::new));
     }
 
     /**
@@ -277,48 +322,18 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
     }
 
     /**
-     * Indicates whether {@code lhsState} and {@code rhsState} have potential to be matched to one another.
-     * <p>
-     * Any (LHS, RHS)-state pair is defined to have <i>potential</i> if (1) they have combinable state properties, and
-     * (2) have incoming or outgoing transition properties that are combinable. State pairs without potential are not to
-     * be matched to one another, since their matchings would be invalid or would lead to tangles.
-     * </p>
+     * Given a {@code set} of pairs, constructs a map from right elements (of the pairs) to the sets of all left
+     * elements they are paired to.
      * 
-     * @param lhs The left-hand-side (LHS) GLTS.
-     * @param rhs The right-hand-side (RHS) GLTS.
-     * @param lhsState The input LHS state.
-     * @param rhsState The input RHS state.
-     * @return {@code true} if the state pair ({@code lhsState}, {@code rhsState}) has potential according to the above
-     *     definition, {@code false} otherwise.
+     * @param <L> The type of left elements of the pair.
+     * @param <R> The type of right elements of the pair.
+     * @param set The input set to construct the map for.
+     * @return A mapping from right elements of pairs in {@code set} to all left elements they are paired with.
      */
-    private boolean hasPotential(U lhs, U rhs, State<S> lhsState, State<S> rhsState) {
-        if (!statePropertyCombiner.areCombinable(lhsState.getProperty(), rhsState.getProperty())) {
-            return false;
-        }
-
-        Pair<State<S>, State<S>> statePair = Pair.create(lhsState, rhsState);
-
-        return GLTSUtils.hasCommonIncomingTransitions(lhs, rhs, transitionPropertyCombiner, statePair)
-                || GLTSUtils.hasCommonOutgoingTransitions(lhs, rhs, transitionPropertyCombiner, statePair);
-    }
-
-    /**
-     * @param lhs The left-hand-side (LHS) GLTS.
-     * @param rhs The right-hand-side (RHS) GLTS.
-     * @return The set of all (LHS, RHS)-state pairs with potential according to {@link #hasPotential(S, S)}.
-     */
-    private Set<Pair<State<S>, State<S>>> allStatePairsWithPotential(U lhs, U rhs) {
-        Set<Pair<State<S>, State<S>>> pairs = new LinkedHashSet<>(lhs.size() * rhs.size());
-
-        for (State<S> lhsState: lhs.getStates()) {
-            for (State<S> rhsState: rhs.getStates()) {
-                if (hasPotential(lhs, rhs, lhsState, rhsState)) {
-                    pairs.add(Pair.create(lhsState, rhsState));
-                }
-            }
-        }
-
-        return pairs;
+    private <L, R> Multimap<R, L> projectToRight(Set<Pair<L, R>> set) {
+        Multimap<R, L> rightMap = LinkedHashMultimap.create();
+        set.forEach(pair -> rightMap.put(pair.getSecond(), pair.getFirst()));
+        return rightMap;
     }
 
     /**
@@ -339,20 +354,5 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
         }
 
         return Pair.create(left, right);
-    }
-
-    /**
-     * Given a {@code set} of pairs, constructs a map from right elements (of the pairs) to the sets of all left
-     * elements they are paired to.
-     * 
-     * @param <L> The type of left elements of the pair.
-     * @param <R> The type of right elements of the pair.
-     * @param set The input set to construct the map for.
-     * @return A mapping from right elements of pairs in {@code set} to all left elements they are paired with.
-     */
-    private <L, R> Multimap<R, L> projectToRight(Set<Pair<L, R>> set) {
-        Multimap<R, L> rightMap = LinkedHashMultimap.create();
-        set.forEach(pair -> rightMap.put(pair.getSecond(), pair.getFirst()));
-        return rightMap;
     }
 }

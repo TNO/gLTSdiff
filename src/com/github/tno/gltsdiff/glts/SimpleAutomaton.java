@@ -18,6 +18,18 @@ import com.google.common.base.Preconditions;
  * @param <T> The type of transition properties.
  */
 public class SimpleAutomaton<T> extends Automaton<AutomatonStateProperty, T> implements Cloneable {
+    @Override
+    public boolean isInitial(AutomatonStateProperty property) {
+        Preconditions.checkNotNull(property, "Expected a non-null state property.");
+        return property.isInitial();
+    }
+
+    @Override
+    public boolean isAccepting(AutomatonStateProperty property) {
+        Preconditions.checkNotNull(property, "Expected a non-null state property.");
+        return property.isAccepting();
+    }
+
     /**
      * Adds a new initial state to this automaton.
      * 
@@ -41,17 +53,5 @@ public class SimpleAutomaton<T> extends Automaton<AutomatonStateProperty, T> imp
     @Override
     public SimpleAutomaton<T> clone() {
         return map(SimpleAutomaton::new, property -> property, property -> property);
-    }
-
-    @Override
-    public boolean isInitial(AutomatonStateProperty property) {
-        Preconditions.checkNotNull(property, "Expected a non-null state property.");
-        return property.isInitial();
-    }
-
-    @Override
-    public boolean isAccepting(AutomatonStateProperty property) {
-        Preconditions.checkNotNull(property, "Expected a non-null state property.");
-        return property.isAccepting();
     }
 }
