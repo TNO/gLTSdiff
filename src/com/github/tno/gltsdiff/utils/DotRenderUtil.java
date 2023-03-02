@@ -6,7 +6,7 @@ import java.nio.file.Path;
 
 import com.google.common.base.Preconditions;
 
-/** Utility class to rendering DOT files. */
+/** Utility class for rendering DOT files. */
 public class DotRenderUtil {
     /** Constructor for the DotRenderUtil class. */
     private DotRenderUtil() {
@@ -25,7 +25,7 @@ public class DotRenderUtil {
      * @throws IOException In case of an I/O error.
      * @throws InterruptedException If the current thread is interrupted by another thread while it is waiting for the
      *     DOT process to terminate.
-     * @throws IllegalStateException If the DOT executable did not successfully complete terminate.
+     * @throws IllegalStateException If the DOT executable did not successfully terminate.
      */
     public static void renderDot(Path dotFilePath) throws IOException, InterruptedException {
         // Get DOT executable path.
@@ -43,7 +43,7 @@ public class DotRenderUtil {
         Process process = builder.start();
         int exitCode = process.waitFor();
 
-        // Check that
+        // Check that DOT terminated successfully.
         Preconditions.checkState(exitCode == 0,
                 "DOT execution terminated with non-zero exit code: " + Integer.toString(exitCode));
     }
