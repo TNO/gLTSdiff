@@ -32,7 +32,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.HashBiMap;
 
 /**
- * Matcher that based on a similarity scores computes a guaranteed maximal matching, in the sense that there does not
+ * Matcher that based on similarity scores computes a guaranteed maximal matching, in the sense that there does not
  * exist a (LHS, RHS)-state matching other than the one computed that has a higher summed-up score.
  *
  * <p>

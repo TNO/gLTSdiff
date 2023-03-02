@@ -199,7 +199,7 @@ public class GLTS<S, T> {
     }
 
     /**
-     * Returns the number of sates in this GLTS.
+     * Returns the number of states in this GLTS.
      *
      * @return The number of states in this GLTS.
      */

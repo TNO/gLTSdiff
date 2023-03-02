@@ -34,7 +34,7 @@ import com.github.tno.gltsdiff.operators.printers.StringHtmlPrinter;
 import com.github.tno.gltsdiff.writers.AutomatonDotWriter;
 import com.google.common.collect.ImmutableSet;
 
-/** Example that compares, and merges multiple inputs. */
+/** Example that compares and merges multiple inputs. */
 public class MultipleInputsExample {
     /**
      * Main method to run the example.

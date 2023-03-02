@@ -431,7 +431,7 @@ public class WalkinshawGlobalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walk
      *
      * <p>
      * An overview of other available solvers can be found at:
-     * <a href= "https://commons.apache.org/proper/commons-math/userguide/linear.html"
+     * <a href="https://commons.apache.org/proper/commons-math/userguide/linear.html"
      * >https://commons.apache.org/proper/commons-math/userguide/linear.html</a>.
      * </p>
      *

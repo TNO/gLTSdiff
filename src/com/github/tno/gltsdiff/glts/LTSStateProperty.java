@@ -27,7 +27,7 @@ public class LTSStateProperty {
     }
 
     /**
-     * Returns whether the associate state is initial.
+     * Returns whether the associated state is initial.
      *
      * @return {@code true} if the associated state is initial, {@code false} otherwise.
      */
