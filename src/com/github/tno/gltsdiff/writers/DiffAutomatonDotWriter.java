@@ -63,6 +63,12 @@ public class DiffAutomatonDotWriter<T, U extends DiffAutomaton<T>>
     }
 
     @Override
+    protected String initialStateColor(U automaton, State<DiffAutomatonStateProperty> initialState) {
+        Preconditions.checkArgument(automaton.isInitialState(initialState), "Expected an initial state.");
+        return diffKindColorPrinter.print(initialState.getProperty().getInitDiffKind());
+    }
+
+    @Override
     protected String stateStyle(U automaton, State<DiffAutomatonStateProperty> state) {
         switch (state.getProperty().getStateDiffKind()) {
             case ADDED:
@@ -96,11 +102,5 @@ public class DiffAutomatonDotWriter<T, U extends DiffAutomaton<T>>
     @Override
     protected String transitionColor(U automaton, Transition<DiffAutomatonStateProperty, DiffProperty<T>> transition) {
         return diffKindColorPrinter.print(transition.getProperty().getDiffKind());
-    }
-
-    @Override
-    protected String initialStateColor(U automaton, State<DiffAutomatonStateProperty> initialState) {
-        Preconditions.checkArgument(automaton.isInitialState(initialState), "Expected an initial state.");
-        return diffKindColorPrinter.print(initialState.getProperty().getInitDiffKind());
     }
 }

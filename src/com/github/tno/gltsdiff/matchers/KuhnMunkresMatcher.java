@@ -142,6 +142,207 @@ public class KuhnMunkresMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatch
     }
 
     /**
+     * Computes the inversion of {@code scores}, i.e. change every element {@code e} to {@code 1 - e}.
+     * 
+     * @param scores The scores that are to be inverted.
+     * @return The inverted scores.
+     */
+    private RealMatrix invert(RealMatrix scores) {
+        RealMatrix invertedScores = new Array2DRowRealMatrix(scores.getRowDimension(), scores.getColumnDimension());
+        for (int row = 0; row < scores.getRowDimension(); row++) {
+            for (int column = 0; column < scores.getColumnDimension(); column++) {
+                invertedScores.setEntry(row, column, 1.0d - scores.getEntry(row, column));
+            }
+        }
+        return invertedScores;
+    }
+
+    /**
+     * Constructs a maximum matching for the given matrix by only considering its {@code 0.0d} entries. Here
+     * <i>maximum</i> means that the returned matching contains as many edges as possible. That is, it is not possible
+     * to construct a matching with more edges than the one returned.
+     * <p>
+     * This is an implementation of Kuhn's algorithm for finding maximum bipartite matchings. Details about this
+     * algorithm can be found at https://cp-algorithms.com/graph/kuhn_maximum_bipartite_matching.html.
+     * </p>
+     * <p>
+     * Note that more efficient algorithms exist for finding maximum matchings, like for example the
+     * Hopcroft-Karp-Karzanov algorithm. Furthermore, the web page mentioned above lists some heuristics for improving
+     * the performance of the current implementation. These improvements have not yet been applied.
+     * </p>
+     * 
+     * @param matrix The assignment matrix for which a matching is to be constructed.
+     * @return A matching for the given matrix, so that every assignment corresponds to a {@code 0.0d} matrix entry.
+     */
+    private Map<Integer, Integer> constructMatching(RealMatrix matrix) {
+        Preconditions.checkArgument(matrix.getRowDimension() == matrix.getColumnDimension());
+
+        Map<Integer, List<Integer>> candidateMatches = new LinkedHashMap<>();
+
+        // Initializing the map of candidate matches to be empty for every row.
+        for (int row = 0; row < matrix.getRowDimension(); row++) {
+            candidateMatches.put(row, new ArrayList<>());
+        }
+
+        // For every row, find all potentially matching columns: the ones with a current score of 0.0d.
+        for (int row = 0; row < matrix.getRowDimension(); row++) {
+            for (int column = 0; column < matrix.getColumnDimension(); column++) {
+                if (matrix.getEntry(row, column) == 0.0d) {
+                    candidateMatches.get(row).add(column);
+                }
+            }
+        }
+
+        // Find a maximum matching by using Kuhn's algorithm for finding maximum bipartite matchings.
+        // Kuhn's algorithm requires 'currentMatching' to map from RHS states to LHS states. It must be inverted later.
+        Map<Integer, Integer> currentMatching = new LinkedHashMap<>(matrix.getRowDimension());
+
+        for (int row = 0; row < matrix.getRowDimension(); row++) {
+            Set<Integer> usedStates = new LinkedHashSet<>(matrix.getRowDimension());
+            alternateMatchingAlongAugmentingPath(candidateMatches, currentMatching, usedStates, row);
+        }
+
+        // Invert the maximum matching found, to get a map from LHS to RHS states.
+        return HashBiMap.create(currentMatching).inverse();
+    }
+
+    /**
+     * This is an implementation of the 'try_kuhn' function described in
+     * https://cp-algorithms.com/graph/kuhn_maximum_bipartite_matching.html.
+     * <p>
+     * This function searches for any augmenting paths starting from a given state {@code v}, and after having found
+     * one, updates the current matching {@code currentMatching} by alternating it along the augmenting path found. A
+     * definition of augmenting paths as well as details on the algorithm can be found on the web page mentioned above.
+     * </p>
+     * 
+     * @param candidateMatches A map from LHS states to the collection of RHS-states that are potential matches.
+     * @param currentMatching The current intermediate matching that is updated while searching for augmenting paths.
+     *     Note that this matching is a map from RHS states to LHS states (instead of the other way around).
+     * @param usedStates The set of states that are already traversed during the search for an augmenting path starting
+     *     from {@code v}.
+     * @param v The state from which to start searching for an augmenting path.
+     * @return {@code true} if there exists an augmenting path starting from {@code v}, {@code false} otherwise.
+     */
+    private boolean alternateMatchingAlongAugmentingPath(Map<Integer, List<Integer>> candidateMatches,
+            Map<Integer, Integer> currentMatching, Set<Integer> usedStates, int v)
+    {
+        Preconditions.checkArgument(candidateMatches.containsKey(v));
+
+        if (usedStates.contains(v)) {
+            return false;
+        }
+
+        usedStates.add(v);
+
+        for (int candidate: candidateMatches.get(v)) {
+            Integer w = currentMatching.get(candidate);
+
+            if (w == null || alternateMatchingAlongAugmentingPath(candidateMatches, currentMatching, usedStates, w)) {
+                currentMatching.put(candidate, v);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Converts a given matching that is constructed for the Kuhn-Munkres matrix, to a matching on (LHS, RHS)-states.
+     * 
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
+     * @param matching The (LHS, RHS)-state matching to convert, where all states are represented by their identifiers.
+     *     All matched pairs of states must have combinable state properties, as well as a finite similarity score with
+     *     respect to {@code scores}.
+     * @param scores The similarity scoring function for (LHS, RHS)-state pairs. All state similarity scores must either
+     *     be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
+     * @return The converted (LHS, RHS)-state matching.
+     */
+    private Map<State<S>, State<S>> convert(U lhs, U rhs, Map<Integer, Integer> matching,
+            BiFunction<State<S>, State<S>, Double> scores)
+    {
+        Map<State<S>, State<S>> stateMatching = new LinkedHashMap<>();
+
+        for (Entry<Integer, Integer> entry: matching.entrySet()) {
+            int leftIndex = entry.getKey();
+            int rightIndex = entry.getValue();
+
+            if (0 <= leftIndex && leftIndex < lhs.size() && 0 <= rightIndex && rightIndex < rhs.size()) {
+                State<S> leftState = lhs.getStateById(leftIndex);
+                State<S> rightState = rhs.getStateById(rightIndex);
+
+                Preconditions.checkArgument(
+                        statePropertyCombiner.areCombinable(leftState.getProperty(), rightState.getProperty()),
+                        "Expected matched states to have combinable state properties.");
+                Preconditions.checkArgument(Double.isFinite(scores.apply(leftState, rightState)),
+                        "Expected matched states to have finite scores.");
+
+                stateMatching.put(leftState, rightState);
+            }
+        }
+
+        return stateMatching;
+    }
+
+    /**
+     * Determines whether the given matching is a complete (LHS, RHS)-matching, in the sense that it cannot be extended.
+     * 
+     * @param lhs The left-hand-side (LHS) GLTS.
+     * @param rhs The right-hand-side (RHS) GLTS.
+     * @param matching The (LHS, RHS)-state matching to check.
+     * @param scores The similarity scoring function for (LHS, RHS)-state pairs. All state similarity scores must either
+     *     be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
+     * @return {@code true} if {@code matching} is complete and cannot be extended further, {@code false} otherwise.
+     */
+    private boolean isComplete(U lhs, U rhs, Map<State<S>, State<S>> matching,
+            BiFunction<State<S>, State<S>, Double> scores)
+    {
+        Set<State<S>> leftStates = new LinkedHashSet<>(lhs.getStates());
+        Set<State<S>> rightStates = new LinkedHashSet<>(rhs.getStates());
+
+        for (Entry<State<S>, State<S>> assignment: matching.entrySet()) {
+            leftStates.remove(assignment.getKey());
+            rightStates.remove(assignment.getValue());
+        }
+
+        // The given matching is complete if all leftover unmatched LHS and RHS state pairs are incompatible, i.e., have
+        // uncombinable properties and/or have a similarity score that is not finite.
+        return leftStates.stream().allMatch(leftState -> rightStates.stream()
+                .noneMatch(rightState -> Double.isFinite(scores.apply(leftState, rightState))
+                        && statePropertyCombiner.areCombinable(leftState.getProperty(), rightState.getProperty())));
+    }
+
+    /**
+     * Filters-out all assignments from the given matching that have a score lower than {@code 0.1d} according to the
+     * given similarity scoring function.
+     * 
+     * @param matching The (LHS, RHS)-state matching that is to be filtered. All matched pairs of states must have
+     *     combinable state properties, as well as a finite similarity score with respect to {@code scores}.
+     * @param scores The similarity scoring function for (LHS, RHS)-state pairs that forms the basis for filtering. All
+     *     state similarity scores must either be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
+     * @return A subset of matchings, containing only the assignments with a similarity score at least {@code 0.1d}.
+     */
+    private Map<State<S>, State<S>> truncate(Map<State<S>, State<S>> matching,
+            BiFunction<State<S>, State<S>, Double> scores)
+    {
+        Map<State<S>, State<S>> reducedMatching = new LinkedHashMap<>();
+
+        for (Entry<State<S>, State<S>> entry: matching.entrySet()) {
+            State<S> leftState = entry.getKey();
+            State<S> rightState = entry.getValue();
+
+            double score = scores.apply(leftState, rightState);
+            Preconditions.checkArgument(Double.isFinite(score), "Expected matched states to have finite scores.");
+
+            if (0.1d <= score) {
+                reducedMatching.put(leftState, rightState);
+            }
+        }
+
+        return reducedMatching;
+    }
+
+    /**
      * Performs the first step of the Kuhn-Munkres algorithm: for each row in the given matrix, find the smallest entry
      * in that row, and if that entry is finite, subtract it from every entry in the row. This step ensures that all
      * entries of {@code matrix} within the range [0,1] stay within that range, and that all
@@ -344,206 +545,5 @@ public class KuhnMunkresMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatch
                 matrix.addToEntry(row, column, minValue);
             }
         }
-    }
-
-    /**
-     * Determines whether the given matching is a complete (LHS, RHS)-matching, in the sense that it cannot be extended.
-     * 
-     * @param lhs The left-hand-side (LHS) GLTS.
-     * @param rhs The right-hand-side (RHS) GLTS.
-     * @param matching The (LHS, RHS)-state matching to check.
-     * @param scores The similarity scoring function for (LHS, RHS)-state pairs. All state similarity scores must either
-     *     be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
-     * @return {@code true} if {@code matching} is complete and cannot be extended further, {@code false} otherwise.
-     */
-    private boolean isComplete(U lhs, U rhs, Map<State<S>, State<S>> matching,
-            BiFunction<State<S>, State<S>, Double> scores)
-    {
-        Set<State<S>> leftStates = new LinkedHashSet<>(lhs.getStates());
-        Set<State<S>> rightStates = new LinkedHashSet<>(rhs.getStates());
-
-        for (Entry<State<S>, State<S>> assignment: matching.entrySet()) {
-            leftStates.remove(assignment.getKey());
-            rightStates.remove(assignment.getValue());
-        }
-
-        // The given matching is complete if all leftover unmatched LHS and RHS state pairs are incompatible, i.e., have
-        // uncombinable properties and/or have a similarity score that is not finite.
-        return leftStates.stream().allMatch(leftState -> rightStates.stream()
-                .noneMatch(rightState -> Double.isFinite(scores.apply(leftState, rightState))
-                        && statePropertyCombiner.areCombinable(leftState.getProperty(), rightState.getProperty())));
-    }
-
-    /**
-     * Converts a given matching that is constructed for the Kuhn-Munkres matrix, to a matching on (LHS, RHS)-states.
-     * 
-     * @param lhs The left-hand-side (LHS) GLTS.
-     * @param rhs The right-hand-side (RHS) GLTS.
-     * @param matching The (LHS, RHS)-state matching to convert, where all states are represented by their identifiers.
-     *     All matched pairs of states must have combinable state properties, as well as a finite similarity score with
-     *     respect to {@code scores}.
-     * @param scores The similarity scoring function for (LHS, RHS)-state pairs. All state similarity scores must either
-     *     be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
-     * @return The converted (LHS, RHS)-state matching.
-     */
-    private Map<State<S>, State<S>> convert(U lhs, U rhs, Map<Integer, Integer> matching,
-            BiFunction<State<S>, State<S>, Double> scores)
-    {
-        Map<State<S>, State<S>> stateMatching = new LinkedHashMap<>();
-
-        for (Entry<Integer, Integer> entry: matching.entrySet()) {
-            int leftIndex = entry.getKey();
-            int rightIndex = entry.getValue();
-
-            if (0 <= leftIndex && leftIndex < lhs.size() && 0 <= rightIndex && rightIndex < rhs.size()) {
-                State<S> leftState = lhs.getStateById(leftIndex);
-                State<S> rightState = rhs.getStateById(rightIndex);
-
-                Preconditions.checkArgument(
-                        statePropertyCombiner.areCombinable(leftState.getProperty(), rightState.getProperty()),
-                        "Expected matched states to have combinable state properties.");
-                Preconditions.checkArgument(Double.isFinite(scores.apply(leftState, rightState)),
-                        "Expected matched states to have finite scores.");
-
-                stateMatching.put(leftState, rightState);
-            }
-        }
-
-        return stateMatching;
-    }
-
-    /**
-     * Filters-out all assignments from the given matching that have a score lower than {@code 0.1d} according to the
-     * given similarity scoring function.
-     * 
-     * @param matching The (LHS, RHS)-state matching that is to be filtered. All matched pairs of states must have
-     *     combinable state properties, as well as a finite similarity score with respect to {@code scores}.
-     * @param scores The similarity scoring function for (LHS, RHS)-state pairs that forms the basis for filtering. All
-     *     state similarity scores must either be within the range [0,1] or be {@link Double#POSITIVE_INFINITY}.
-     * @return A subset of matchings, containing only the assignments with a similarity score at least {@code 0.1d}.
-     */
-    private Map<State<S>, State<S>> truncate(Map<State<S>, State<S>> matching,
-            BiFunction<State<S>, State<S>, Double> scores)
-    {
-        Map<State<S>, State<S>> reducedMatching = new LinkedHashMap<>();
-
-        for (Entry<State<S>, State<S>> entry: matching.entrySet()) {
-            State<S> leftState = entry.getKey();
-            State<S> rightState = entry.getValue();
-
-            double score = scores.apply(leftState, rightState);
-            Preconditions.checkArgument(Double.isFinite(score), "Expected matched states to have finite scores.");
-
-            if (0.1d <= score) {
-                reducedMatching.put(leftState, rightState);
-            }
-        }
-
-        return reducedMatching;
-    }
-
-    /**
-     * Constructs a maximum matching for the given matrix by only considering its {@code 0.0d} entries. Here
-     * <i>maximum</i> means that the returned matching contains as many edges as possible. That is, it is not possible
-     * to construct a matching with more edges than the one returned.
-     * <p>
-     * This is an implementation of Kuhn's algorithm for finding maximum bipartite matchings. Details about this
-     * algorithm can be found at https://cp-algorithms.com/graph/kuhn_maximum_bipartite_matching.html.
-     * </p>
-     * <p>
-     * Note that more efficient algorithms exist for finding maximum matchings, like for example the
-     * Hopcroft-Karp-Karzanov algorithm. Furthermore, the web page mentioned above lists some heuristics for improving
-     * the performance of the current implementation. These improvements have not yet been applied.
-     * </p>
-     * 
-     * @param matrix The assignment matrix for which a matching is to be constructed.
-     * @return A matching for the given matrix, so that every assignment corresponds to a {@code 0.0d} matrix entry.
-     */
-    private Map<Integer, Integer> constructMatching(RealMatrix matrix) {
-        Preconditions.checkArgument(matrix.getRowDimension() == matrix.getColumnDimension());
-
-        Map<Integer, List<Integer>> candidateMatches = new LinkedHashMap<>();
-
-        // Initializing the map of candidate matches to be empty for every row.
-        for (int row = 0; row < matrix.getRowDimension(); row++) {
-            candidateMatches.put(row, new ArrayList<>());
-        }
-
-        // For every row, find all potentially matching columns: the ones with a current score of 0.0d.
-        for (int row = 0; row < matrix.getRowDimension(); row++) {
-            for (int column = 0; column < matrix.getColumnDimension(); column++) {
-                if (matrix.getEntry(row, column) == 0.0d) {
-                    candidateMatches.get(row).add(column);
-                }
-            }
-        }
-
-        // Find a maximum matching by using Kuhn's algorithm for finding maximum bipartite matchings.
-        // Kuhn's algorithm requires 'currentMatching' to map from RHS states to LHS states. It must be inverted later.
-        Map<Integer, Integer> currentMatching = new LinkedHashMap<>(matrix.getRowDimension());
-
-        for (int row = 0; row < matrix.getRowDimension(); row++) {
-            Set<Integer> usedStates = new LinkedHashSet<>(matrix.getRowDimension());
-            alternateMatchingAlongAugmentingPath(candidateMatches, currentMatching, usedStates, row);
-        }
-
-        // Invert the maximum matching found, to get a map from LHS to RHS states.
-        return HashBiMap.create(currentMatching).inverse();
-    }
-
-    /**
-     * This is an implementation of the 'try_kuhn' function described in
-     * https://cp-algorithms.com/graph/kuhn_maximum_bipartite_matching.html.
-     * <p>
-     * This function searches for any augmenting paths starting from a given state {@code v}, and after having found
-     * one, updates the current matching {@code currentMatching} by alternating it along the augmenting path found. A
-     * definition of augmenting paths as well as details on the algorithm can be found on the web page mentioned above.
-     * </p>
-     * 
-     * @param candidateMatches A map from LHS states to the collection of RHS-states that are potential matches.
-     * @param currentMatching The current intermediate matching that is updated while searching for augmenting paths.
-     *     Note that this matching is a map from RHS states to LHS states (instead of the other way around).
-     * @param usedStates The set of states that are already traversed during the search for an augmenting path starting
-     *     from {@code v}.
-     * @param v The state from which to start searching for an augmenting path.
-     * @return {@code true} if there exists an augmenting path starting from {@code v}, {@code false} otherwise.
-     */
-    private boolean alternateMatchingAlongAugmentingPath(Map<Integer, List<Integer>> candidateMatches,
-            Map<Integer, Integer> currentMatching, Set<Integer> usedStates, int v)
-    {
-        Preconditions.checkArgument(candidateMatches.containsKey(v));
-
-        if (usedStates.contains(v)) {
-            return false;
-        }
-
-        usedStates.add(v);
-
-        for (int candidate: candidateMatches.get(v)) {
-            Integer w = currentMatching.get(candidate);
-
-            if (w == null || alternateMatchingAlongAugmentingPath(candidateMatches, currentMatching, usedStates, w)) {
-                currentMatching.put(candidate, v);
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Computes the inversion of {@code scores}, i.e. change every element {@code e} to {@code 1 - e}.
-     * 
-     * @param scores The scores that are to be inverted.
-     * @return The inverted scores.
-     */
-    private RealMatrix invert(RealMatrix scores) {
-        RealMatrix invertedScores = new Array2DRowRealMatrix(scores.getRowDimension(), scores.getColumnDimension());
-        for (int row = 0; row < scores.getRowDimension(); row++) {
-            for (int column = 0; column < scores.getColumnDimension(); column++) {
-                invertedScores.setEntry(row, column, 1.0d - scores.getEntry(row, column));
-            }
-        }
-        return invertedScores;
     }
 }

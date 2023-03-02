@@ -40,6 +40,12 @@ public abstract class AbstractMerger<S, T, U extends GLTS<S, T>> implements Merg
         this.statePropertyCombiner = statePropertyCombiner;
     }
 
+    @Override
+    public U merge(U lhs, U rhs, Map<State<S>, State<S>> matching) throws IllegalArgumentException {
+        checkPreconditions(lhs, rhs, matching);
+        return mergeInternal(lhs, rhs, matching);
+    }
+
     /**
      * Checks whether the given matching is proper.
      * 
@@ -67,12 +73,6 @@ public abstract class AbstractMerger<S, T, U extends GLTS<S, T>> implements Merg
             leftStates.add(leftState);
             rightStates.add(rightState);
         }
-    }
-
-    @Override
-    public U merge(U lhs, U rhs, Map<State<S>, State<S>> matching) throws IllegalArgumentException {
-        checkPreconditions(lhs, rhs, matching);
-        return mergeInternal(lhs, rhs, matching);
     }
 
     /**

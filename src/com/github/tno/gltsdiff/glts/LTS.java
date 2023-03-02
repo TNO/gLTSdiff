@@ -25,16 +25,6 @@ import com.google.common.base.Preconditions;
  * @param <T> The type of transition properties.
  */
 public abstract class LTS<S, T> extends GLTS<S, T> {
-    /** @return The number of initial states in this LTS satisfying {@code predicate}. */
-    public long countInitialStates(Predicate<State<S>> predicate) {
-        return getInitialStates().stream().filter(predicate).count();
-    }
-
-    /** @return The set of all initial states, all of which are non-{@code null}. */
-    public Set<State<S>> getInitialStates() {
-        return getStates().stream().filter(s -> isInitialState(s)).collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-
     /**
      * Determines whether the given state property indicates that the associated state is initial.
      * 
@@ -52,5 +42,15 @@ public abstract class LTS<S, T> extends GLTS<S, T> {
     public boolean isInitialState(State<S> state) {
         Preconditions.checkNotNull(state, "Expected a non-null state.");
         return isInitial(state.getProperty());
+    }
+
+    /** @return The set of all initial states, all of which are non-{@code null}. */
+    public Set<State<S>> getInitialStates() {
+        return getStates().stream().filter(s -> isInitialState(s)).collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    /** @return The number of initial states in this LTS satisfying {@code predicate}. */
+    public long countInitialStates(Predicate<State<S>> predicate) {
+        return getInitialStates().stream().filter(predicate).count();
     }
 }

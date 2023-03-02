@@ -15,14 +15,14 @@ import com.google.common.base.Preconditions;
 
 /** An HTML printer that prints the hex color associated to a specified {@link DiffKind difference kind}. */
 public class DiffKindHtmlPrinter implements HtmlPrinter<DiffKind> {
-    /** The hex representation of black. */
-    private static final String COLOR_BLACK = "#000000";
-
     /** The hex representation of green. */
     private static final String COLOR_GREEN = "#00cc00";
 
     /** The hex representation of red. */
     private static final String COLOR_RED = "#ff4040";
+
+    /** The hex representation of black. */
+    private static final String COLOR_BLACK = "#000000";
 
     @Override
     public String print(DiffKind diffKind) {

@@ -52,6 +52,185 @@ public class GLTS<S, T> {
     private final Map<State<S>, List<Transition<S, T>>> outgoingTransitions = new LinkedHashMap<>();
 
     /**
+     * Determines whether the specified state exists in this GLTS.
+     * 
+     * @param state The non-{@code null} state.
+     * @return {@code true} if the state exists in this GLTS, {@code false} otherwise.
+     */
+    public boolean hasState(State<S> state) {
+        Preconditions.checkNotNull(state, "Expected a non-null source state.");
+        return getStates().contains(state);
+    }
+
+    /**
+     * Determines whether the specified transition exists in this GLTS.
+     * 
+     * @param source The non-{@code null} source state, which must exist in this GLTS.
+     * @param property The non-{@code null} transition property.
+     * @param target The non-{@code null} target state, which must exist in this GLTS.
+     * @return {@code true} if the given transition exists in this GLTS, {@code false} otherwise.
+     */
+    public boolean hasTransition(State<S> source, T property, State<S> target) {
+        Preconditions.checkNotNull(source, "Expected a non-null source state.");
+        Preconditions.checkNotNull(property, "Expected a non-null transition property.");
+        Preconditions.checkNotNull(target, "Expected a non-null target state.");
+        Preconditions.checkArgument(hasState(source), "Expected an existing source state.");
+        Preconditions.checkArgument(hasState(target), "Expected an existing target state.");
+
+        return getOutgoingTransitions(source).stream()
+                .anyMatch(transition -> transition.getProperty().equals(property) && transition.getTarget() == target);
+    }
+
+    /**
+     * Determines whether the specified transition exists in this GLTS.
+     * 
+     * @param transition The non-{@code null} transition.
+     * @return {@code true} if the given transition exists in this GLTS, {@code false} otherwise.
+     */
+    public boolean hasTransition(Transition<S, T> transition) {
+        return hasTransition(transition.getSource(), transition.getProperty(), transition.getTarget());
+    }
+
+    /**
+     * @return The set of all states of this GLTS, all of which are non-{@code null} and have identifiers between
+     *     {@code 0} and {@code size() - 1} that are unique within this GLTS.
+     */
+    public Set<State<S>> getStates() {
+        return Collections.unmodifiableSet(statesSet);
+    }
+
+    /**
+     * Gives the state with the specified identifier.
+     * 
+     * @param id The state identifier, which must be between {@code 0} and {@code size() - 1}.
+     * @return The non-{@code null} state within this GLTS with the specified identifier.
+     */
+    public State<S> getStateById(int id) {
+        Preconditions.checkArgument(0 <= id && id < statesSet.size(), "Expected the identifier to be within range.");
+        State<S> state = statesList.get(id);
+        Preconditions.checkArgument(state.getId() == id, "Expected state identifiers to be consistent.");
+        return state;
+    }
+
+    /** @return The set of all transitions of this GLTS, all of which are non-{@code null}. */
+    public Set<Transition<S, T>> getTransitions() {
+        return outgoingTransitions.values().stream().flatMap(ts -> ts.stream())
+                .collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
+    }
+
+    /**
+     * Gives the set of states that can reach the given state by a single transition.
+     * 
+     * @param state The non-{@code null} target state, which must exist in this GLTS.
+     * @return The set of all reachable states from {@code state} by a single transition, all of which are
+     *     non-{@code null}.
+     */
+    public Set<State<S>> getPredecessorsOf(State<S> state) {
+        Preconditions.checkNotNull(state, "Expected a non-null state.");
+        return getIncomingTransitions(state).stream().map(Transition::getSource)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    /**
+     * Gives the set of states that the specified state can reach by a single transition.
+     * 
+     * @param state The non-{@code null} source state, which must exist in this GLTS.
+     * @return The set of all co-reachable states from {@code state} by a single transition, all of which are
+     *     non-{@code null}.
+     */
+    public Set<State<S>> getSuccessorsOf(State<S> state) {
+        Preconditions.checkNotNull(state, "Expected a non-null state.");
+        return getOutgoingTransitions(state).stream().map(Transition::getTarget)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    /**
+     * Gives all transitions that go into the specified target state.
+     * 
+     * @param state The non-{@code null} target state, which must exist in this GLTS.
+     * @return All transitions that go into the given target state, all of which are non-{@code null}.
+     */
+    public List<Transition<S, T>> getIncomingTransitions(State<S> state) {
+        Preconditions.checkNotNull(state, "Expected a non-null target state.");
+        Preconditions.checkArgument(statesSet.contains(state), "Expected an existing target state.");
+        return Collections.unmodifiableList(incomingTransitions.get(state));
+    }
+
+    /**
+     * Gives all transitions that go out of the specified source state.
+     * 
+     * @param state The non-{@code null} source state, which must exist in this GLTS.
+     * @return All transitions that go out of the given source state, all of which are non-{@code null}.
+     */
+    public List<Transition<S, T>> getOutgoingTransitions(State<S> state) {
+        Preconditions.checkNotNull(state, "Expected a non-null source state.");
+        Preconditions.checkArgument(statesSet.contains(state), "Expected an existing source state.");
+        return Collections.unmodifiableList(outgoingTransitions.get(state));
+    }
+
+    /**
+     * Gives the properties of all transitions that go into the specified target state.
+     * 
+     * @param state The non-{@code null} target state, which must exist in this GLTS.
+     * @return The properties of all transitions going into the given state, all of which are non-{@code null}.
+     */
+    public Set<T> getIncomingTransitionProperties(State<S> state) {
+        Preconditions.checkNotNull(state, "Expected a non-null target state.");
+        return getIncomingTransitions(state).stream().map(Transition::getProperty)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    /**
+     * Gives the properties of all transitions that go out of the specified source state.
+     * 
+     * @param state The non-{@code null} source state, which must exist in this GLTS.
+     * @return The properties of all transitions going out of the given state, all of which are non-{@code null}.
+     */
+    public Set<T> getOutgoingTransitionProperties(State<S> state) {
+        Preconditions.checkNotNull(state, "Expected a non-null source state.");
+        return getOutgoingTransitions(state).stream().map(Transition::getProperty)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    /** @return The number of states in this GLTS. */
+    public int size() {
+        return getStates().size();
+    }
+
+    /** @return The number of states in this GLTS satisfying {@code predicate}. */
+    public long countStates(Predicate<State<S>> predicate) {
+        return getStates().stream().filter(predicate).count();
+    }
+
+    /** @return The number of transitions in this GLTS with a property that satisfies {@code predicate}. */
+    public long countTransitions(Predicate<T> predicate) {
+        return getStates().stream().flatMap(state -> getOutgoingTransitions(state).stream())
+                .map(Transition::getProperty).filter(predicate).count();
+    }
+
+    /**
+     * Updates the identifier of the given state.
+     * 
+     * @param state The state whose identifier to update.
+     * @param id The new state identifier.
+     */
+    protected void updateStateId(State<S> state, int id) {
+        Preconditions.checkNotNull(state, "Expected a non-null state.");
+        state.id = id;
+    }
+
+    /**
+     * Replaces the state property associated to the given state with the specified new property.
+     * 
+     * @param state The non-{@code null} state whose property is to be replaced, which must exist in this GLTS.
+     * @param property The non-{@code null} new state property.
+     */
+    public void setStateProperty(State<S> state, S property) {
+        Preconditions.checkArgument(statesSet.contains(state), "Expected an existing state.");
+        state.setProperty(property);
+    }
+
+    /**
      * Adds a state to this GLTS.
      * 
      * @param property The non-{@code null} property to associate to the newly added state.
@@ -74,6 +253,44 @@ public class GLTS<S, T> {
     }
 
     /**
+     * Tries adding the specified transition to this GLTS.
+     * 
+     * @param source The non-{@code null} source state, which must exist in this GLTS.
+     * @param property The non-{@code null} transition property.
+     * @param target The non-{@code null} target state, which must exist in this GLTS.
+     * @return {@code true} if the transition has been added to this GLTS, {@code false} if it already existed.
+     */
+    public boolean tryAddTransition(State<S> source, T property, State<S> target) {
+        if (hasTransition(source, property, target)) {
+            return false;
+        }
+
+        addTransition(source, property, target);
+        return true;
+    }
+
+    /**
+     * Tries adding the specified transition to this GLTS.
+     * 
+     * @param transition The non-{@code null} transition, whose source and target states must exist in this GLTS.
+     * @return {@code true} if the transition has been added to this GLTS, {@code false} if it already existed.
+     */
+    public boolean tryAddTransition(Transition<S, T> transition) {
+        return tryAddTransition(transition.getSource(), transition.getProperty(), transition.getTarget());
+    }
+
+    /**
+     * Adds the given transition to this GLTS.
+     * 
+     * @param transition The non-{@code null} transition to add, which must not already exist in this GLTS, but whose
+     *     source and target states must exist in this GLTS.
+     */
+    public void addTransition(Transition<S, T> transition) {
+        Preconditions.checkNotNull(transition, "Expected a non-null transition.");
+        addTransition(transition.getSource(), transition.getProperty(), transition.getTarget());
+    }
+
+    /**
      * Adds a transition to this GLTS, which must not already exist in this GLTS.
      * 
      * @param source The non-{@code null} source state, which must exist in this GLTS.
@@ -91,57 +308,6 @@ public class GLTS<S, T> {
         Transition<S, T> transition = new Transition<>(source, property, target);
         incomingTransitions.get(target).add(transition);
         outgoingTransitions.get(source).add(transition);
-    }
-
-    /**
-     * Gives all transitions that go into the specified target state.
-     * 
-     * @param state The non-{@code null} target state, which must exist in this GLTS.
-     * @return All transitions that go into the given target state, all of which are non-{@code null}.
-     */
-    public List<Transition<S, T>> getIncomingTransitions(State<S> state) {
-        Preconditions.checkNotNull(state, "Expected a non-null target state.");
-        Preconditions.checkArgument(statesSet.contains(state), "Expected an existing target state.");
-        return Collections.unmodifiableList(incomingTransitions.get(state));
-    }
-
-    /**
-     * Gives the state with the specified identifier.
-     * 
-     * @param id The state identifier, which must be between {@code 0} and {@code size() - 1}.
-     * @return The non-{@code null} state within this GLTS with the specified identifier.
-     */
-    public State<S> getStateById(int id) {
-        Preconditions.checkArgument(0 <= id && id < statesSet.size(), "Expected the identifier to be within range.");
-        State<S> state = statesList.get(id);
-        Preconditions.checkArgument(state.getId() == id, "Expected state identifiers to be consistent.");
-        return state;
-    }
-
-    /**
-     * @return The set of all states of this GLTS, all of which are non-{@code null} and have identifiers between
-     *     {@code 0} and {@code size() - 1} that are unique within this GLTS.
-     */
-    public Set<State<S>> getStates() {
-        return Collections.unmodifiableSet(statesSet);
-    }
-
-    /** @return The set of all transitions of this GLTS, all of which are non-{@code null}. */
-    public Set<Transition<S, T>> getTransitions() {
-        return outgoingTransitions.values().stream().flatMap(ts -> ts.stream())
-                .collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
-    }
-
-    /**
-     * Gives all transitions that go out of the specified source state.
-     * 
-     * @param state The non-{@code null} source state, which must exist in this GLTS.
-     * @return All transitions that go out of the given source state, all of which are non-{@code null}.
-     */
-    public List<Transition<S, T>> getOutgoingTransitions(State<S> state) {
-        Preconditions.checkNotNull(state, "Expected a non-null source state.");
-        Preconditions.checkArgument(statesSet.contains(state), "Expected an existing source state.");
-        return Collections.unmodifiableList(outgoingTransitions.get(state));
     }
 
     /**
@@ -195,129 +361,6 @@ public class GLTS<S, T> {
     }
 
     /**
-     * Replaces the state property associated to the given state with the specified new property.
-     * 
-     * @param state The non-{@code null} state whose property is to be replaced, which must exist in this GLTS.
-     * @param property The non-{@code null} new state property.
-     */
-    public void setStateProperty(State<S> state, S property) {
-        Preconditions.checkArgument(statesSet.contains(state), "Expected an existing state.");
-        state.setProperty(property);
-    }
-
-    /**
-     * Adds the given transition to this GLTS.
-     * 
-     * @param transition The non-{@code null} transition to add, which must not already exist in this GLTS, but whose
-     *     source and target states must exist in this GLTS.
-     */
-    public void addTransition(Transition<S, T> transition) {
-        Preconditions.checkNotNull(transition, "Expected a non-null transition.");
-        addTransition(transition.getSource(), transition.getProperty(), transition.getTarget());
-    }
-
-    /** @return The number of states in this GLTS satisfying {@code predicate}. */
-    public long countStates(Predicate<State<S>> predicate) {
-        return getStates().stream().filter(predicate).count();
-    }
-
-    /** @return The number of transitions in this GLTS with a property that satisfies {@code predicate}. */
-    public long countTransitions(Predicate<T> predicate) {
-        return getStates().stream().flatMap(state -> getOutgoingTransitions(state).stream())
-                .map(Transition::getProperty).filter(predicate).count();
-    }
-
-    /**
-     * Gives the properties of all transitions that go into the specified target state.
-     * 
-     * @param state The non-{@code null} target state, which must exist in this GLTS.
-     * @return The properties of all transitions going into the given state, all of which are non-{@code null}.
-     */
-    public Set<T> getIncomingTransitionProperties(State<S> state) {
-        Preconditions.checkNotNull(state, "Expected a non-null target state.");
-        return getIncomingTransitions(state).stream().map(Transition::getProperty)
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-
-    /**
-     * Gives the properties of all transitions that go out of the specified source state.
-     * 
-     * @param state The non-{@code null} source state, which must exist in this GLTS.
-     * @return The properties of all transitions going out of the given state, all of which are non-{@code null}.
-     */
-    public Set<T> getOutgoingTransitionProperties(State<S> state) {
-        Preconditions.checkNotNull(state, "Expected a non-null source state.");
-        return getOutgoingTransitions(state).stream().map(Transition::getProperty)
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-
-    /**
-     * Gives the set of states that can reach the given state by a single transition.
-     * 
-     * @param state The non-{@code null} target state, which must exist in this GLTS.
-     * @return The set of all reachable states from {@code state} by a single transition, all of which are
-     *     non-{@code null}.
-     */
-    public Set<State<S>> getPredecessorsOf(State<S> state) {
-        Preconditions.checkNotNull(state, "Expected a non-null state.");
-        return getIncomingTransitions(state).stream().map(Transition::getSource)
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-
-    /**
-     * Gives the set of states that the specified state can reach by a single transition.
-     * 
-     * @param state The non-{@code null} source state, which must exist in this GLTS.
-     * @return The set of all co-reachable states from {@code state} by a single transition, all of which are
-     *     non-{@code null}.
-     */
-    public Set<State<S>> getSuccessorsOf(State<S> state) {
-        Preconditions.checkNotNull(state, "Expected a non-null state.");
-        return getOutgoingTransitions(state).stream().map(Transition::getTarget)
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-
-    /**
-     * Determines whether the specified state exists in this GLTS.
-     * 
-     * @param state The non-{@code null} state.
-     * @return {@code true} if the state exists in this GLTS, {@code false} otherwise.
-     */
-    public boolean hasState(State<S> state) {
-        Preconditions.checkNotNull(state, "Expected a non-null source state.");
-        return getStates().contains(state);
-    }
-
-    /**
-     * Determines whether the specified transition exists in this GLTS.
-     * 
-     * @param source The non-{@code null} source state, which must exist in this GLTS.
-     * @param property The non-{@code null} transition property.
-     * @param target The non-{@code null} target state, which must exist in this GLTS.
-     * @return {@code true} if the given transition exists in this GLTS, {@code false} otherwise.
-     */
-    public boolean hasTransition(State<S> source, T property, State<S> target) {
-        Preconditions.checkNotNull(source, "Expected a non-null source state.");
-        Preconditions.checkNotNull(property, "Expected a non-null transition property.");
-        Preconditions.checkNotNull(target, "Expected a non-null target state.");
-        Preconditions.checkArgument(hasState(source), "Expected an existing source state.");
-        Preconditions.checkArgument(hasState(target), "Expected an existing target state.");
-
-        return getOutgoingTransitions(source).stream()
-                .anyMatch(transition -> transition.getProperty().equals(property) && transition.getTarget() == target);
-    }
-
-    /**
-     * Determines whether the specified transition exists in this GLTS.
-     * 
-     * @param transition The non-{@code null} transition.
-     * @return {@code true} if the given transition exists in this GLTS, {@code false} otherwise.
-     */
-    public boolean hasTransition(Transition<S, T> transition) {
-        return hasTransition(transition.getSource(), transition.getProperty(), transition.getTarget());
-    }
-
-    /**
      * Removes the specified transition from this GLTS.
      * 
      * @param transition The non-{@code null} transition to remove, which must exist in this GLTS.
@@ -325,49 +368,6 @@ public class GLTS<S, T> {
     public void removeTransition(Transition<S, T> transition) {
         Preconditions.checkNotNull(transition, "Expected a non-null transition.");
         removeTransition(transition.getSource(), transition.getProperty(), transition.getTarget());
-    }
-
-    /** @return The number of states in this GLTS. */
-    public int size() {
-        return getStates().size();
-    }
-
-    /**
-     * Tries adding the specified transition to this GLTS.
-     * 
-     * @param source The non-{@code null} source state, which must exist in this GLTS.
-     * @param property The non-{@code null} transition property.
-     * @param target The non-{@code null} target state, which must exist in this GLTS.
-     * @return {@code true} if the transition has been added to this GLTS, {@code false} if it already existed.
-     */
-    public boolean tryAddTransition(State<S> source, T property, State<S> target) {
-        if (hasTransition(source, property, target)) {
-            return false;
-        }
-
-        addTransition(source, property, target);
-        return true;
-    }
-
-    /**
-     * Tries adding the specified transition to this GLTS.
-     * 
-     * @param transition The non-{@code null} transition, whose source and target states must exist in this GLTS.
-     * @return {@code true} if the transition has been added to this GLTS, {@code false} if it already existed.
-     */
-    public boolean tryAddTransition(Transition<S, T> transition) {
-        return tryAddTransition(transition.getSource(), transition.getProperty(), transition.getTarget());
-    }
-
-    /**
-     * Updates the identifier of the given state.
-     * 
-     * @param state The state whose identifier to update.
-     * @param id The new state identifier.
-     */
-    protected void updateStateId(State<S> state, int id) {
-        Preconditions.checkNotNull(state, "Expected a non-null state.");
-        state.id = id;
     }
 
     /**

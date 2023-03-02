@@ -111,82 +111,15 @@ public class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
     }
 
     /**
-     * Writes transition information of a GLTS in DOT format to the provided writer.
+     * Given a collection of states, constructs a list of states that is deterministically ordered. This is for example
+     * needed for regression testing, which expects deterministic results on every run.
      * 
      * @param glts The GLTS.
-     * @param writer The writer to write DOT data to.
-     * @throws IOException In case of an I/O error.
+     * @param states The states to order.
+     * @return A list of deterministically ordered states.
      */
-    protected void writeTransitions(U glts, Writer writer) throws IOException {
-        for (State<S> source: sortStates(glts, glts.getStates())) {
-            int index = 0;
-            for (Transition<S, T> transition: glts.getOutgoingTransitions(source)) {
-                writeTransition(glts, writer, transition, index++);
-            }
-        }
-    }
-
-    /**
-     * Gives the DOT graph identifier of the specified state.
-     * 
-     * @param state The state for which to obtain the DOT graph identifier.
-     * @return The DOT graph identifier that identifies {@code state} in the DOT graph.
-     */
-    public static String stateId(State<?> state) {
-        return Integer.toString(state.getId() + 1);
-    }
-
-    /**
-     * Gives the DOT graph identifier of the specified transition within {@link #glts}.
-     * 
-     * @param glts The GLTS.
-     * @param transition The transition for which to obtain the DOT graph identifier.
-     * @param index The transition index.
-     * @return The DOT graph identifier that identifies {@code transition} in the DOT graph.
-     */
-    protected String transitionId(U glts, Transition<S, T> transition, int index) {
-        State<S> source = transition.getSource();
-        State<S> target = transition.getTarget();
-
-        Preconditions.checkArgument(glts.hasState(source), "Expected the source state to exist in the given GLTS.");
-        Preconditions.checkArgument(glts.hasState(target), "Expected the target state to exist in the given GLTS.");
-        Preconditions.checkArgument(index >= 0, "Expected the given index to be non-negative.");
-
-        return String.format("%s-%d-%s", stateId(source), index, stateId(target));
-    }
-
-    /**
-     * Gives a standard DOT graph state label for the specified state.
-     * 
-     * @param state The state for which to obtain the DOT graph state label.
-     * @return The DOT graph state label for {@code state}.
-     */
-    public static String stateLabel(State<?> state) {
-        return "s" + stateId(state);
-    }
-
-    protected String stateShape(U glts, State<S> state) {
-        return SHAPE_CIRCLE;
-    }
-
-    protected String stateColor(U glts, State<S> state) {
-        return DEFAULT_COLOR;
-    }
-
-    protected String stateFontColor(U glts, State<S> state) {
-        return DEFAULT_COLOR;
-    }
-
-    protected String stateStyle(U glts, State<S> state) {
-        return DEFAULT_STYLE;
-    }
-
-    protected String initialStateColor(U glts, State<S> state) {
-        return DEFAULT_COLOR;
-    }
-
-    protected String transitionColor(U glts, Transition<S, T> transition) {
-        return DEFAULT_COLOR;
+    protected List<State<S>> sortStates(U glts, Collection<State<S>> states) {
+        return states.stream().sorted(getStateComparator(glts)).collect(Collectors.toList());
     }
 
     /**
@@ -220,6 +153,62 @@ public class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
     }
 
     /**
+     * Gives the DOT graph identifier of the specified state.
+     * 
+     * @param state The state for which to obtain the DOT graph identifier.
+     * @return The DOT graph identifier that identifies {@code state} in the DOT graph.
+     */
+    public static String stateId(State<?> state) {
+        return Integer.toString(state.getId() + 1);
+    }
+
+    /**
+     * Gives a standard DOT graph state label for the specified state.
+     * 
+     * @param state The state for which to obtain the DOT graph state label.
+     * @return The DOT graph state label for {@code state}.
+     */
+    public static String stateLabel(State<?> state) {
+        return "s" + stateId(state);
+    }
+
+    protected String stateShape(U glts, State<S> state) {
+        return SHAPE_CIRCLE;
+    }
+
+    protected String stateColor(U glts, State<S> state) {
+        return DEFAULT_COLOR;
+    }
+
+    protected String stateFontColor(U glts, State<S> state) {
+        return DEFAULT_COLOR;
+    }
+
+    protected String stateStyle(U glts, State<S> state) {
+        return DEFAULT_STYLE;
+    }
+
+    protected String initialStateColor(U glts, State<S> state) {
+        return DEFAULT_COLOR;
+    }
+
+    /**
+     * Writes transition information of a GLTS in DOT format to the provided writer.
+     * 
+     * @param glts The GLTS.
+     * @param writer The writer to write DOT data to.
+     * @throws IOException In case of an I/O error.
+     */
+    protected void writeTransitions(U glts, Writer writer) throws IOException {
+        for (State<S> source: sortStates(glts, glts.getStates())) {
+            int index = 0;
+            for (Transition<S, T> transition: glts.getOutgoingTransitions(source)) {
+                writeTransition(glts, writer, transition, index++);
+            }
+        }
+    }
+
+    /**
      * Writes information of a single transition of a GLTS in DOT format to the provided writer.
      * 
      * @param glts The GLTS.
@@ -235,6 +224,29 @@ public class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
         writer.write(String.format(" id=\"%s\"", transitionId(glts, transition, index)));
         writer.write("];");
         writer.write(System.lineSeparator());
+    }
+
+    protected String transitionColor(U glts, Transition<S, T> transition) {
+        return DEFAULT_COLOR;
+    }
+
+    /**
+     * Gives the DOT graph identifier of the specified transition within {@link #glts}.
+     * 
+     * @param glts The GLTS.
+     * @param transition The transition for which to obtain the DOT graph identifier.
+     * @param index The transition index.
+     * @return The DOT graph identifier that identifies {@code transition} in the DOT graph.
+     */
+    protected String transitionId(U glts, Transition<S, T> transition, int index) {
+        State<S> source = transition.getSource();
+        State<S> target = transition.getTarget();
+
+        Preconditions.checkArgument(glts.hasState(source), "Expected the source state to exist in the given GLTS.");
+        Preconditions.checkArgument(glts.hasState(target), "Expected the target state to exist in the given GLTS.");
+        Preconditions.checkArgument(index >= 0, "Expected the given index to be non-negative.");
+
+        return String.format("%s-%d-%s", stateId(source), index, stateId(target));
     }
 
     /**
@@ -255,17 +267,5 @@ public class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
         if (!templateData.trim().isEmpty()) {
             writer.write(String.format(template, templateData));
         }
-    }
-
-    /**
-     * Given a collection of states, constructs a list of states that is deterministically ordered. This is for example
-     * needed for regression testing, which expects deterministic results on every run.
-     * 
-     * @param glts The GLTS.
-     * @param states The states to order.
-     * @return A list of deterministically ordered states.
-     */
-    protected List<State<S>> sortStates(U glts, Collection<State<S>> states) {
-        return states.stream().sorted(getStateComparator(glts)).collect(Collectors.toList());
     }
 }

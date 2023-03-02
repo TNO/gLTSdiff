@@ -36,22 +36,26 @@ import com.google.common.base.Preconditions;
  */
 public class DiffAutomaton<T> extends Automaton<DiffAutomatonStateProperty, DiffProperty<T>> implements Cloneable {
     @Override
-    public void addTransition(State<DiffAutomatonStateProperty> source, DiffProperty<T> property,
-            State<DiffAutomatonStateProperty> target)
-    {
-        Preconditions.checkNotNull(property, "Expected a non-null transition property.");
+    public boolean isInitial(DiffAutomatonStateProperty property) {
+        Preconditions.checkNotNull(property, "Expected a non-null state property.");
+        return property.isInitial();
+    }
 
-        // Make sure that the difference kinds are consistent.
-        DiffKind sourceDiffKind = source.getProperty().getStateDiffKind();
-        DiffKind targetDiffKind = target.getProperty().getStateDiffKind();
-        DiffKind propertyDiffKind = property.getDiffKind();
+    @Override
+    public boolean isAccepting(DiffAutomatonStateProperty property) {
+        Preconditions.checkNotNull(property, "Expected a non-null state property.");
+        return property.isAccepting();
+    }
 
-        Preconditions.checkArgument(sourceDiffKind == propertyDiffKind || sourceDiffKind == DiffKind.UNCHANGED,
-                "Expected the difference kind of the transition property to be consistent with the source state.");
-        Preconditions.checkArgument(targetDiffKind == propertyDiffKind || targetDiffKind == DiffKind.UNCHANGED,
-                "Expected the difference kind of the transition property to be consistent with the target state.");
-
-        super.addTransition(source, property, target);
+    /**
+     * Gives the difference kind associated to the given initial state.
+     * 
+     * @param state The non-{@code null} initial state.
+     * @return The associated difference kind.
+     */
+    public DiffKind getInitialStateDiffKind(State<DiffAutomatonStateProperty> state) {
+        Preconditions.checkArgument(isInitialState(state), "Expected an initial state.");
+        return state.getProperty().getInitDiffKind();
     }
 
     @Override
@@ -72,31 +76,27 @@ public class DiffAutomaton<T> extends Automaton<DiffAutomatonStateProperty, Diff
     }
 
     @Override
-    public boolean isInitial(DiffAutomatonStateProperty property) {
-        Preconditions.checkNotNull(property, "Expected a non-null state property.");
-        return property.isInitial();
-    }
+    public void addTransition(State<DiffAutomatonStateProperty> source, DiffProperty<T> property,
+            State<DiffAutomatonStateProperty> target)
+    {
+        Preconditions.checkNotNull(property, "Expected a non-null transition property.");
 
-    @Override
-    public boolean isAccepting(DiffAutomatonStateProperty property) {
-        Preconditions.checkNotNull(property, "Expected a non-null state property.");
-        return property.isAccepting();
+        // Make sure that the difference kinds are consistent.
+        DiffKind sourceDiffKind = source.getProperty().getStateDiffKind();
+        DiffKind targetDiffKind = target.getProperty().getStateDiffKind();
+        DiffKind propertyDiffKind = property.getDiffKind();
+
+        Preconditions.checkArgument(sourceDiffKind == propertyDiffKind || sourceDiffKind == DiffKind.UNCHANGED,
+                "Expected the difference kind of the transition property to be consistent with the source state.");
+        Preconditions.checkArgument(targetDiffKind == propertyDiffKind || targetDiffKind == DiffKind.UNCHANGED,
+                "Expected the difference kind of the transition property to be consistent with the target state.");
+
+        super.addTransition(source, property, target);
     }
 
     @Override
     public DiffAutomaton<T> clone() {
         return map(DiffAutomaton::new, property -> property, property -> property);
-    }
-
-    /**
-     * Gives the difference kind associated to the given initial state.
-     * 
-     * @param state The non-{@code null} initial state.
-     * @return The associated difference kind.
-     */
-    public DiffKind getInitialStateDiffKind(State<DiffAutomatonStateProperty> state) {
-        Preconditions.checkArgument(isInitialState(state), "Expected an initial state.");
-        return state.getProperty().getInitDiffKind();
     }
 
     /**

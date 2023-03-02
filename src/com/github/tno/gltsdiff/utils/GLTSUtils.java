@@ -29,6 +29,40 @@ public class GLTSUtils {
     }
 
     /**
+     * Determines whether {@code statePair} has any common incoming transitions with combinable properties.
+     * 
+     * @param <S> The type of state properties.
+     * @param <T> The type of transition properties.
+     * @param left The left GLTS.
+     * @param right The right GLTS.
+     * @param combiner The combiner for transition properties.
+     * @param statePair The pair of ({@code left}, {@code right})-states to consider.
+     * @return {@code true} if the given state pair has common combinable incoming transitions, {@code false} otherwise.
+     */
+    public static <S, T> boolean hasCommonIncomingTransitions(GLTS<S, T> left, GLTS<S, T> right, Combiner<T> combiner,
+            Pair<State<S>, State<S>> statePair)
+    {
+        return commonIncomingTransitions(left, right, combiner, statePair).findAny().isPresent();
+    }
+
+    /**
+     * Determines whether {@code statePair} has any common outgoing transitions with combinable properties.
+     * 
+     * @param <S> The type of state properties.
+     * @param <T> The type of transition properties.
+     * @param left The left GLTS.
+     * @param right The right GLTS.
+     * @param combiner The combiner for transition properties.
+     * @param statePair The pair of ({@code left}, {@code right})-states to consider.
+     * @return {@code true} if the given state pair has common combinable outgoing transitions, {@code false} otherwise.
+     */
+    public static <S, T> boolean hasCommonOutgoingTransitions(GLTS<S, T> left, GLTS<S, T> right, Combiner<T> combiner,
+            Pair<State<S>, State<S>> statePair)
+    {
+        return commonOutgoingTransitions(left, right, combiner, statePair).findAny().isPresent();
+    }
+
+    /**
      * Gives a stream of all pairs of common combinable incoming transitions that go into {@code statePair}.
      * 
      * @param <S> The type of state properties.
@@ -50,23 +84,6 @@ public class GLTSUtils {
     }
 
     /**
-     * Determines whether {@code statePair} has any common incoming transitions with combinable properties.
-     * 
-     * @param <S> The type of state properties.
-     * @param <T> The type of transition properties.
-     * @param left The left GLTS.
-     * @param right The right GLTS.
-     * @param combiner The combiner for transition properties.
-     * @param statePair The pair of ({@code left}, {@code right})-states to consider.
-     * @return {@code true} if the given state pair has common combinable incoming transitions, {@code false} otherwise.
-     */
-    public static <S, T> boolean hasCommonIncomingTransitions(GLTS<S, T> left, GLTS<S, T> right, Combiner<T> combiner,
-            Pair<State<S>, State<S>> statePair)
-    {
-        return commonIncomingTransitions(left, right, combiner, statePair).findAny().isPresent();
-    }
-
-    /**
      * Gives a stream of all pairs of common combinable outgoing transitions that go out of {@code statePair}.
      * 
      * @param <S> The type of state properties.
@@ -85,23 +102,6 @@ public class GLTSUtils {
 
         return leftTransitions.stream().flatMap(l -> rightTransitions.stream()
                 .filter(r -> combiner.areCombinable(l.getProperty(), r.getProperty())).map(r -> Pair.create(l, r)));
-    }
-
-    /**
-     * Determines whether {@code statePair} has any common outgoing transitions with combinable properties.
-     * 
-     * @param <S> The type of state properties.
-     * @param <T> The type of transition properties.
-     * @param left The left GLTS.
-     * @param right The right GLTS.
-     * @param combiner The combiner for transition properties.
-     * @param statePair The pair of ({@code left}, {@code right})-states to consider.
-     * @return {@code true} if the given state pair has common combinable outgoing transitions, {@code false} otherwise.
-     */
-    public static <S, T> boolean hasCommonOutgoingTransitions(GLTS<S, T> left, GLTS<S, T> right, Combiner<T> combiner,
-            Pair<State<S>, State<S>> statePair)
-    {
-        return commonOutgoingTransitions(left, right, combiner, statePair).findAny().isPresent();
     }
 
     /**
