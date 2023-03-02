@@ -26,7 +26,7 @@ public class WalkinshawLocalLTSScorer<S, T, U extends LTS<S, T>> extends Walkins
     /**
      * Instantiates a new Walkinshaw local similarity scorer for LTSs, that performs only a single refinement. Uses an
      * attenuation factor of 0.6.
-     * 
+     *
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
@@ -36,7 +36,7 @@ public class WalkinshawLocalLTSScorer<S, T, U extends LTS<S, T>> extends Walkins
 
     /**
      * Instantiates a new Walkinshaw local similarity scorer for LTSs. Uses an attenuation factor of 0.6.
-     * 
+     *
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      * @param nrOfRefinements The number of refinements to perform, which must be at least 1.
@@ -49,7 +49,7 @@ public class WalkinshawLocalLTSScorer<S, T, U extends LTS<S, T>> extends Walkins
 
     /**
      * Instantiates a new Walkinshaw local similarity scorer for LTSs. Uses an attenuation factor of 0.6.
-     * 
+     *
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      * @param nrOfRefinements The number of refinements to perform, which must be at least 1.

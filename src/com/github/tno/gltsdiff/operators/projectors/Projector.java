@@ -22,7 +22,7 @@ import java.util.Optional;
 public interface Projector<T, U> {
     /**
      * Projects the specified {@code property} along a given element {@code along}.
-     * 
+     *
      * @param property The non-{@code null} property to project.
      * @param along The non-{@code null} element to project along.
      * @return The non-{@code null} projected property, or {@link Optional#empty()} if nothing remained after

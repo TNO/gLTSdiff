@@ -22,11 +22,12 @@ import com.github.tno.gltsdiff.glts.State;
  * @param <T> The type of transition properties.
  * @param <U> The type of GLTSs to merge.
  */
+@FunctionalInterface
 public interface Merger<S, T, U extends GLTS<S, T>> {
     /**
      * Merges the LHS and RHS into a single GLTS. The given (LHS, RHS)-state matching determines which LHS states are to
      * be merged with which RHS states.
-     * 
+     *
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
      * @param matching A matching from LHS states to RHS states. This matching should be proper in the sense that:

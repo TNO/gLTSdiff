@@ -23,7 +23,7 @@ public class SubtypeHtmlPrinter<T, U extends T> implements HtmlPrinter<U> {
 
     /**
      * Instantiates a new subtype property printer.
-     * 
+     *
      * @param printer The printer for properties.
      */
     public SubtypeHtmlPrinter(HtmlPrinter<T> printer) {

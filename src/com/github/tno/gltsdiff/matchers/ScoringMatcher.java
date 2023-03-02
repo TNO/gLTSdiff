@@ -34,7 +34,7 @@ public abstract class ScoringMatcher<S, T, U extends GLTS<S, T>> implements Matc
 
     /**
      * Instantiates a new similarity scoring based matcher.
-     * 
+     *
      * @param scorer The algorithm for computing state similarity scores.
      */
     public ScoringMatcher(SimilarityScorer<S, T, U> scorer) {
@@ -52,11 +52,12 @@ public abstract class ScoringMatcher<S, T, U extends GLTS<S, T>> implements Matc
     /**
      * Normalizes the given matrix of similarity scores, so that every matrix cell with a finite value is within the
      * interval [0,1].
-     * 
+     *
      * @param scores The matrix of state similarity scores that is to be normalized. All cells of this matrix must
      *     either be finite, or be {@link Double#NEGATIVE_INFINITY}.
      * @return The normalized score matrix.
      */
+    @SuppressWarnings("null")
     protected RealMatrix normalize(RealMatrix scores) {
         // Empty matrices are trivially normalized.
         if (scores.getRowDimension() == 0 || scores.getColumnDimension() == 0) {
@@ -116,7 +117,7 @@ public abstract class ScoringMatcher<S, T, U extends GLTS<S, T>> implements Matc
     /**
      * Given a matrix {@code scores} containing similarity scores for (LHS, RHS)-state pairs, computes which LHS states
      * should be matched onto which RHS states. The computed matching comes as a mapping from LHS states to RHS states.
-     * 
+     *
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
      * @param scores A matrix of (LHS, RHS)-state similarity scores. The rows correspond to LHS states, columns to RHS

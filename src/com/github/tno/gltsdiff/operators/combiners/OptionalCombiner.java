@@ -15,10 +15,14 @@ import java.util.Optional;
 import com.google.common.base.Preconditions;
 
 /**
- * A combiner for optional properties. Two optionals are always combinable. It is assumed that their inner properties
- * are always combinable as well. The combination of two optionals is defined to be an optional with a combined inner
- * property, or {@link Optional#empty()} if there are no inner properties.
- * 
+ * A combiner for optional properties.
+ *
+ * <p>
+ * Two optionals are always combinable. It is assumed that their inner properties are always combinable as well. The
+ * combination of two optionals is defined to be an optional with a combined inner property, or {@link Optional#empty()}
+ * if there are no inner properties.
+ * </p>
+ *
  * @param <T> The type of inner properties.
  */
 public class OptionalCombiner<T> extends Combiner<Optional<T>> {
@@ -27,7 +31,7 @@ public class OptionalCombiner<T> extends Combiner<Optional<T>> {
 
     /**
      * Instantiates a combiner for optional properties based on a combiner for properties that are present.
-     * 
+     *
      * @param combiner The combiner for properties that are present.
      */
     public OptionalCombiner(Combiner<T> combiner) {

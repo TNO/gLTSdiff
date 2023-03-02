@@ -15,7 +15,8 @@ import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 
 /**
- * Scorer that computes global similarity scores for pairs of (LHS, RHS)-states in {@link LTS LTSs}, thereby taking
+ * Scorer that computes global similarity scores between {@link LTS LTSs}, by transforming the problem of finding global
+ * similarity scores to a problem of solving a system of linear equations, as proposed by Walkinshaw et al. Takes
  * initial state information into account.
  *
  * @param <S> The type of state properties.
@@ -25,7 +26,7 @@ import com.github.tno.gltsdiff.operators.combiners.Combiner;
 public class WalkinshawGlobalLTSScorer<S, T, U extends LTS<S, T>> extends WalkinshawGlobalGLTSScorer<S, T, U> {
     /**
      * Instantiates a new Walkinshaw global scorer for LTSs. Uses an attenuation factor of 0.6.
-     * 
+     *
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
@@ -35,7 +36,7 @@ public class WalkinshawGlobalLTSScorer<S, T, U extends LTS<S, T>> extends Walkin
 
     /**
      * Instantiates a new Walkinshaw global scorer for LTSs.
-     * 
+     *
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      * @param attenuationFactor The attenuation factor, the ratio in the range [0,1] that determines how much the

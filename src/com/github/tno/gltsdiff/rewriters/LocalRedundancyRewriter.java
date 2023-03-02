@@ -22,6 +22,7 @@ import com.github.tno.gltsdiff.utils.EquivalenceClasses;
 
 /**
  * Eliminates patterns of local redundancy in GLTSs.
+ *
  * <p>
  * A <i>pattern of local redundancy</i> is defined to be a set of at least two transitions with combinable properties,
  * that all share the same source state and target state. This rewriter merges any such set of transitions into a single
@@ -38,7 +39,7 @@ public class LocalRedundancyRewriter<S, T, U extends GLTS<S, T>> implements Rewr
 
     /**
      * Instantiates a new rewriter for eliminating local redundancy.
-     * 
+     *
      * @param combiner The combiner for transition properties.
      */
     public LocalRedundancyRewriter(Combiner<T> combiner) {

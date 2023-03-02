@@ -22,6 +22,7 @@ import com.google.common.base.Preconditions;
 /**
  * A difference automaton, which is a concrete automaton with difference information associated to states, initial
  * states and transitions.
+ *
  * <p>
  * Difference automata maintain the invariant that difference kinds are always properly nested, meaning that:
  * <ul>
@@ -48,8 +49,8 @@ public class DiffAutomaton<T> extends Automaton<DiffAutomatonStateProperty, Diff
     }
 
     /**
-     * Gives the difference kind associated to the given initial state.
-     * 
+     * Returns the difference kind associated to the given initial state.
+     *
      * @param state The non-{@code null} initial state.
      * @return The associated difference kind.
      */
@@ -101,7 +102,7 @@ public class DiffAutomaton<T> extends Automaton<DiffAutomatonStateProperty, Diff
 
     /**
      * Projects this difference automaton along a given difference kind.
-     * 
+     *
      * @param projector The projector for projecting inner transition properties.
      * @param along The non-{@code null} difference kind to project along.
      * @return The projected difference automaton, containing only state and transition properties related to
@@ -114,8 +115,8 @@ public class DiffAutomaton<T> extends Automaton<DiffAutomatonStateProperty, Diff
     }
 
     /**
-     * Gives the left (LHS) projection of this difference automaton.
-     * 
+     * Returns the left (LHS) projection of this difference automaton.
+     *
      * @param projector The projector for projecting inner transition properties.
      * @return The left (LHS) projection of this difference automaton, containing only the states, initial states and
      *     transitions that are {@link DiffKind#REMOVED}.
@@ -125,8 +126,8 @@ public class DiffAutomaton<T> extends Automaton<DiffAutomatonStateProperty, Diff
     }
 
     /**
-     * Gives the right (RHS) projection of this difference automaton.
-     * 
+     * Returns the right (RHS) projection of this difference automaton.
+     *
      * @param projector The projector for projecting inner transition properties.
      * @return The right (RHS) projection of this difference automaton, containing only the states, initial states and
      *     transitions that are {@link DiffKind#ADDED}.
@@ -137,7 +138,7 @@ public class DiffAutomaton<T> extends Automaton<DiffAutomatonStateProperty, Diff
 
     /**
      * Converts this difference automaton to a simple automaton with potentially different transition properties.
-     * 
+     *
      * @param <U> The target type of transition properties.
      * @param transitionPropertyMapper A function for mapping transition properties. Any transition with a property that
      *     is mapped to {@code null} will not be included in the returned simple automaton.
@@ -151,7 +152,7 @@ public class DiffAutomaton<T> extends Automaton<DiffAutomatonStateProperty, Diff
 
     /**
      * Converts a given simple automaton to a difference automaton.
-     * 
+     *
      * @param <T> The type of transition properties.
      * @param automaton The non-{@code null} automaton to convert.
      * @param diffKind The non-{@code null} difference kind to be associated to all converted states, initial states and

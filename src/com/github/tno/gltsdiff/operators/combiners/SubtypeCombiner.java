@@ -31,7 +31,7 @@ public class SubtypeCombiner<T, U extends T> extends Combiner<U> {
 
     /**
      * Instantiates a new subtype property combiner.
-     * 
+     *
      * @param combiner The combiner for properties.
      * @param converter The converter function for combined properties. This function is only called with
      *     non-{@code null} properties, and must always return a non-{@code null} property.

@@ -26,7 +26,7 @@ public class OptionalProjector<T, U> implements Projector<Optional<T>, U> {
 
     /**
      * Instantiates a new optional property projector.
-     * 
+     *
      * @param projector The projector for optional properties.
      */
     public OptionalProjector(Projector<T, U> projector) {

@@ -28,9 +28,14 @@ import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.google.common.base.Preconditions;
 
 /**
- * Contains common functionality for the state similarity scoring approaches that are described in the article by
- * Walkinshaw et al. (TOSEM 2013). However, this implementation generalizes the approaches described in the article by a
- * more general concept of combinability (see {@link Combiner}).
+ * Scorer that computes local similarity scores, using the approach described by Walkinshaw et al.
+ *
+ * <p>
+ * Implements base functionality for scorers that are described in the article by Walkinshaw et al. (TOSEM 2013).
+ * However, this implementation generalizes the approaches described in the article by a more general concept of
+ * combinability (see {@link Combiner}).
+ * </p>
+ *
  * <p>
  * The equation system as described by Walkinshaw et al. produces similarity scores guaranteed to be in the range
  * [-1,1]. This implementation converts all negative similarity scores to {@link Double#NEGATIVE_INFINITY} instead after
@@ -47,6 +52,7 @@ public abstract class WalkinshawScorer<S, T, U extends GLTS<S, T>> implements Si
     /**
      * The attenuation factor, the ratio in the range [0,1] that determines how much the similarity scores of far-away
      * states influence the final similarity scores.
+     *
      * <p>
      * This factor can be tweaked a bit if the comparison results come out unsatisfactory. A ratio of 0 would mean that
      * only local similarity scores are used. Note that, if one is only interested in local similarity,
@@ -64,7 +70,7 @@ public abstract class WalkinshawScorer<S, T, U extends GLTS<S, T>> implements Si
 
     /**
      * Instantiates a new Walkinshaw similarity scorer. Uses an attenuation factor of 0.6.
-     * 
+     *
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
@@ -74,7 +80,7 @@ public abstract class WalkinshawScorer<S, T, U extends GLTS<S, T>> implements Si
 
     /**
      * Instantiates a new Walkinshaw similarity scorer.
-     * 
+     *
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      * @param attenuationFactor The attenuation factor, the ratio in the range [0,1] that determines how much the
@@ -150,6 +156,8 @@ public abstract class WalkinshawScorer<S, T, U extends GLTS<S, T>> implements Si
     }
 
     /**
+     * Compute forward similarity scores.
+     *
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
      * @return The computed {@code lhs.size()} times {@code rhs.size()} matrix of forward state similarity scores, all
@@ -158,6 +166,8 @@ public abstract class WalkinshawScorer<S, T, U extends GLTS<S, T>> implements Si
     protected abstract RealMatrix computeForwardSimilarityScores(U lhs, U rhs);
 
     /**
+     * Compute backward similarity scores.
+     *
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
      * @return The computed {@code lhs.size()} times {@code rhs.size()} matrix of backward state similarity scores, all
@@ -166,15 +176,15 @@ public abstract class WalkinshawScorer<S, T, U extends GLTS<S, T>> implements Si
     protected abstract RealMatrix computeBackwardSimilarityScores(U lhs, U rhs);
 
     /**
-     * Gives an adjustment to the numerator of the fractional similarity score equation for the given state pair. This
+     * Returns an adjustment to the numerator of the fractional similarity score equation for the given state pair. This
      * adjustment, together with {@code #getDenominatorAdjustment}, must ensure that state similarity scores stay within
      * the range [-1,1].
-     * 
+     *
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
      * @param leftState A LHS state.
      * @param rightState A RHS state.
-     * @param Whether the state similarity score equation is for the forward or the backward direction.
+     * @param isForward Whether the state similarity score equation is for the forward or the backward direction.
      * @return An adjustment to the numerator of the fractional similarity score equation for the given state pair.
      */
     protected double getNumeratorAdjustment(U lhs, U rhs, State<S> leftState, State<S> rightState, boolean isForward) {
@@ -182,15 +192,15 @@ public abstract class WalkinshawScorer<S, T, U extends GLTS<S, T>> implements Si
     }
 
     /**
-     * Gives an adjustment to the denominator of the fractional similarity score equation for the given state pair. This
-     * adjustment, together with {@code #getNumeratorAdjustment}, must ensure that state similarity scores stay within
-     * the range [-1,1].
-     * 
+     * Returns an adjustment to the denominator of the fractional similarity score equation for the given state pair.
+     * This adjustment, together with {@code #getNumeratorAdjustment}, must ensure that state similarity scores stay
+     * within the range [-1,1].
+     *
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
      * @param leftState A LHS state.
      * @param rightState A RHS state.
-     * @param Whether the state similarity score equation is for the forward or the backward direction.
+     * @param isForward Whether the state similarity score equation is for the forward or the backward direction.
      * @return An adjustment to the denominator of the fractional similarity score equation for the given state pair.
      */
     protected double getDenominatorAdjustment(U lhs, U rhs, State<S> leftState, State<S> rightState,
@@ -202,7 +212,7 @@ public abstract class WalkinshawScorer<S, T, U extends GLTS<S, T>> implements Si
     /**
      * Counts the number of transitions in {@code first} for which there does not exist any transition in {@code second}
      * with a transition property that is combinable.
-     * 
+     *
      * @param first The first collection of transitions.
      * @param second The second collection of transitions.
      * @return The number of transitions in {@code first} with a property that is not combinable with the property of
@@ -221,7 +231,7 @@ public abstract class WalkinshawScorer<S, T, U extends GLTS<S, T>> implements Si
      * Collects the list of endpoint states (i.e., common neighbors) of all pairs of transitions from {@code first} and
      * {@code second} whose transition properties are combinable. The endpoint states of all such transition pairs are
      * determined using {@code stateSelector}.
-     * 
+     *
      * @param first The first collection of transitions.
      * @param second The second collection of transitions.
      * @param stateSelector The selector function that determines which endpoint states are to be considered. This

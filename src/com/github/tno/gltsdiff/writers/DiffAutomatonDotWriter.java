@@ -21,7 +21,7 @@ import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
 import com.google.common.base.Preconditions;
 
 /**
- * Functionality for writing {@link DiffAutomaton difference automata} in DOT format.
+ * Writer for writing {@link DiffAutomaton difference automata} in DOT format.
  *
  * @param <T> The type of transition properties.
  * @param <U> The type of difference automata to be written.
@@ -29,8 +29,10 @@ import com.google.common.base.Preconditions;
 public class DiffAutomatonDotWriter<T, U extends DiffAutomaton<T>>
         extends AutomatonDotWriter<DiffAutomatonStateProperty, DiffProperty<T>, U>
 {
+    /** The contrast color to use. */
     static final String CONTRAST_COLOR = "#ffffff";
 
+    /** The filled style to use. */
     static final String STYLE_FILLED = "filled";
 
     /** A printer for printing the colors of difference kinds. */
@@ -38,7 +40,7 @@ public class DiffAutomatonDotWriter<T, U extends DiffAutomaton<T>>
 
     /**
      * Instantiates a writer for difference automata, which prints state identifiers as state labels.
-     * 
+     *
      * @param transitionLabelPrinter A printer for printing transition labels.
      */
     public DiffAutomatonDotWriter(HtmlPrinter<DiffProperty<T>> transitionLabelPrinter) {
@@ -47,7 +49,7 @@ public class DiffAutomatonDotWriter<T, U extends DiffAutomaton<T>>
 
     /**
      * Instantiates a writer for difference automata.
-     * 
+     *
      * @param stateLabelPrinter A printer for printing state labels.
      * @param transitionLabelPrinter A printer for printing transition labels.
      */

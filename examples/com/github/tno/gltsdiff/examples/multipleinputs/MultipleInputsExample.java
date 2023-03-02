@@ -34,7 +34,14 @@ import com.github.tno.gltsdiff.operators.printers.StringHtmlPrinter;
 import com.github.tno.gltsdiff.writers.AutomatonDotWriter;
 import com.google.common.collect.ImmutableSet;
 
+/** Example that compares, and merges multiple inputs. */
 public class MultipleInputsExample {
+    /**
+     * Main method to run the example.
+     *
+     * @param args The command line arguments. Are ignored.
+     * @throws IOException In case of an I/O error.
+     */
     public static void main(String[] args) throws IOException {
         // Create the first input automaton to compare.
         SimpleAutomaton<Pair<String, Set<Integer>>> first = new SimpleAutomaton<>();
@@ -87,7 +94,7 @@ public class MultipleInputsExample {
         HtmlPrinter<Transition<AutomatonStateProperty, Pair<String, Set<Integer>>>> printer = transition -> transitionPropertyPrinter
                 .print(transition.getProperty());
 
-        // Print the result to the console, in DOT format.
+        // Write the result to the console, in DOT format.
         new AutomatonDotWriter<>(printer).write(result, System.out);
     }
 }

@@ -24,12 +24,14 @@ import com.github.tno.gltsdiff.operators.hiders.Hider;
 
 /** A default post processor for difference automata. */
 public class DiffAutomatonPostProcessing {
+    /** Constructor for the {@link DiffAutomatonPostProcessing} class. */
     private DiffAutomatonPostProcessing() {
+        // Static class.
     }
 
     /**
      * Rewrites the given difference automaton by applying post processing to it.
-     * 
+     *
      * @param <T> The type of transition properties.
      * @param diff The difference automaton to rewrite.
      * @param combiner The combiner for transition properties.

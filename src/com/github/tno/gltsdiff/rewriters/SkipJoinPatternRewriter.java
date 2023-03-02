@@ -50,9 +50,11 @@ public class SkipJoinPatternRewriter<T>
     private final BiPredicate<DiffProperty<T>, DiffProperty<T>> isIncludedIn;
 
     /**
-     * Instantiates a new rewriter for rewriting skip join patterns in difference automata. The specified
-     * {@code transitionPropertyCombiner} and {@code transitionPropertyHider} are <u>required to interact</u> in the
-     * following ways:
+     * Instantiates a new rewriter for rewriting skip join patterns in difference automata.
+     *
+     * <p>
+     * The specified {@code transitionPropertyCombiner} and {@code transitionPropertyHider} are <u>required to
+     * interact</u> in the following ways:
      * <ol>
      * <li>All hidden properties are combinable with each other: for any <i>e1</i> and <i>e2</i>, if <i>hidden(e1)</i>
      * and <i>hidden(e2)</i> then <i>combinable(e1, e2)</i>.</li>
@@ -60,7 +62,7 @@ public class SkipJoinPatternRewriter<T>
      * <i>hidden(e1)</i> and <i>hidden(e2)</i> then <i>hidden(combine(e1, e2))</i>.</li>
      * </ol>
      * </p>
-     * 
+     *
      * @param transitionPropertyCombiner The combiner for transition properties.
      * @param transitionPropertyHider The hider for transition properties.
      * @param isIncludedIn A property inclusion relation, that determines whether all combinable information of the
@@ -88,8 +90,8 @@ public class SkipJoinPatternRewriter<T>
 
     /**
      * Rewrites all skip join patterns in {@code diff} that originate from {@code state}.
-     * 
-     * @param diff The difference automaton to be transformed.
+     *
+     * @param diff The difference automaton to be rewritten.
      * @param state The potential origin state of skip join patterns.
      * @return {@code true} if any rewrites have been performed, {@code false} otherwise.
      */
@@ -114,6 +116,7 @@ public class SkipJoinPatternRewriter<T>
     /**
      * Determines whether {@code left} and {@code right} together form a valid skip join pattern. If so, then these two
      * transitions can be rewritten by {@link #rewriteSkipJoinPattern} without changing the language of {@code diff}.
+     *
      * <p>
      * The input transitions form a skip join pattern if:
      * <ol>
@@ -129,7 +132,7 @@ public class SkipJoinPatternRewriter<T>
      * introduction of a new skip transition would not change the language of {@code diff}.</li>
      * </ol>
      * </p>
-     * 
+     *
      * @param diff The contextual input difference automaton.
      * @param left The left transition, which must be different from {@code right} but must have the same target state.
      * @param right The right transition, which must be different from {@code left} but must have the same target state.
@@ -188,9 +191,9 @@ public class SkipJoinPatternRewriter<T>
     }
 
     /**
-     * Rewrites the join pattern that is formed by {@code left} and {@code right}. This transformation assumes that
+     * Rewrites the join pattern that is formed by {@code left} and {@code right}. This rewriter assumes that
      * {@code left} and {@code right} form a skip join pattern with respect to {@link #isSkipJoinPattern}.
-     * 
+     *
      * @param diff The contextual input difference automaton.
      * @param left The left transition, which must have the same target state as {@code right}.
      * @param right The right transition, which must have the same target state as {@code left}.

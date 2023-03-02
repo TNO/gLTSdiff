@@ -32,7 +32,7 @@ public class SimpleAutomaton<T> extends Automaton<AutomatonStateProperty, T> imp
 
     /**
      * Adds a new initial state to this automaton.
-     * 
+     *
      * @param isAccepting Whether or not the new initial state is accepting.
      * @return The non-{@code null} newly added initial state.
      */
@@ -42,7 +42,7 @@ public class SimpleAutomaton<T> extends Automaton<AutomatonStateProperty, T> imp
 
     /**
      * Adds a new non-initial state to this automaton.
-     * 
+     *
      * @param isAccepting Whether or not the new state is accepting.
      * @return The non-{@code null} newly added non-initial state.
      */

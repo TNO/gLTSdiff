@@ -22,8 +22,8 @@ import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.google.common.collect.ImmutableSet;
 
 /**
- * Functionality for computing (LHS, RHS)-state matchings for {@link LTS LTSs} based on heuristics proposed by
- * Walkinshaw et al. (TOSEM 2013; see Section 4.3.1), thereby taking initial state information into account.
+ * Matcher for {@link LTS LTSs} based on landmarks, 'obviously' matching state pairs, as proposed by Walkinshaw et al,
+ * thereby taking initial state information into account.
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
@@ -32,7 +32,7 @@ import com.google.common.collect.ImmutableSet;
 public class WalkinshawLTSMatcher<S, T, U extends LTS<S, T>> extends WalkinshawGLTSMatcher<S, T, U> {
     /**
      * Instantiates a new Walkinshaw matcher for LTSs.
-     * 
+     *
      * @param scorer The algorithm for computing state similarity scores.
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.

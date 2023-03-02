@@ -28,10 +28,12 @@ import com.google.common.base.Preconditions;
 /**
  * Scorer that computes local similarity scores for pairs of (LHS, RHS)-states in {@link GLTS GLTSs}. These scores are
  * local in the sense that they are determined by the amount of overlap in incoming and outgoing transitions.
+ *
  * <p>
  * The complexity of computing local similarity scores is about O(|LHS|*|RHS|), with |LHS| and |RHS| the number of
  * states plus transitions in the LHS and RHS, respectively.
  * </p>
+ *
  * <p>
  * By performing more than one refinement, this method does allow to take further away neighbors into account, for
  * better quality scoring, at higher computation costs.
@@ -48,7 +50,7 @@ public class WalkinshawLocalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walki
     /**
      * Instantiates a new Walkinshaw local similarity scorer for GLTSs, that performs only a single refinement. Uses an
      * attenuation factor of 0.6.
-     * 
+     *
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
@@ -58,7 +60,7 @@ public class WalkinshawLocalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walki
 
     /**
      * Instantiates a new Walkinshaw local similarity scorer for GLTSs. Uses an attenuation factor of 0.6.
-     * 
+     *
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      * @param nrOfRefinements The number of refinements to perform, which must be at least 1.
@@ -71,7 +73,7 @@ public class WalkinshawLocalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walki
 
     /**
      * Instantiates a new Walkinshaw local similarity scorer for GLTSs.
-     * 
+     *
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      * @param nrOfRefinements The number of refinements to perform, which must be at least 1.
@@ -107,6 +109,7 @@ public class WalkinshawLocalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walki
      * Computes local similarity scores for every pair of (LHS, RHS)-state pairs. Details of this computation are in the
      * TOSEM 2013 article of Walkinshaw et al. However, this implementation has been generalized by a notion of
      * combinability (see {@link Combiner}) to determine the amount of overlap between transition properties.
+     *
      * <p>
      * More specifically, this function implements Equation (6) of the article of Walkinshaw et al. (and its "Prev"
      * counterpart, depending on how {@code commonNeighbors} and {@code relevantProperties} are specified), as a
@@ -116,7 +119,7 @@ public class WalkinshawLocalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walki
      * article. However, by increasing the number of refinements further, the scores as computed by
      * {@link WalkinshawGlobalGLTSScorer} can be approximated more closely.
      * </p>
-     * 
+     *
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
      * @param relevantTransitions A function that, given an GLTS and a state of that GLTS, determines the list of
@@ -163,7 +166,7 @@ public class WalkinshawLocalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walki
      * Given a pair ({@code leftState}, {@code rightState}) of (LHS, RHS)-states, calculate a similarity score between
      * them as indicated by Equation (6) in the TOSEM 2013 article of Walkinshaw et al., where the similarity scores of
      * all state pairs on the right-hand side of this equation are resolved using {@code scores}.
-     * 
+     *
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
      * @param leftState A LHS state.

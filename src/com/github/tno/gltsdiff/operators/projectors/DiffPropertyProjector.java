@@ -31,7 +31,7 @@ public class DiffPropertyProjector<T, U> implements Projector<DiffProperty<T>, U
 
     /**
      * Instantiates a new difference property projector.
-     * 
+     *
      * @param propertyProjector The projector for the inner properties.
      * @param diffKindProjector The projector for difference kinds.
      */

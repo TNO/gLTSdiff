@@ -18,10 +18,12 @@ import com.google.common.base.Preconditions;
 
 /**
  * An operator for combining properties.
+ *
  * <p>
  * Combiners describe whether any two properties of type {@code T} are <i>combinable</i>, and if so, describes what
  * their <i>combination</i> is. These notions are implemented in terms of an equivalence relation
- * {@link #areCombinable(T, T)} and a binary combinability-preserving operation {@link #combine(T, T)}, respectively.
+ * {@link #areCombinable(Object, Object) areCombinable(T, T)} and a binary combinability-preserving operation
+ * {@link #combine(Object, Object) combine(T, T)}, respectively.
  * </p>
  *
  * @param <T> The type of combinable properties, for which value equality must be defined.
@@ -29,15 +31,16 @@ import com.google.common.base.Preconditions;
 public abstract class Combiner<T> {
     /**
      * Determines whether {@code left} and {@code right} can be combined into a single property.
+     *
      * <p>
      * This binary relation must be implemented to satisfy the following two properties:
      * <ul>
      * <li>It must be an <u>equivalence relation</u>, meaning that it must be reflexive, symmetric and transitive.</li>
-     * <li>It must <u>agree with (Java) equality</u>: if {@code left} and {@code right} are equal in the Java sense then
-     * they must also necessarily be combinable.</li>
+     * <li>It must <u>agree with Java value equality</u>: if {@code left} and {@code right} are {@link Object#equals
+     * equal} in the Java sense then they must also necessarily be combinable.</li>
      * </ul>
      * </p>
-     * 
+     *
      * @param left The first input property, which must be non-{@code null}.
      * @param right The second input property, which must be non-{@code null}.
      * @return {@code true} if and only if {@code left} and {@code right} are combinable.
@@ -46,7 +49,8 @@ public abstract class Combiner<T> {
 
     /**
      * Computes the combination of {@code left} and {@code right}, which are required to be combinable with respect to
-     * {@link #areCombinable(T, T)}.
+     * {@link #areCombinable(Object, Object) areCombinable(T, T)}.
+     *
      * <p>
      * This binary operation must be implemented to satisfy the following four properties:
      * <ul>
@@ -56,10 +60,9 @@ public abstract class Combiner<T> {
      * <i>combine(e1, combine(e2, e3)) = combine(combine(e1, e2), e3)</i>.</li>
      * <li><u>Commutative:</u> for every two combinable properties <i>e1</i> and <i>e2</i> it holds that <i>combine(e1,
      * e2) = combine(e2, e1)</i>.</li>
-     * <li><u>Idempotent</u>: for every property <i>e</i> it must hold that <i>combine(e, e) = e</i>.</li>
      * </ul>
      * </p>
-     * 
+     *
      * @param left The first input property, which must be non-{@code null}.
      * @param right The second input property, which must be non-{@code null}.
      * @return The combination of {@code left} and {@code right}, which is non-{@code null}.
@@ -69,7 +72,7 @@ public abstract class Combiner<T> {
     /**
      * Determines whether {@code left} and {@code right} can be combined (joined together) into a single property. This
      * is an equivalence relation over {@code T}-typed properties.
-     * 
+     *
      * @param left The first input property, which must be non-{@code null}.
      * @param right The second input property, which must be non-{@code null}.
      * @return {@code true} if and only if {@code left} and {@code right} are combinable.
@@ -82,8 +85,8 @@ public abstract class Combiner<T> {
 
     /**
      * Determines whether the properties in {@code properties} are all combinable with each other, with respect to
-     * {@link #areCombinable(T, T)}.
-     * 
+     * {@link #areCombinable(Object, Object) areCombinable(T, T)}.
+     *
      * @param properties The input collection of properties, all of which must be non-{@code null}.
      * @return {@code true} if and only if every pair of properties in {@code properties} is combinable.
      */
@@ -95,11 +98,12 @@ public abstract class Combiner<T> {
 
     /**
      * Combines {@code left} and {@code right} into a single {@code T}-typed property.
+     *
      * <p>
      * This operation requires that {@code left} and {@code right} are <u>combinable</u> with respect to
-     * {@link #areCombinable(T, T)}.
+     * {@link #areCombinable(Object, Object) areCombinable(T, T)}.
      * </p>
-     * 
+     *
      * @param left The first input property, which must be non-{@code null}.
      * @param right The second input property, which must be non-{@code null}.
      * @return The combination of {@code left} and {@code right}, which is non-{@code null}.
@@ -116,12 +120,13 @@ public abstract class Combiner<T> {
 
     /**
      * Combines all properties in {@code properties} into a single {@code T}-typed property using
-     * {@link #combine(T, T)}.
+     * {@link #combine(Object, Object) combine(T, T)}.
+     *
      * <p>
      * This operation requires that {@code properties} is <u>not empty</u>, and that all properties in
      * {@code properties} <u>are combinable</u> with each other.
      * </p>
-     * 
+     *
      * @param properties The collection of combinable properties, all of which must be non-{@code null}.
      * @return The combination of all properties in {@code properties}, which is non-{@code null}.
      */
@@ -131,12 +136,13 @@ public abstract class Combiner<T> {
 
     /**
      * Combines all properties in the given {@code stream} into a single {@code T}-typed property using
-     * {@link #combine(T, T)}.
+     * {@link #combine(Object, Object) combine(T, T)}.
+     *
      * <p>
      * This operation requires that {@code stream} is <u>finite</u> and <u>not empty</u>. Moreover, this operation
      * requires that all properties in {@code stream} are <u>all combinable</u> with each other.
      * </p>
-     * 
+     *
      * @param stream The input stream of combinable properties, all of which must be non-{@code null}.
      * @return The combination of all properties in {@code stream}, which is non-{@code null}.
      */

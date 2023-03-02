@@ -22,7 +22,7 @@ import com.google.common.base.Preconditions;
 
 /**
  * An abstract GLTS merger that contains common validation logic for input matchings.
- * 
+ *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
  * @param <U> The type of GLTSs to merge.
@@ -33,7 +33,7 @@ public abstract class AbstractMerger<S, T, U extends GLTS<S, T>> implements Merg
 
     /**
      * Instantiates an abstract GLTS merger.
-     * 
+     *
      * @param statePropertyCombiner The combiner for state properties.
      */
     public AbstractMerger(Combiner<S> statePropertyCombiner) {
@@ -48,7 +48,7 @@ public abstract class AbstractMerger<S, T, U extends GLTS<S, T>> implements Merg
 
     /**
      * Checks whether the given matching is proper.
-     * 
+     *
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
      * @param matching The matching that is to be validated.
@@ -78,7 +78,7 @@ public abstract class AbstractMerger<S, T, U extends GLTS<S, T>> implements Merg
     /**
      * Merges the LHS and RHS into a single GLTS. The given (LHS, RHS)-state matching determines which LHS states are to
      * be merged with which RHS states.
-     * 
+     *
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
      * @param matching A matching from LHS states to RHS states. This matching should be proper in the sense that:

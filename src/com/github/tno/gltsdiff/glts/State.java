@@ -26,7 +26,7 @@ public class State<S> {
 
     /**
      * Instantiates a new state.
-     * 
+     *
      * @param id The state identifier.
      * @param property The non-{@code null} state property.
      */
@@ -37,12 +37,18 @@ public class State<S> {
         this.property = property;
     }
 
-    /** @return The state identifier. */
+    /**
+     * Returns the state identifier.
+     *
+     * @return The state identifier.
+     */
     public int getId() {
         return id;
     }
 
     /**
+     * Returns the state property.
+     *
      * @return The non-{@code null} state property.
      */
     public S getProperty() {
@@ -50,8 +56,8 @@ public class State<S> {
     }
 
     /**
-     * Replace the state's property.
-     * 
+     * Replace the state property.
+     *
      * @param property The new non-{@code null} state property.
      */
     void setProperty(S property) {

@@ -13,8 +13,12 @@ package com.github.tno.gltsdiff.operators.combiners;
 import org.apache.commons.math3.util.Pair;
 
 /**
- * A combiner for pairs of combinable properties. Two pairs of properties are combinable if their left and right
- * properties are pairwise combinable. The combination of two pairs is a pair with a combined left and right property.
+ * A combiner for pairs of combinable properties.
+ *
+ * <p>
+ * Two pairs of properties are combinable if their left and right properties are pairwise combinable. The combination of
+ * two pairs is a pair with a combined left and right property.
+ * </p>
  *
  * @param <S> The type of left properties.
  * @param <T> The type of right properties.
@@ -28,7 +32,7 @@ public class PairCombiner<S, T> extends Combiner<Pair<S, T>> {
 
     /**
      * Initializes a property pair combiner.
-     * 
+     *
      * @param leftCombiner The combiner for left properties.
      * @param rightCombiner The combiner for right properties.
      */
