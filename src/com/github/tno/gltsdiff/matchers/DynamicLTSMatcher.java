@@ -28,7 +28,7 @@ import com.github.tno.gltsdiff.operators.combiners.Combiner;
 public class DynamicLTSMatcher<S, T, U extends LTS<S, T>> extends DynamicGLTSMatcher<S, T, U> {
     /**
      * Instantiates a new dynamic matcher for LTSs, that uses a default configuration of matching algorithms.
-     * 
+     *
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
@@ -38,7 +38,7 @@ public class DynamicLTSMatcher<S, T, U extends LTS<S, T>> extends DynamicGLTSMat
 
     /**
      * Instantiates a new dynamic matcher for LTSs.
-     * 
+     *
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      * @param matchingAlgorithmCreator The matching algorithm creator. Given the input LTSs and appropriate combiners,
@@ -50,6 +50,16 @@ public class DynamicLTSMatcher<S, T, U extends LTS<S, T>> extends DynamicGLTSMat
         super(statePropertyCombiner, transitionPropertyCombiner, matchingAlgorithmCreator);
     }
 
+    /**
+     * Returns the default matcher.
+     *
+     * @param <S> The type of state properties.
+     * @param <T> The type of transition properties.
+     * @param <U> The type of LTSs.
+     * @param statePropertyCombiner The state property combiner.
+     * @param transitionPropertyCombiner The transition property combiner.
+     * @return The matcher.
+     */
     private static final <S, T, U extends LTS<S, T>> Matcher<S, T, U>
             defaultMatchingAlgorithmCreator(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner)
     {

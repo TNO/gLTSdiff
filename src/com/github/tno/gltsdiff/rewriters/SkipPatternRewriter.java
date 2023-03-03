@@ -33,6 +33,7 @@ public abstract class SkipPatternRewriter<S, T, U extends GLTS<S, T>> implements
      * Determines whether there exists structure between {@code source} and {@code target} in {@code glts} that can
      * intuitively be skipped. Such structure exists if either <b>(1)</b> there exists a pattern of intuitively
      * skippable structure, or <b>(2)</b> there are only direct transitions from {@code source} to {@code target}.
+     *
      * <p>
      * A <u>pattern of intuitively skippable structure</u> is defined to be a non-empty set <i>X</i> of states such that
      * <ol>
@@ -43,13 +44,14 @@ public abstract class SkipPatternRewriter<S, T, U extends GLTS<S, T>> implements
      * <li>All successors of states in <i>X</i> must be included in '<i>X</i> union {@code target}'.</li>
      * </ol>
      * </p>
+     *
      * <p>
      * Note that this function does not check entire (fork/join) skip patterns, but just the parts of them that may (or
      * may not) be intuitively skippable. For example, in case of fork skip patterns, this function checks if the
      * pattern without the first two edges (that form the fork) can intuitively be skipped. In case of join skip
      * patterns, it checks if the pattern without the last two edges (that form the join) can intuitively be skipped.
      * </p>
-     * 
+     *
      * @param glts The contextual input GLTS.
      * @param source The source state, which must not be the same as {@code target}.
      * @param target The target state, which must not be the same as {@code source}.
@@ -109,7 +111,7 @@ public abstract class SkipPatternRewriter<S, T, U extends GLTS<S, T>> implements
      * Performs a DFS starting from {@code source} where {@code nextStates} is used as the next-state function. This DFS
      * will not explore beyond {@code barrier} states. So if any state is encountered that is in {@code barrier}, then
      * its next states will not be explored and the exploration of the barrier state will finish immediately.
-     * 
+     *
      * @param source The state from which the DFS exploration starts.
      * @param nextStates The next-state function.
      * @param barrier The set of barrier states, forming a fence for the DFS exploration.

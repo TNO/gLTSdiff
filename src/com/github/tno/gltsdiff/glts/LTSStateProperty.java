@@ -19,14 +19,18 @@ public class LTSStateProperty {
 
     /**
      * Instantiates a new LTS state property.
-     * 
+     *
      * @param isInitial Whether the associated state is initial.
      */
     public LTSStateProperty(boolean isInitial) {
         this.isInitial = isInitial;
     }
 
-    /** @return {@code true} if the associated state is initial, {@code false} otherwise. */
+    /**
+     * Returns whether the associated state is initial.
+     *
+     * @return {@code true} if the associated state is initial, {@code false} otherwise.
+     */
     public boolean isInitial() {
         return this.isInitial;
     }

@@ -13,9 +13,13 @@ package com.github.tno.gltsdiff.operators.combiners;
 import com.github.tno.gltsdiff.glts.DiffKind;
 
 /**
- * A combiner for {@link DiffKind difference kinds}. Difference kinds can always be combined. Combining any two
- * difference kinds results either in {@link DiffKind#UNCHANGED} if the inputs are unequal, or otherwise gives a result
- * that is equal to the input operands.
+ * A combiner for {@link DiffKind difference kinds}.
+ *
+ * <p>
+ * Difference kinds can always be combined. Combining any two difference kinds results either in
+ * {@link DiffKind#UNCHANGED} if the inputs are unequal, or otherwise gives a result that is equal to the input
+ * operands.
+ * </p>
  */
 public class DiffKindCombiner extends Combiner<DiffKind> {
     @Override

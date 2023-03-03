@@ -15,9 +15,13 @@ import java.util.Objects;
 import com.google.common.base.Preconditions;
 
 /**
- * Essentially a pair of an element of type {@code T} together with an element of type {@link DiffKind}, which are used
+ * A difference property.
+ *
+ * <p>
+ * It is a pair, with an element of type {@code T} together with an element of type {@link DiffKind}. The pair is used
  * as transition properties of {@link DiffAutomaton difference automata}.
- * 
+ * </p>
+ *
  * @param <T> The type of inner properties.
  */
 public final class DiffProperty<T> {
@@ -29,7 +33,7 @@ public final class DiffProperty<T> {
 
     /**
      * Constructs a new difference property.
-     * 
+     *
      * @param property The non-{@code null} property.
      * @param diffKind The non-{@code null} difference kind.
      */
@@ -41,12 +45,20 @@ public final class DiffProperty<T> {
         this.diffKind = diffKind;
     }
 
-    /** @return The non-{@code null} property. */
+    /**
+     * Returns the property.
+     *
+     * @return The non-{@code null} property.
+     */
     public T getProperty() {
         return property;
     }
 
-    /** @return The non-{@code null} difference kind. */
+    /**
+     * Returns the difference kind.
+     *
+     * @return The non-{@code null} difference kind.
+     */
     public DiffKind getDiffKind() {
         return diffKind;
     }

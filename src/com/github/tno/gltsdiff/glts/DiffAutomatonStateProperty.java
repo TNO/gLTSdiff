@@ -28,7 +28,7 @@ public class DiffAutomatonStateProperty extends AutomatonStateProperty {
 
     /**
      * Instantiates a new difference automaton state property.
-     * 
+     *
      * @param isAccepting Whether the associated state is accepting.
      * @param stateDiffKind The non-{@code null} difference kind of the associated state.
      * @param initDiffKind A non-{@code null} non-empty optional in case the state is initial with a difference kind for
@@ -48,15 +48,19 @@ public class DiffAutomatonStateProperty extends AutomatonStateProperty {
         this.initDiffKind = initDiffKind;
     }
 
-    /** @return The non-{@code null} difference kind of the associated state. */
+    /**
+     * Returns the difference kind of the associated state.
+     *
+     * @return The non-{@code null} difference kind of the associated state.
+     */
     public DiffKind getStateDiffKind() {
         return stateDiffKind;
     }
 
     /**
-     * Gives the difference kind of the initial state arrow. This method can only be called if the associated state is
-     * initial, i.e., if {@link #isInitial()} is {@code true}.
-     * 
+     * Returns the difference kind of the initial state arrow. This method can only be called if the associated state is
+     * initial, i.e., if {@link #isInitial} returns {@code true}.
+     *
      * @return The non-{@code null} difference kind of the initial state arrow.
      */
     public DiffKind getInitDiffKind() {

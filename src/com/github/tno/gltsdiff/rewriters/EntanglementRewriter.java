@@ -28,6 +28,7 @@ import com.google.common.collect.Sets;
 
 /**
  * A rewriter for rewriting tangles in {@link DiffAutomaton difference automata}.
+ *
  * <p>
  * A <i>tangle</i> is defined to be an {@link DiffKind#UNCHANGED unchanged} state that has no unchanged incoming or
  * outgoing transitions, at least one {@link DiffKind#ADDED added} incoming/outgoing transition, and at least one
@@ -86,7 +87,7 @@ public class EntanglementRewriter<T>
     /**
      * Splits {@code state} by defining a new state with the given difference kind ({@code diffKind}), and relocating
      * all incoming and outgoing transitions of {@code state} with this difference kind to the new state.
-     * 
+     *
      * @param automaton The difference automaton in which to define the new state.
      * @param state The state to split.
      * @param diffKind The difference kind of the new state, and of the transitions to relocate.

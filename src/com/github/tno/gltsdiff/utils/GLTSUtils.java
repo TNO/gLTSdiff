@@ -25,12 +25,14 @@ import com.github.tno.gltsdiff.operators.combiners.Combiner;
 
 /** Utilities for working with GLTSs. */
 public class GLTSUtils {
+    /** Constructor for the {@link GLTSUtils} class. */
     private GLTSUtils() {
+        // Static class.
     }
 
     /**
      * Determines whether {@code statePair} has any common incoming transitions with combinable properties.
-     * 
+     *
      * @param <S> The type of state properties.
      * @param <T> The type of transition properties.
      * @param left The left GLTS.
@@ -47,7 +49,7 @@ public class GLTSUtils {
 
     /**
      * Determines whether {@code statePair} has any common outgoing transitions with combinable properties.
-     * 
+     *
      * @param <S> The type of state properties.
      * @param <T> The type of transition properties.
      * @param left The left GLTS.
@@ -64,7 +66,7 @@ public class GLTSUtils {
 
     /**
      * Gives a stream of all pairs of common combinable incoming transitions that go into {@code statePair}.
-     * 
+     *
      * @param <S> The type of state properties.
      * @param <T> The type of transition properties.
      * @param left The left GLTS.
@@ -85,7 +87,7 @@ public class GLTSUtils {
 
     /**
      * Gives a stream of all pairs of common combinable outgoing transitions that go out of {@code statePair}.
-     * 
+     *
      * @param <S> The type of state properties.
      * @param <T> The type of transition properties.
      * @param left The left GLTS.
@@ -107,7 +109,7 @@ public class GLTSUtils {
     /**
      * Determines the set of all pairs of ({@code left}, {@code right})-states that can reach {@code statePair} by a
      * common combinable incoming transition.
-     * 
+     *
      * @param <S> The type of state properties.
      * @param <T> The type of transition properties.
      * @param left The left GLTS.
@@ -127,7 +129,7 @@ public class GLTSUtils {
     /**
      * Determines the set of all pairs of ({@code left}, {@code right})-states that {@code statePair} can reach by a
      * common combinable outgoing transition.
-     * 
+     *
      * @param <S> The type of state properties.
      * @param <T> The type of transition properties.
      * @param left The left GLTS.

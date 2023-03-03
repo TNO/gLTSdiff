@@ -36,7 +36,7 @@ public class SetHtmlPrinter<T> implements HtmlPrinter<Set<T>> {
     /**
      * Instantiates a new property set printer, that uses "&#123;" and "&#125;" as prefix and suffix, respectively,
      * delimiting elements of the set by ", ".
-     * 
+     *
      * @param propertyPrinter The printer for properties.
      */
     public SetHtmlPrinter(HtmlPrinter<T> propertyPrinter) {
@@ -45,7 +45,7 @@ public class SetHtmlPrinter<T> implements HtmlPrinter<Set<T>> {
 
     /**
      * Instantiates a new property set printer.
-     * 
+     *
      * @param propertyPrinter The printer for properties.
      * @param prefix The prefix, as HTML.
      * @param delimiter The delimiter, as HTML.

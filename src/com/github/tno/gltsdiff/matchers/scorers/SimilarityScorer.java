@@ -26,12 +26,13 @@ public interface SimilarityScorer<S, T, U extends GLTS<S, T>> {
     /**
      * Computes a matrix of (LHS, RHS)-state similarity scores. The rows correspond to LHS states, columns to RHS
      * states, and cells to a score that expresses how similar the (LHS, RHS)-state pair is.
+     *
      * <p>
      * Similarity scores are allowed to be any finite double, or {@link Double#NEGATIVE_INFINITY} to indicate that the
      * corresponding state pair is truly incompatible and should not be merged. Moreover, similarity scores are intended
      * to be monotone: the higher the score, the higher the degree of similarity.
      * </p>
-     * 
+     *
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
      * @return The computed matrix of similarity scores for every pair of (LHS, RHS)-states.

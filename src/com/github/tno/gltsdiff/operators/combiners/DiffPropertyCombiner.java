@@ -14,9 +14,13 @@ import com.github.tno.gltsdiff.glts.DiffKind;
 import com.github.tno.gltsdiff.glts.DiffProperty;
 
 /**
- * A combiner for {@link DiffProperty difference properties}. Any two difference properties are combinable if their
- * inner properties are combinable and their difference kinds are combinable. Combining two difference properties
- * results in a difference property with a combined inner property and a combined difference kind.
+ * A combiner for {@link DiffProperty difference properties}.
+ *
+ * <p>
+ * Any two difference properties are combinable if their inner properties are combinable and their difference kinds are
+ * combinable. Combining two difference properties results in a difference property with a combined inner property and a
+ * combined difference kind.
+ * </p>
  *
  * @param <T> The type of inner properties.
  */
@@ -29,7 +33,7 @@ public class DiffPropertyCombiner<T> extends Combiner<DiffProperty<T>> {
 
     /**
      * Instantiates a difference property combiner that uses a {@link DiffKindCombiner} to combine difference kinds.
-     * 
+     *
      * @param propertyCombiner The combiner for inner properties.
      */
     public DiffPropertyCombiner(Combiner<T> propertyCombiner) {
@@ -38,7 +42,7 @@ public class DiffPropertyCombiner<T> extends Combiner<DiffProperty<T>> {
 
     /**
      * Instantiates a difference property combiner.
-     * 
+     *
      * @param propertyCombiner The combiner for inner properties.
      * @param diffKindCombiner The combiner for difference kinds.
      */
@@ -55,7 +59,7 @@ public class DiffPropertyCombiner<T> extends Combiner<DiffProperty<T>> {
 
     @Override
     protected DiffProperty<T> computeCombination(DiffProperty<T> left, DiffProperty<T> right) {
-        return new DiffProperty<T>(propertyCombiner.combine(left.getProperty(), right.getProperty()),
+        return new DiffProperty<>(propertyCombiner.combine(left.getProperty(), right.getProperty()),
                 diffKindCombiner.combine(left.getDiffKind(), right.getDiffKind()));
     }
 }

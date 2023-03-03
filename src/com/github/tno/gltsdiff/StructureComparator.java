@@ -34,7 +34,7 @@ public class StructureComparator<S, T, U extends GLTS<S, T>> {
 
     /**
      * Initializes a comparator.
-     * 
+     *
      * @param matcher The component that determines which (LHS, RHS)-state pairs should be merged into a single state.
      * @param merger The component that merges LHS and RHS into a single GLTS.
      */
@@ -44,8 +44,8 @@ public class StructureComparator<S, T, U extends GLTS<S, T>> {
     }
 
     /**
-     * Compare two GLTSs.
-     * 
+     * Compare and merge two GLTSs.
+     *
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
      * @return The GLTS describing the combination of the LHS and RHS.

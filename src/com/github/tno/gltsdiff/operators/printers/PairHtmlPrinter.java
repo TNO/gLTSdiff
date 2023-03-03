@@ -37,7 +37,7 @@ public class PairHtmlPrinter<T, U> implements HtmlPrinter<Pair<T, U>> {
     /**
      * Instantiates a new pair property printer, that uses "(" as prefix HTML text, "," as separator HTML text, and ")"
      * as suffix HTML text.
-     * 
+     *
      * @param firstPrinter The printer for first elements of the pairs.
      * @param secondPrinter The printer for second elements of the pairs.
      */
@@ -47,7 +47,7 @@ public class PairHtmlPrinter<T, U> implements HtmlPrinter<Pair<T, U>> {
 
     /**
      * Instantiates a new pair property printer.
-     * 
+     *
      * @param prefix The prefix HTML text.
      * @param firstPrinter The printer for first elements of the pairs.
      * @param separator The separator HTML text.

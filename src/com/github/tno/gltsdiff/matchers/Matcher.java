@@ -25,7 +25,7 @@ import com.github.tno.gltsdiff.glts.State;
 public interface Matcher<S, T, U extends GLTS<S, T>> {
     /**
      * Computes a matching from LHS states to RHS states.
-     * 
+     *
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
      * @return A matching from LHS to RHS states that satisfies the following properties:

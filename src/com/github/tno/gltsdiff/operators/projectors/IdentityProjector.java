@@ -15,7 +15,7 @@ import java.util.Optional;
 import com.google.common.base.Preconditions;
 
 /**
- * A trivial projector that simply returns the given input property unaltered.
+ * A projector that returns the given input property unaltered.
  *
  * @param <T> The type of properties.
  * @param <U> The type of elements to project along.

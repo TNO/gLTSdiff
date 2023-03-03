@@ -18,8 +18,12 @@ import com.github.tno.gltsdiff.utils.EquivalenceClasses;
 import com.google.common.collect.Sets;
 
 /**
- * A combiner for sets of combinable properties. Sets can always be combined, and combining any two sets results in the
- * union of these sets in which all combinable properties are combined.
+ * A combiner for sets of combinable properties.
+ *
+ * <p>
+ * Sets can always be combined, and combining any two sets results in the union of these sets in which all combinable
+ * properties are combined.
+ * </p>
  *
  * @param <T> The type of properties.
  */
@@ -29,7 +33,7 @@ public class SetCombiner<T> extends Combiner<Set<T>> {
 
     /**
      * Instantiates a new property set combiner.
-     * 
+     *
      * @param combiner The combiner for properties.
      */
     public SetCombiner(Combiner<T> combiner) {

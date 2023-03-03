@@ -13,9 +13,13 @@ package com.github.tno.gltsdiff.operators.combiners;
 import com.github.tno.gltsdiff.glts.LTSStateProperty;
 
 /**
- * A combiner for {@link LTSStateProperty LTS state properties}. Any two such properties can be combined if they agree
- * on states being initial (i.e., either both states are initial or both states are not initial). Combining two such
- * properties results in an LTS state property with their equal initial state information.
+ * A combiner for {@link LTSStateProperty LTS state properties}.
+ *
+ * <p>
+ * Any two such properties can be combined if they agree on states being initial (i.e., either both states are initial
+ * or both states are not initial). Combining two such properties results in an LTS state property with their equal
+ * initial state information.
+ * </p>
  */
 public class LTSStatePropertyCombiner extends Combiner<LTSStateProperty> {
     @Override

@@ -38,10 +38,14 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 /**
- * Scorer that computes global similarity scores for pairs of (LHS, RHS)-states in {@link GLTS GLTSs}. These scores are
- * computed by transforming the problem of finding global similarity scores to a problem of solving a system of linear
- * equations, as proposed by Walkinshaw et al. in their TOSEM 2013 article. However, this implementation generalizes the
- * approach of Walkinshaw et al. by a more general concept of combinability (see {@link Combiner}).
+ * Scorer that computes global similarity scores between {@link GLTS GLTSs}, by transforming the problem of finding
+ * global similarity scores to a problem of solving a system of linear equations, as proposed by Walkinshaw et al.
+ *
+ * <p>
+ * Implementation of the algorithm by Walkinshaw et al. in their TOSEM 2013 article. However, this implementation
+ * generalizes the approach of Walkinshaw et al. by a more general concept of combinability (see {@link Combiner}).
+ * </p>
+ *
  * <p>
  * Note that, since computing global similarity scores requires solving systems of linear equations, the complexity of
  * this computation is about O((|LHS|*|RHS|)^3), with |LHS| and |RHS| the number of states in the LHS and RHS,
@@ -60,7 +64,7 @@ public class WalkinshawGlobalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walk
 
     /**
      * Instantiates a new Walkinshaw global scorer for GLTSs. Uses an attenuation factor of 0.6.
-     * 
+     *
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
@@ -70,7 +74,7 @@ public class WalkinshawGlobalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walk
 
     /**
      * Instantiates a new Walkinshaw global scorer for GLTSs.
-     * 
+     *
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      * @param attenuationFactor The attenuation factor, the ratio in the range [0,1] that determines how much the
@@ -109,17 +113,19 @@ public class WalkinshawGlobalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walk
 
     /**
      * Computes a (global) similarity score matrix for all pairs of (LHS, RHS)-states, with scores in the range [-1,1].
+     *
      * <p>
      * This computation relies on a function {@code commonNeighbors} that gives a list of all relevant common
      * neighboring state pairs that are possible from the input pair of states. Furthermore, {@code relevantProperties}
      * gives the set of transition properties that are relevant to consider from a given state in a specified GLTS.
      * </p>
+     *
      * <p>
      * The similarity scores are computed by constructing and solving a system of linear equations. Details on this can
      * be found in the TOSEM'13 article by Walkinshaw et al. However, this implementation generalizes the approach
      * described in that article by a more general concept of combinability (see {@link Combiner}).
      * </p>
-     * 
+     *
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
      * @param relevantTransitions A function that, given an GLTS and a state of that GLTS, determines the list of
@@ -249,7 +255,7 @@ public class WalkinshawGlobalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walk
 
     /**
      * Collects all (LHS, RHS)-state pairs with a state similarity score that can statically (efficiently) be computed.
-     * 
+     *
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
      * @param staticallyKnownScores A mutable map from state pairs to statically known similarity scores, which will be
@@ -359,7 +365,7 @@ public class WalkinshawGlobalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walk
      * <li>Any state pair with uncombinable state properties has a statically known score of {@code -1d}.</li>
      * <li>Any state pair has a statically known score, if all its common neighbors have statically known scores.</li>
      * </ul>
-     * 
+     *
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
      * @param statePair The state pair for which to attempt to statically determine the similarity score.
@@ -421,9 +427,14 @@ public class WalkinshawGlobalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walk
     }
 
     /**
-     * Gives a decomposition solver for the given matrix. (An overview of other available solvers can be found at:
-     * https://commons.apache.org/proper/commons-math/userguide/linear.html.)
-     * 
+     * Gives a decomposition solver for the given matrix.
+     *
+     * <p>
+     * An overview of other available solvers can be found at:
+     * <a href="https://commons.apache.org/proper/commons-math/userguide/linear.html"
+     * >https://commons.apache.org/proper/commons-math/userguide/linear.html</a>.
+     * </p>
+     *
      * @param matrix The matrix that encodes the system of linear equations.
      * @return A solver for solving the system of linear equations.
      */
@@ -434,13 +445,14 @@ public class WalkinshawGlobalGLTSScorer<S, T, U extends GLTS<S, T>> extends Walk
     /**
      * Indexates a given collection, by associating a unique index between {@code 0} and {@code collection.size() - 1}
      * to every element.
+     *
      * <p>
      * Note that, as an alternative to using this method, one could also simply convert {@code collection} to a list and
      * use list indices instead. However, {@link List#indexOf} is (typically) not a constant operation, whereas the
      * returned map can give indices of elements effectively in constant time. And since the number of possible state
      * pairs to consider may be huge, this improvement may well pay off.
      * </p>
-     * 
+     *
      * @param <E> The type of elements in the collection.
      * @param collection The collection to indexate.
      * @return A bidirectional map from the elements of {@code collection} to their unique indices.

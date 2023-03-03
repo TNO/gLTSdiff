@@ -11,7 +11,7 @@
 package com.github.tno.gltsdiff.operators.printers;
 
 /**
- * A printer for printing state and/or transition properties in HTML format.
+ * A printer, an operator for printing state and/or transition properties in HTML format.
  *
  * @param <T> The type of properties.
  */
@@ -19,7 +19,7 @@ package com.github.tno.gltsdiff.operators.printers;
 public interface HtmlPrinter<T> {
     /**
      * Prints the specified property as HTML.
-     * 
+     *
      * @param property The non-{@code null} property to print.
      * @return The printed property, as HTML.
      */

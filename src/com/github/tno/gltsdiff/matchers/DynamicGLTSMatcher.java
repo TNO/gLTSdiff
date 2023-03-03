@@ -20,9 +20,13 @@ import com.github.tno.gltsdiff.matchers.scorers.SimilarityScorer;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 
 /**
- * Matcher that computes state matchings for {@link GLTS GLTSs}, that makes a trade-off between computational intensity
- * and the quality of the computed matchings. Different matching algorithms can be used for different input GLTSs, e.g.
- * based on their sizes (numbers of states) from "heavyweight" (for smaller GLTSs) to "lightweight" (for larger GLTSs).
+ * Matcher that computes state matchings for {@link GLTS GLTSs}, making a trade-off between computational intensity and
+ * the quality of the computed matchings.
+ *
+ * <p>
+ * Different matching algorithms can be used for different input GLTSs, e.g. based on their sizes (numbers of states)
+ * from "heavyweight" (for smaller GLTSs) to "lightweight" (for larger GLTSs).
+ * </p>
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
@@ -34,7 +38,7 @@ public class DynamicGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matcher<S
 
     /**
      * Instantiates a new dynamic matcher for GLTSs, that uses a default configuration of matching algorithms.
-     * 
+     *
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
@@ -44,7 +48,7 @@ public class DynamicGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matcher<S
 
     /**
      * Instantiates a new dynamic matcher for GLTSs.
-     * 
+     *
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      * @param matchingAlgorithmCreator The matching algorithm creator. Given appropriate combiners, creates a suitable
@@ -56,6 +60,16 @@ public class DynamicGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matcher<S
         this.matcher = matchingAlgorithmCreator.apply(statePropertyCombiner, transitionPropertyCombiner);
     }
 
+    /**
+     * Returns the default matcher.
+     *
+     * @param <S> The type of state properties.
+     * @param <T> The type of transition properties.
+     * @param <U> The type of GLTSs.
+     * @param statePropertyCombiner The state property combiner.
+     * @param transitionPropertyCombiner The transition property combiner.
+     * @return The matcher.
+     */
     private static final <S, T, U extends GLTS<S, T>> Matcher<S, T, U>
             defaultMatchingAlgorithmCreator(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner)
     {

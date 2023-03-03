@@ -13,9 +13,12 @@ package com.github.tno.gltsdiff.operators.combiners;
 import com.github.tno.gltsdiff.glts.Transition;
 
 /**
- * A combiner for {@link Transition transitions}. Any two transitions are combinable if their source and target states
- * are equal and their properties are combinable. Combining two transitions results in a transition with a combined
- * property.
+ * A combiner for {@link Transition transitions}.
+ *
+ * <p>
+ * Any two transitions are combinable if their source and target states are equal and their properties are combinable.
+ * Combining two transitions results in a transition with a combined property.
+ * </p>
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.

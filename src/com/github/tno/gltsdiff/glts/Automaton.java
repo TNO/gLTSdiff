@@ -20,16 +20,16 @@ import com.google.common.base.Preconditions;
  */
 public abstract class Automaton<S, T> extends LTS<S, T> {
     /**
-     * Determines whether the given state property indicates that the associated state is accepting.
-     * 
+     * Returns whether the given state property indicates that the associated state is accepting.
+     *
      * @param property The non-{@code null} state property to check.
      * @return {@code true} if the given state property indicates state acceptance, {@code false} otherwise.
      */
     public abstract boolean isAccepting(S property);
 
     /**
-     * Determines whether the given state is accepting.
-     * 
+     * Returns whether the given state is accepting.
+     *
      * @param state The non-{@code null} state to check, which must exist in this automaton.
      * @return {@code true} if the given state is accepting, {@code false} otherwise.
      */

@@ -15,18 +15,19 @@ import com.github.tno.gltsdiff.glts.DiffProperty;
 import com.google.common.base.Preconditions;
 
 /**
- * A {@link Hider} for {@link DiffProperty difference properties} of type {@code T} that hides their inner
- * {@code T}-typed properties and leaves the associated {@link DiffKind} unchanged.
+ * A hider for {@link DiffProperty difference properties} of type {@code T} that hides their inner {@code T}-typed
+ * properties and leaves the associated {@link DiffKind} unchanged.
  *
  * @param <T> The type of inner properties.
  */
 public class DiffPropertyHider<T> implements Hider<DiffProperty<T>> {
+    /** Hider for the inner properties. */
     private final Hider<T> hider;
 
     /**
-     * Instantiates a {@link Hider} for difference properties using {@code hider} for the inner properties.
-     * 
-     * @param hider {@link Hider} to use for the inner properties.
+     * Instantiates a hider for difference properties with a given hider for the inner properties.
+     *
+     * @param hider Hider for the inner properties.
      */
     public DiffPropertyHider(Hider<T> hider) {
         this.hider = hider;

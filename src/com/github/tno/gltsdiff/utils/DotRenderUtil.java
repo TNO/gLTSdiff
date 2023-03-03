@@ -6,7 +6,7 @@ import java.nio.file.Path;
 
 import com.google.common.base.Preconditions;
 
-/** Utility class for rendering DOT files. */
+/** Utilities for rendering DOT files. */
 public class DotRenderUtil {
     /** Constructor for the DotRenderUtil class. */
     private DotRenderUtil() {
@@ -15,12 +15,12 @@ public class DotRenderUtil {
 
     /**
      * Renders a DOT file using 'dot' (part of GraphViz).
-     * 
+     *
      * <p>
      * If the 'DOT_PATH' environment variable is set, the DOT executable path is taken from that variable. Otherwise
      * "dot" is used as executable, and 'dot' must on the 'PATH'.
      * </p>
-     * 
+     *
      * @param dotFilePath The path to the DOT file to render.
      * @throws IOException In case of an I/O error.
      * @throws InterruptedException If the current thread is interrupted by another thread while it is waiting for the

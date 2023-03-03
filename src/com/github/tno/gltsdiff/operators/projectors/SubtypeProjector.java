@@ -33,7 +33,7 @@ public class SubtypeProjector<T, U extends T, V> implements Projector<U, V> {
 
     /**
      * Instantiates a new subtype property projector.
-     * 
+     *
      * @param projector The projector for properties.
      * @param converter The converter function for projected properties. This function is only called with
      *     non-{@code null} properties, and must always return a non-{@code null} property.

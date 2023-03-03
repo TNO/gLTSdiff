@@ -27,7 +27,7 @@ public class DiffAutomatonStatePropertyProjector<U> implements Projector<DiffAut
 
     /**
      * Instantiates a new difference automaton state property projector.
-     * 
+     *
      * @param diffKindProjector The projector for difference kinds.
      */
     public DiffAutomatonStatePropertyProjector(Projector<DiffKind, U> diffKindProjector) {

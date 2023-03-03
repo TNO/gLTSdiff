@@ -46,7 +46,7 @@ public class DefaultMerger<S, T, U extends GLTS<S, T>> extends AbstractMerger<S,
 
     /**
      * Instantiates a new default merger.
-     * 
+     *
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      * @param instantiator The supplier for instantiating new GLTSs.
@@ -129,7 +129,7 @@ public class DefaultMerger<S, T, U extends GLTS<S, T>> extends AbstractMerger<S,
     /**
      * Gives the set of all transitions of {@code glts}, where all source and target states are mapped according to
      * {@code projection}.
-     * 
+     *
      * @param glts The GLTS for which to collect all transitions.
      * @param projection The projection function that is applied to the source and target states of all transitions.
      *     This function must contain a mapping for every state of {@code glts}.

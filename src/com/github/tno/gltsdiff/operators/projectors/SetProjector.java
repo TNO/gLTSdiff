@@ -29,7 +29,7 @@ public class SetProjector<T, U> implements Projector<Set<T>, U> {
 
     /**
      * Instantiates a new property set projector.
-     * 
+     *
      * @param propertyProjector The projector for properties.
      */
     public SetProjector(Projector<T, U> propertyProjector) {

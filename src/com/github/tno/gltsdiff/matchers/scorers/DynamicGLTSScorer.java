@@ -19,9 +19,12 @@ import com.github.tno.gltsdiff.operators.combiners.Combiner;
 
 /**
  * Scorer that computes state similarity scores for {@link GLTS GLTSs} that makes a trade-off between computational
- * intensity and the quality of the computed scores. Different scoring algorithms can be used for different input GLTSs,
- * e.g. based on their sizes (numbers of states) from "heavyweight" (for smaller GLTSs) to "lightweight" (for larger
- * GLTSs).
+ * intensity and the quality of the computed scores.
+ *
+ * <p>
+ * Different scoring algorithms can be used for different input GLTSs, e.g. based on their sizes (numbers of states)
+ * from "heavyweight" (for smaller GLTSs) to "lightweight" (for larger GLTSs).
+ * </p>
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
@@ -33,7 +36,7 @@ public class DynamicGLTSScorer<S, T, U extends GLTS<S, T>> implements Similarity
 
     /**
      * Instantiates a new dynamic scoring algorithm for GLTSs, that uses a default configuration of scoring algorithms.
-     * 
+     *
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
@@ -43,7 +46,7 @@ public class DynamicGLTSScorer<S, T, U extends GLTS<S, T>> implements Similarity
 
     /**
      * Instantiates a new dynamic scoring algorithm for GLTSs.
-     * 
+     *
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      * @param scoringAlgorithmCreator The scoring algorithm creator. Given appropriate combiners, creates a suitable
@@ -55,6 +58,16 @@ public class DynamicGLTSScorer<S, T, U extends GLTS<S, T>> implements Similarity
         this.scorer = scoringAlgorithmCreator.apply(statePropertyCombiner, transitionPropertyCombiner);
     }
 
+    /**
+     * Returns the default scorer.
+     *
+     * @param <S> The type of state properties.
+     * @param <T> The type of transition properties.
+     * @param <U> The type of GLTSs.
+     * @param statePropertyCombiner The state property combiner.
+     * @param transitionPropertyCombiner The transition property combiner.
+     * @return The scorer.
+     */
     private static final <S, T, U extends GLTS<S, T>> SimilarityScorer<S, T, U>
             defaultScoringAlgorithmCreator(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner)
     {

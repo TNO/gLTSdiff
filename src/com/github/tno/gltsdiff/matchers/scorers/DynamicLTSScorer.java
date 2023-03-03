@@ -26,7 +26,7 @@ import com.github.tno.gltsdiff.operators.combiners.Combiner;
 public class DynamicLTSScorer<S, T, U extends LTS<S, T>> extends DynamicGLTSScorer<S, T, U> {
     /**
      * Instantiates a new dynamic scoring algorithm for LTSs, that uses a default configuration of scoring algorithms.
-     * 
+     *
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
@@ -36,7 +36,7 @@ public class DynamicLTSScorer<S, T, U extends LTS<S, T>> extends DynamicGLTSScor
 
     /**
      * Instantiates a new dynamic scoring algorithm for LTSs.
-     * 
+     *
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      * @param scoringAlgorithmCreator The scoring algorithm creator. Given the input LTSs and appropriate combiners,
@@ -48,6 +48,16 @@ public class DynamicLTSScorer<S, T, U extends LTS<S, T>> extends DynamicGLTSScor
         super(statePropertyCombiner, transitionPropertyCombiner, scoringAlgorithmCreator);
     }
 
+    /**
+     * Returns the default scorer.
+     *
+     * @param <S> The type of state properties.
+     * @param <T> The type of transition properties.
+     * @param <U> The type of LTSs.
+     * @param statePropertyCombiner The state property combiner.
+     * @param transitionPropertyCombiner The transition property combiner.
+     * @return The scorer.
+     */
     private static final <S, T, U extends LTS<S, T>> SimilarityScorer<S, T, U>
             defaultScoringAlgorithmCreator(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner)
     {

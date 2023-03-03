@@ -10,14 +10,18 @@
 
 package com.github.tno.gltsdiff.operators.combiners;
 
-/** A combiner that allows any two properties to be combined, always producing the same fixed value. */
+/**
+ * A combiner that allows any two properties to be combined, always producing the same fixed value.
+ *
+ * @param <T> The type of properties to combine.
+ */
 public class FixedValueCombiner<T> extends Combiner<T> {
     /** The fixed value. */
     private final T fixedValue;
 
     /**
      * Instantiates a fixed value combiner.
-     * 
+     *
      * @param fixedValue The fixed value.
      */
     public FixedValueCombiner(T fixedValue) {

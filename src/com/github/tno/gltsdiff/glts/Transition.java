@@ -15,7 +15,7 @@ import java.util.Objects;
 import com.google.common.base.Preconditions;
 
 /**
- * A transition with a property.
+ * A transition with a property, in a {@link GLTS}.
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
@@ -32,7 +32,7 @@ public class Transition<S, T> {
 
     /**
      * Instantiates a new transition.
-     * 
+     *
      * @param source The non-{@code null} source state.
      * @param property The non-{@code null} transition property.
      * @param target The non-{@code null} target state.
@@ -46,17 +46,29 @@ public class Transition<S, T> {
         this.target = target;
     }
 
-    /** @return The non-{@code null} source state. */
+    /**
+     * Returns the source state.
+     *
+     * @return The non-{@code null} source state.
+     */
     public State<S> getSource() {
         return source;
     }
 
-    /** @return The non-{@code null} transition property. */
+    /**
+     * Returns the transition property.
+     *
+     * @return The non-{@code null} transition property.
+     */
     public T getProperty() {
         return property;
     }
 
-    /** @return The non-{@code null} target state. */
+    /**
+     * Returns the target state.
+     *
+     * @return The non-{@code null} target state.
+     */
     public State<S> getTarget() {
         return target;
     }

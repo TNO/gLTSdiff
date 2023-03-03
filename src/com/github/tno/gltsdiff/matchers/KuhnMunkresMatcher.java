@@ -32,16 +32,15 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.HashBiMap;
 
 /**
- * Contains functionality for computing (LHS, RHS)-state matchings, based on a similarity scoring algorithm that
- * computes a matrix of scores, indicating for every pair of (LHS, RHS)-states how similar they are. The computed
- * matching is guaranteed to be maximal in the sense that there does not exist a (LHS, RHS)-state matching other than
- * the one computed that has a higher summed-up score.
+ * Matcher that based on similarity scores computes a guaranteed maximal matching, in the sense that there does not
+ * exist a (LHS, RHS)-state matching other than the one computed that has a higher summed-up score.
+ *
  * <p>
- * The underlying algorithm is the Kuhn-Munkres algorithm that is also known as the Hungarian algorithm. Its
- * computational complexity is about O((|LHS| + |RHS|)^3) with |LHS| and |RHS| the number of states on the
- * left-hand-side and right-hand-side, respectively. However, the runtime may be cheaper in case the input GLTSs are
- * sparse.
+ * Implements the Kuhn-Munkres algorithm, that is also known as the Hungarian algorithm. Its computational complexity is
+ * about O((|LHS| + |RHS|)^3) with |LHS| and |RHS| the number of states on the left-hand-side and right-hand-side,
+ * respectively. However, the runtime may be cheaper in case the input GLTSs are sparse.
  * </p>
+ *
  * <p>
  * If one experiences performance problems with {@link KuhnMunkresMatcher}, for example because the input GLTSs are
  * large or dense, consider switching to a more lightweight matcher like for example {@link WalkinshawGLTSMatcher}.
@@ -57,7 +56,7 @@ public class KuhnMunkresMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatch
 
     /**
      * Constructs a Kuhn-Munkres state matcher.
-     * 
+     *
      * @param scorer The algorithm for computing state similarity scores.
      * @param statePropertyCombiner The combiner for state properties.
      */
@@ -143,7 +142,7 @@ public class KuhnMunkresMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatch
 
     /**
      * Computes the inversion of {@code scores}, i.e. change every element {@code e} to {@code 1 - e}.
-     * 
+     *
      * @param scores The scores that are to be inverted.
      * @return The inverted scores.
      */
@@ -161,16 +160,18 @@ public class KuhnMunkresMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatch
      * Constructs a maximum matching for the given matrix by only considering its {@code 0.0d} entries. Here
      * <i>maximum</i> means that the returned matching contains as many edges as possible. That is, it is not possible
      * to construct a matching with more edges than the one returned.
+     *
      * <p>
      * This is an implementation of Kuhn's algorithm for finding maximum bipartite matchings. Details about this
      * algorithm can be found at https://cp-algorithms.com/graph/kuhn_maximum_bipartite_matching.html.
      * </p>
+     *
      * <p>
      * Note that more efficient algorithms exist for finding maximum matchings, like for example the
      * Hopcroft-Karp-Karzanov algorithm. Furthermore, the web page mentioned above lists some heuristics for improving
      * the performance of the current implementation. These improvements have not yet been applied.
      * </p>
-     * 
+     *
      * @param matrix The assignment matrix for which a matching is to be constructed.
      * @return A matching for the given matrix, so that every assignment corresponds to a {@code 0.0d} matrix entry.
      */
@@ -209,12 +210,13 @@ public class KuhnMunkresMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatch
     /**
      * This is an implementation of the 'try_kuhn' function described in
      * https://cp-algorithms.com/graph/kuhn_maximum_bipartite_matching.html.
+     *
      * <p>
      * This function searches for any augmenting paths starting from a given state {@code v}, and after having found
      * one, updates the current matching {@code currentMatching} by alternating it along the augmenting path found. A
      * definition of augmenting paths as well as details on the algorithm can be found on the web page mentioned above.
      * </p>
-     * 
+     *
      * @param candidateMatches A map from LHS states to the collection of RHS-states that are potential matches.
      * @param currentMatching The current intermediate matching that is updated while searching for augmenting paths.
      *     Note that this matching is a map from RHS states to LHS states (instead of the other way around).
@@ -248,7 +250,7 @@ public class KuhnMunkresMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatch
 
     /**
      * Converts a given matching that is constructed for the Kuhn-Munkres matrix, to a matching on (LHS, RHS)-states.
-     * 
+     *
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
      * @param matching The (LHS, RHS)-state matching to convert, where all states are represented by their identifiers.
@@ -286,7 +288,7 @@ public class KuhnMunkresMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatch
 
     /**
      * Determines whether the given matching is a complete (LHS, RHS)-matching, in the sense that it cannot be extended.
-     * 
+     *
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
      * @param matching The (LHS, RHS)-state matching to check.
@@ -315,7 +317,7 @@ public class KuhnMunkresMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatch
     /**
      * Filters-out all assignments from the given matching that have a score lower than {@code 0.1d} according to the
      * given similarity scoring function.
-     * 
+     *
      * @param matching The (LHS, RHS)-state matching that is to be filtered. All matched pairs of states must have
      *     combinable state properties, as well as a finite similarity score with respect to {@code scores}.
      * @param scores The similarity scoring function for (LHS, RHS)-state pairs that forms the basis for filtering. All
@@ -347,7 +349,7 @@ public class KuhnMunkresMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatch
      * in that row, and if that entry is finite, subtract it from every entry in the row. This step ensures that all
      * entries of {@code matrix} within the range [0,1] stay within that range, and that all
      * {@link Double#POSITIVE_INFINITY} entries are preserved.
-     * 
+     *
      * @param matrix The matrix of score assignments, whose entries are either within the range [0,1] or are
      *     {@link Double#POSITIVE_INFINITY}.
      */
@@ -377,7 +379,7 @@ public class KuhnMunkresMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatch
      * finite entry in that column, and subtract it from every entry in the column. This step ensures that all entries
      * of {@code matrix} within the range [0,1] stay within that range, and that all {@link Double#POSITIVE_INFINITY}
      * entries are preserved.
-     * 
+     *
      * @param matrix The matrix of score assignments, whose entries are either within the range [0,1] or are
      *     {@link Double#POSITIVE_INFINITY}.
      */
@@ -405,7 +407,7 @@ public class KuhnMunkresMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatch
     /**
      * Finds a minimal number of horizontal and vertical lines over the given matrix that together cover all the entries
      * in the matrix that are {@code 0.0d}. This operation does not modify {@code matrix}.
-     * 
+     *
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
      * @param matrix The matrix of score assignments, whose entries are either within the range [0,1] or are
@@ -494,12 +496,13 @@ public class KuhnMunkresMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatch
      * </ul>
      * This step ensures that all entries of {@code matrix} within the range [0,1] stay within that range, and that all
      * {@link Double#POSITIVE_INFINITY} entries are preserved.
-     * 
+     *
      * @param matrix The matrix of score assignments, whose entries are either within the range [0,1] or are
      *     {@link Double#POSITIVE_INFINITY}.
      * @param horizontalLines A set of horizontal lines: the elements of this set are row indices in the matrix.
      * @param verticalLines A set of vertical lines: the elements of this set are column indices in the matrix.
      */
+    @SuppressWarnings("null")
     private void step4(RealMatrix matrix, Set<Integer> horizontalLines, Set<Integer> verticalLines) {
         Double minValue = null;
 

@@ -52,8 +52,8 @@ public class GLTS<S, T> {
     private final Map<State<S>, List<Transition<S, T>>> outgoingTransitions = new LinkedHashMap<>();
 
     /**
-     * Determines whether the specified state exists in this GLTS.
-     * 
+     * Returns whether the specified state exists in this GLTS.
+     *
      * @param state The non-{@code null} state.
      * @return {@code true} if the state exists in this GLTS, {@code false} otherwise.
      */
@@ -63,8 +63,8 @@ public class GLTS<S, T> {
     }
 
     /**
-     * Determines whether the specified transition exists in this GLTS.
-     * 
+     * Returns whether the specified transition exists in this GLTS.
+     *
      * @param source The non-{@code null} source state, which must exist in this GLTS.
      * @param property The non-{@code null} transition property.
      * @param target The non-{@code null} target state, which must exist in this GLTS.
@@ -82,8 +82,8 @@ public class GLTS<S, T> {
     }
 
     /**
-     * Determines whether the specified transition exists in this GLTS.
-     * 
+     * Returns whether the specified transition exists in this GLTS.
+     *
      * @param transition The non-{@code null} transition.
      * @return {@code true} if the given transition exists in this GLTS, {@code false} otherwise.
      */
@@ -92,6 +92,8 @@ public class GLTS<S, T> {
     }
 
     /**
+     * Returns the states of this GLTS.
+     *
      * @return The set of all states of this GLTS, all of which are non-{@code null} and have identifiers between
      *     {@code 0} and {@code size() - 1} that are unique within this GLTS.
      */
@@ -100,8 +102,8 @@ public class GLTS<S, T> {
     }
 
     /**
-     * Gives the state with the specified identifier.
-     * 
+     * Returns the state with the specified identifier.
+     *
      * @param id The state identifier, which must be between {@code 0} and {@code size() - 1}.
      * @return The non-{@code null} state within this GLTS with the specified identifier.
      */
@@ -112,15 +114,19 @@ public class GLTS<S, T> {
         return state;
     }
 
-    /** @return The set of all transitions of this GLTS, all of which are non-{@code null}. */
+    /**
+     * Returns the transitions of this GLTS.
+     *
+     * @return The set of all transitions of this GLTS, all of which are non-{@code null}.
+     */
     public Set<Transition<S, T>> getTransitions() {
         return outgoingTransitions.values().stream().flatMap(ts -> ts.stream())
                 .collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
     }
 
     /**
-     * Gives the set of states that can reach the given state by a single transition.
-     * 
+     * Returns the set of states that can reach the given state by a single transition.
+     *
      * @param state The non-{@code null} target state, which must exist in this GLTS.
      * @return The set of all reachable states from {@code state} by a single transition, all of which are
      *     non-{@code null}.
@@ -132,8 +138,8 @@ public class GLTS<S, T> {
     }
 
     /**
-     * Gives the set of states that the specified state can reach by a single transition.
-     * 
+     * Returns the set of states that the specified state can reach by a single transition.
+     *
      * @param state The non-{@code null} source state, which must exist in this GLTS.
      * @return The set of all co-reachable states from {@code state} by a single transition, all of which are
      *     non-{@code null}.
@@ -145,8 +151,8 @@ public class GLTS<S, T> {
     }
 
     /**
-     * Gives all transitions that go into the specified target state.
-     * 
+     * Returns all transitions that go into the specified target state.
+     *
      * @param state The non-{@code null} target state, which must exist in this GLTS.
      * @return All transitions that go into the given target state, all of which are non-{@code null}.
      */
@@ -157,8 +163,8 @@ public class GLTS<S, T> {
     }
 
     /**
-     * Gives all transitions that go out of the specified source state.
-     * 
+     * Returns all transitions that go out of the specified source state.
+     *
      * @param state The non-{@code null} source state, which must exist in this GLTS.
      * @return All transitions that go out of the given source state, all of which are non-{@code null}.
      */
@@ -169,8 +175,8 @@ public class GLTS<S, T> {
     }
 
     /**
-     * Gives the properties of all transitions that go into the specified target state.
-     * 
+     * Returns the properties of all transitions that go into the specified target state.
+     *
      * @param state The non-{@code null} target state, which must exist in this GLTS.
      * @return The properties of all transitions going into the given state, all of which are non-{@code null}.
      */
@@ -181,8 +187,8 @@ public class GLTS<S, T> {
     }
 
     /**
-     * Gives the properties of all transitions that go out of the specified source state.
-     * 
+     * Returns the properties of all transitions that go out of the specified source state.
+     *
      * @param state The non-{@code null} source state, which must exist in this GLTS.
      * @return The properties of all transitions going out of the given state, all of which are non-{@code null}.
      */
@@ -192,17 +198,31 @@ public class GLTS<S, T> {
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    /** @return The number of states in this GLTS. */
+    /**
+     * Returns the number of states in this GLTS.
+     *
+     * @return The number of states in this GLTS.
+     */
     public int size() {
         return getStates().size();
     }
 
-    /** @return The number of states in this GLTS satisfying {@code predicate}. */
+    /**
+     * Count states of this GLTS that satisfy a given predicate.
+     *
+     * @param predicate The predicate.
+     * @return The number of states that satisfy the predicate.
+     */
     public long countStates(Predicate<State<S>> predicate) {
         return getStates().stream().filter(predicate).count();
     }
 
-    /** @return The number of transitions in this GLTS with a property that satisfies {@code predicate}. */
+    /**
+     * Count transitions of this GLTS with a property that satisfies a given predicate.
+     *
+     * @param predicate The predicate.
+     * @return The number of transitions with a property that satisfies the predicate.
+     */
     public long countTransitions(Predicate<T> predicate) {
         return getStates().stream().flatMap(state -> getOutgoingTransitions(state).stream())
                 .map(Transition::getProperty).filter(predicate).count();
@@ -210,7 +230,7 @@ public class GLTS<S, T> {
 
     /**
      * Updates the identifier of the given state.
-     * 
+     *
      * @param state The state whose identifier to update.
      * @param id The new state identifier.
      */
@@ -221,7 +241,7 @@ public class GLTS<S, T> {
 
     /**
      * Replaces the state property associated to the given state with the specified new property.
-     * 
+     *
      * @param state The non-{@code null} state whose property is to be replaced, which must exist in this GLTS.
      * @param property The non-{@code null} new state property.
      */
@@ -232,7 +252,7 @@ public class GLTS<S, T> {
 
     /**
      * Adds a state to this GLTS.
-     * 
+     *
      * @param property The non-{@code null} property to associate to the newly added state.
      * @return The non-{@code null} newly added state, which has an identifier between {@code 0} and {@code size() - 1}
      *     that is unique within this GLTS.
@@ -254,7 +274,7 @@ public class GLTS<S, T> {
 
     /**
      * Tries adding the specified transition to this GLTS.
-     * 
+     *
      * @param source The non-{@code null} source state, which must exist in this GLTS.
      * @param property The non-{@code null} transition property.
      * @param target The non-{@code null} target state, which must exist in this GLTS.
@@ -271,7 +291,7 @@ public class GLTS<S, T> {
 
     /**
      * Tries adding the specified transition to this GLTS.
-     * 
+     *
      * @param transition The non-{@code null} transition, whose source and target states must exist in this GLTS.
      * @return {@code true} if the transition has been added to this GLTS, {@code false} if it already existed.
      */
@@ -281,7 +301,7 @@ public class GLTS<S, T> {
 
     /**
      * Adds the given transition to this GLTS.
-     * 
+     *
      * @param transition The non-{@code null} transition to add, which must not already exist in this GLTS, but whose
      *     source and target states must exist in this GLTS.
      */
@@ -292,7 +312,7 @@ public class GLTS<S, T> {
 
     /**
      * Adds a transition to this GLTS, which must not already exist in this GLTS.
-     * 
+     *
      * @param source The non-{@code null} source state, which must exist in this GLTS.
      * @param property The non-{@code null} transition property.
      * @param target The non-{@code null} target state, which must exist in this GLTS.
@@ -313,7 +333,7 @@ public class GLTS<S, T> {
     /**
      * Removes the given state from this GLTS, thereby ensuring that the identifiers of all other states of this GLTS
      * remain unique and between {@code 0} and {@code size() - 1}.
-     * 
+     *
      * @param state The non-{@code null} state to remove, which must exist in this GLTS.
      */
     public void removeState(State<S> state) {
@@ -342,7 +362,7 @@ public class GLTS<S, T> {
 
     /**
      * Removes the given transition from this GLTS, which must exist in this GLTS.
-     * 
+     *
      * @param source The non-{@code null} source state of the transition to remove.
      * @param property The non-{@code null} property of the transition to remove.
      * @param target The non-{@code null} target state of the transition to remove.
@@ -362,7 +382,7 @@ public class GLTS<S, T> {
 
     /**
      * Removes the specified transition from this GLTS.
-     * 
+     *
      * @param transition The non-{@code null} transition to remove, which must exist in this GLTS.
      */
     public void removeTransition(Transition<S, T> transition) {
@@ -373,7 +393,7 @@ public class GLTS<S, T> {
     /**
      * Maps this GLTS to a different (kind of) GLTS, thereby filtering out any state with a property that is mapped to
      * {@code null}, as well as any transition with a property that is mapped to {@code null}.
-     * 
+     *
      * @param <U> The target type of state properties.
      * @param <V> The target type of transition properties.
      * @param <L> The type of the resulting GLTS.
@@ -420,7 +440,7 @@ public class GLTS<S, T> {
 
     /**
      * Projects this GLTS by projecting all state and transition properties along a given element {@code along}.
-     * 
+     *
      * @param <L> The target type of GLTSs to project to.
      * @param <U> The type of elements to project along.
      * @param instantiator A supplier that instantiates new GLTSs of the appropriate type.

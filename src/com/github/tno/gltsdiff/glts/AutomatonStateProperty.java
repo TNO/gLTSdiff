@@ -19,7 +19,7 @@ public class AutomatonStateProperty extends LTSStateProperty {
 
     /**
      * Instantiates a new automaton state property.
-     * 
+     *
      * @param isInitial Whether the associated state is initial.
      * @param isAccepting Whether the associated state is accepting.
      */
@@ -28,7 +28,11 @@ public class AutomatonStateProperty extends LTSStateProperty {
         this.isAccepting = isAccepting;
     }
 
-    /** @return {@code true} if the associated state is accepting, {@code false} otherwise. */
+    /**
+     * Returns whether the associated state is accepting.
+     *
+     * @return {@code true} if the associated state is accepting, {@code false} otherwise.
+     */
     public boolean isAccepting() {
         return this.isAccepting;
     }

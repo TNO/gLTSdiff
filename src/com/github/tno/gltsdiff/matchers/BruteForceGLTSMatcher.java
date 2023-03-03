@@ -32,10 +32,14 @@ import com.google.common.collect.Sets;
 
 /**
  * A brute force matching algorithm for {@link GLTS GLTSs} that calculates a best possible maximal (LHS, RHS)-state
- * matching. The results are <i>best possible</i> (or optimal) in the sense that matchings are computed with the
- * objective to maximize the number of transitions that would be combined in the final merged GLTS. Or, equivalently, it
- * minimizes the number of uncombined transitions. Moreover, the computed matching is guaranteed not to introduce any
- * tangles.
+ * matching.
+ *
+ * <p>
+ * The results are <i>best possible</i> (or optimal) in the sense that matchings are computed with the objective to
+ * maximize the number of transitions that would be combined in the final merged GLTS. Or, equivalently, it minimizes
+ * the number of uncombined transitions. Moreover, the computed matching is guaranteed not to introduce any tangles.
+ * </p>
+ *
  * <p>
  * This algorithm explores all the possible choices of relevant state matchings, making it brute force. The worst case
  * time complexity is therefore O(N!) with N = min{|LHS|, |RHS|}, where |LHS| and |RHS| are the number of states in the
@@ -56,7 +60,7 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
 
     /**
      * Instantiates a new brute force matcher for GLTSs.
-     * 
+     *
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
@@ -73,9 +77,11 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
     }
 
     /**
+     * Returns all (LHS, RHS)-state pairs with {@link #hasPotential potential}.
+     *
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
-     * @return The set of all (LHS, RHS)-state pairs with potential according to {@link #hasPotential(S, S)}.
+     * @return The set of all (LHS, RHS)-state pairs with potential.
      */
     private Set<Pair<State<S>, State<S>>> allStatePairsWithPotential(U lhs, U rhs) {
         Set<Pair<State<S>, State<S>>> pairs = new LinkedHashSet<>(lhs.size() * rhs.size());
@@ -93,12 +99,13 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
 
     /**
      * Indicates whether {@code lhsState} and {@code rhsState} have potential to be matched to one another.
+     *
      * <p>
      * Any (LHS, RHS)-state pair is defined to have <i>potential</i> if (1) they have combinable state properties, and
      * (2) have incoming or outgoing transition properties that are combinable. State pairs without potential are not to
      * be matched to one another, since their matchings would be invalid or would lead to tangles.
      * </p>
-     * 
+     *
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
      * @param lhsState The input LHS state.
@@ -119,7 +126,7 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
 
     /**
      * Determines the best possible matching out of a set {@code candidateMatches} of possible candidate matchings.
-     * 
+     *
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
      * @param candidateMatches A set of all state pairs to consider as potential matches.
@@ -134,11 +141,12 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
     /**
      * Determines the best possible matching out of a set {@code candidateMatches} of possible candidate matchings, that
      * contains at least all the matchings in {@code fixedMatches} (which are thus fixed).
+     *
      * <p>
      * Note that, since this method is recursive, stack depth issues may occur for larger input GLTSs. The exact limits
      * depend on the Java Virtual Machine that is used, and its settings.
      * </p>
-     * 
+     *
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
      * @param fixedMatches The set of matches that are already fixed.
@@ -215,12 +223,13 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
     /**
      * Given a set {@code fixed} of fixed matches and a set {@code candidates} of candidate matches, determines the set
      * of candidate matches that are impossible by the specified choice of fixed matches.
+     *
      * <p>
      * The set returned by this function is a subset of {@code candidates}. Moreover, every pair in the returned set
      * contains a LHS state or RHS state that occurs in {@code fixed}. This is linear-time O(|{@code fixed}| +
      * |{@code candidates}|) operation.
      * </p>
-     * 
+     *
      * @param fixed The set of fixes matches, i.e., state pairs that have been chosen to match on one another.
      * @param candidates The set of candidate matches, i.e., the choices that are still available.
      * @return A subset of {@code candidates} containing all states that cannot be added to {@code fixed}.
@@ -244,11 +253,12 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
      * Given a set {@code candidates} of candidate (LHS, RHS)-state matches, determines the set of all candidate matches
      * that are forced. Any candidate match is <i>forced</i> if both its LHS state and RHS state do not occur elsewhere
      * in {@code candidates}.
+     *
      * <p>
      * This function returns a subset of {@code candidates}. Every pair in the returned set contains a LHS and RHS state
      * that both occur only once in {@code candidates}. This is a linear-time O(|{@code candidates}|) algorithm.
      * </p>
-     * 
+     *
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
      * @param candidates The input set of candidates.
@@ -274,12 +284,12 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
 
     /**
      * The objective function that is to be maximized by the brute force matcher. This function determines the number of
-     * transitions that would be combined in the final merged GLTS of {@link #getLhs()} and {@link #getRhs()}, in which
-     * all (LHS, RHS)-state pairs in {@code fixed} were matched and merged.
+     * transitions that would be combined in the final merged GLTS of {@code lhs} and {@code rhs}, in which all (LHS,
+     * RHS)-state pairs in {@code fixed} were matched and merged.
      *
      * <p>
      * The time complexity of this operation is O(|V1|*|V2|*|{@code fixed}|), with |V1| the number of states in
-     * {@link #getLhs()} and |V2| the number of states in {@link #getRhs()}.
+     * {@code lhs} and |V2| the number of states in {@code rhs}.
      * </p>
      *
      * <p>
@@ -324,7 +334,7 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
     /**
      * Given a {@code set} of pairs, constructs a map from right elements (of the pairs) to the sets of all left
      * elements they are paired to.
-     * 
+     *
      * @param <L> The type of left elements of the pair.
      * @param <R> The type of right elements of the pair.
      * @param set The input set to construct the map for.
@@ -338,7 +348,7 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
 
     /**
      * Unzips the given {@code set} of pairs into a pair of sets containing all its left and right elements.
-     * 
+     *
      * @param <L> The type of left elements of the pair.
      * @param <R> The type of right elements of the pair.
      * @param set The input set of pairs to unzip.

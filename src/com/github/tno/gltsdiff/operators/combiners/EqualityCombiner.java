@@ -11,8 +11,12 @@
 package com.github.tno.gltsdiff.operators.combiners;
 
 /**
- * A combiner that combines any two properties only if they are equal to one another. So any two properties are
- * combinable if and only if they are equal, and the result of combining them is equal to both the input properties.
+ * A combiner that combines any two properties only if they are equal to one another.
+ *
+ * <p>
+ * So any two properties are combinable if and only if they are {@link Object#equals equal}, and the result of combining
+ * them is equal to both the input properties.
+ * </p>
  *
  * @param <T> The type of properties to combine.
  */

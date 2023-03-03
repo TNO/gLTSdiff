@@ -27,17 +27,20 @@ import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
 import com.google.common.base.Preconditions;
 
 /**
- * Functionality for writing {@link GLTS GLTSs} in DOT format.
+ * Writer for writing {@link GLTS GLTSs} in DOT format.
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
  * @param <U> The type of GLTSs to be written.
  */
 public class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
+    /** The default color to use. */
     static final String DEFAULT_COLOR = "#000000";
 
+    /** The default style to use. */
     static final String DEFAULT_STYLE = "";
 
+    /** The circle shape style to use. */
     static final String SHAPE_CIRCLE = "circle";
 
     /** A printer for printing state labels. */
@@ -48,7 +51,7 @@ public class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
 
     /**
      * Instantiates a writer for GLTSs, which prints state identifiers as state labels.
-     * 
+     *
      * @param transitionLabelPrinter A printer for printing transition labels.
      */
     public GLTSDotWriter(HtmlPrinter<Transition<S, T>> transitionLabelPrinter) {
@@ -57,7 +60,7 @@ public class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
 
     /**
      * Instantiates a writer for GLTSs.
-     * 
+     *
      * @param stateLabelPrinter A printer for printing state labels.
      * @param transitionLabelPrinter A printer for printing transition labels.
      */
@@ -70,7 +73,7 @@ public class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
 
     /**
      * Writes a GLTS in DOT format to the provided output stream.
-     * 
+     *
      * @param glts The GLTS.
      * @param stream Stream to output DOT data to.
      * @throws IOException In case of an I/O error.
@@ -91,7 +94,9 @@ public class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
     }
 
     /**
-     * @return The name of the digraph to be written in DOT format.
+     * Returns the name of the digraph to be written in DOT format.
+     *
+     * @return The name of the digraph.
      */
     protected String getDigraphName() {
         return "glts";
@@ -99,7 +104,7 @@ public class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
 
     /**
      * Writes state information of a GLTS in DOT format to the provided writer.
-     * 
+     *
      * @param glts The GLTS.
      * @param writer The writer to write DOT data to.
      * @throws IOException In case of an I/O error.
@@ -113,7 +118,7 @@ public class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
     /**
      * Given a collection of states, constructs a list of states that is deterministically ordered. This is for example
      * needed for regression testing, which expects deterministic results on every run.
-     * 
+     *
      * @param glts The GLTS.
      * @param states The states to order.
      * @return A list of deterministically ordered states.
@@ -123,8 +128,10 @@ public class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
     }
 
     /**
+     * Get a state comparator for the given GLTS, that imposes a deterministic and total order on its states.
+     *
      * @param glts The GLTS.
-     * @return A comparator that imposes a deterministic and total order on states.
+     * @return The comparator.
      */
     protected Comparator<State<S>> getStateComparator(U glts) {
         return Comparator.comparing(State::getId);
@@ -132,7 +139,7 @@ public class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
 
     /**
      * Writes information of a single state of a GLTS in DOT format to the provided writer.
-     * 
+     *
      * @param glts The GLTS.
      * @param writer The writer to write DOT data to.
      * @param state The state to write in DOT format.
@@ -154,7 +161,7 @@ public class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
 
     /**
      * Gives the DOT graph identifier of the specified state.
-     * 
+     *
      * @param state The state for which to obtain the DOT graph identifier.
      * @return The DOT graph identifier that identifies {@code state} in the DOT graph.
      */
@@ -164,37 +171,72 @@ public class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
 
     /**
      * Gives a standard DOT graph state label for the specified state.
-     * 
+     *
      * @param state The state for which to obtain the DOT graph state label.
-     * @return The DOT graph state label for {@code state}.
+     * @return The DOT graph state label for the state.
      */
     public static String stateLabel(State<?> state) {
         return "s" + stateId(state);
     }
 
+    /**
+     * Returns the shape of the given state.
+     *
+     * @param glts The GLTS.
+     * @param state The state of the GLTS.
+     * @return The state shape.
+     */
     protected String stateShape(U glts, State<S> state) {
         return SHAPE_CIRCLE;
     }
 
+    /**
+     * Returns the color of the given state.
+     *
+     * @param glts The GLTS.
+     * @param state The state of the GLTS.
+     * @return The state color.
+     */
     protected String stateColor(U glts, State<S> state) {
         return DEFAULT_COLOR;
     }
 
+    /**
+     * Returns the font color of the given state.
+     *
+     * @param glts The GLTS.
+     * @param state The state of the GLTS.
+     * @return The state font color.
+     */
     protected String stateFontColor(U glts, State<S> state) {
         return DEFAULT_COLOR;
     }
 
+    /**
+     * Returns the style of the given state.
+     *
+     * @param glts The GLTS.
+     * @param state The state of the GLTS.
+     * @return The state style.
+     */
     protected String stateStyle(U glts, State<S> state) {
         return DEFAULT_STYLE;
     }
 
+    /**
+     * Returns the color of the given initial state.
+     *
+     * @param glts The GLTS.
+     * @param state The state of the GLTS.
+     * @return The initial state color.
+     */
     protected String initialStateColor(U glts, State<S> state) {
         return DEFAULT_COLOR;
     }
 
     /**
      * Writes transition information of a GLTS in DOT format to the provided writer.
-     * 
+     *
      * @param glts The GLTS.
      * @param writer The writer to write DOT data to.
      * @throws IOException In case of an I/O error.
@@ -210,7 +252,7 @@ public class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
 
     /**
      * Writes information of a single transition of a GLTS in DOT format to the provided writer.
-     * 
+     *
      * @param glts The GLTS.
      * @param writer The writer to write DOT data to.
      * @param transition The transition to write in DOT format.
@@ -226,17 +268,24 @@ public class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
         writer.write(System.lineSeparator());
     }
 
+    /**
+     * Returns the color of the given transition.
+     *
+     * @param glts The GLTS.
+     * @param transition The transition of the GLTS.
+     * @return The transition color.
+     */
     protected String transitionColor(U glts, Transition<S, T> transition) {
         return DEFAULT_COLOR;
     }
 
     /**
-     * Gives the DOT graph identifier of the specified transition within {@link #glts}.
-     * 
+     * Gives the DOT graph identifier of a given transition.
+     *
      * @param glts The GLTS.
-     * @param transition The transition for which to obtain the DOT graph identifier.
+     * @param transition The transition of the GLTS.
      * @param index The transition index.
-     * @return The DOT graph identifier that identifies {@code transition} in the DOT graph.
+     * @return The DOT graph identifier that identifies the transition in the DOT graph.
      */
     protected String transitionId(U glts, Transition<S, T> transition, int index) {
         State<S> source = transition.getSource();
@@ -250,22 +299,27 @@ public class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
     }
 
     /**
-     * Gives either the provided {@code color}, or an empty string in case this color represents a default color.
-     * 
+     * Gives either the provided color, or an empty string in case this color represents a default color.
+     *
      * @param color A hex color code.
-     * @return Either {@code color}, or the empty string in case {@code color} is a default color.
+     * @return Either the given color, or the empty string in case the given color is the default color.
      */
     protected String skipDefaultColor(String color) {
         return DEFAULT_COLOR.equals(color) ? "" : color;
     }
 
     /**
-     * Optionally writes the String.format(${template}, ${templateData}) to the writer. Writes only occur when the
-     * trimmed value of ${templateData} is non empty.
+     * Optionally writes the {@link String#format formatted} pattern to the writer. Writes only occur when the trimmed
+     * value of the given argument is non-empty.
+     *
+     * @param pattern The format pattern.
+     * @param argument The format pattern argument.
+     * @param writer The writer to use.
+     * @throws IOException In case of an I/O error.
      */
-    protected void optionalWrite(String template, String templateData, Writer writer) throws IOException {
-        if (!templateData.trim().isEmpty()) {
-            writer.write(String.format(template, templateData));
+    protected void optionalWrite(String pattern, String argument, Writer writer) throws IOException {
+        if (!argument.trim().isEmpty()) {
+            writer.write(String.format(pattern, argument));
         }
     }
 }

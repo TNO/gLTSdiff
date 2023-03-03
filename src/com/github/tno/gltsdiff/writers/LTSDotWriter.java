@@ -20,7 +20,7 @@ import com.github.tno.gltsdiff.glts.Transition;
 import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
 
 /**
- * Functionality for writing {@link LTS LTSs} in DOT format.
+ * Writer for writing {@link LTS LTSs} in DOT format.
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
@@ -29,7 +29,7 @@ import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
 public class LTSDotWriter<S, T, U extends LTS<S, T>> extends GLTSDotWriter<S, T, U> {
     /**
      * Instantiates a writer for LTSs, which prints state identifiers as state labels.
-     * 
+     *
      * @param transitionLabelPrinter A printer for printing transition labels.
      */
     public LTSDotWriter(HtmlPrinter<Transition<S, T>> transitionLabelPrinter) {
@@ -38,7 +38,7 @@ public class LTSDotWriter<S, T, U extends LTS<S, T>> extends GLTSDotWriter<S, T,
 
     /**
      * Instantiates a writer for the LTSs.
-     * 
+     *
      * @param stateLabelPrinter A printer for printing state labels.
      * @param transitionLabelPrinter A printer for printing transition labels.
      */
@@ -71,6 +71,14 @@ public class LTSDotWriter<S, T, U extends LTS<S, T>> extends GLTSDotWriter<S, T,
         super.writeTransitions(lts, writer);
     }
 
+    /**
+     * Writes information of a single initial transition of an LTS in DOT format to the provided writer.
+     *
+     * @param lts The LTS.
+     * @param writer The writer to write DOT data to.
+     * @param initialTransition The initial transition to write in DOT format.
+     * @throws IOException In case of an I/O error.
+     */
     private void writeInitialTransition(U lts, Writer writer, State<S> initialTransition) throws IOException {
         String initialTransitionId = stateId(initialTransition);
         writer.write(String.format("\t__init%s [label=<> shape=\"none\"];", initialTransitionId));

@@ -13,10 +13,13 @@ package com.github.tno.gltsdiff.operators.combiners;
 import com.github.tno.gltsdiff.glts.AutomatonStateProperty;
 
 /**
- * A combiner for {@link AutomatonStateProperty automaton state properties}. Any two such properties can be combined if
- * they agree on states being initial and accepting (i.e., either both states are initial and accepting or both states
- * are not initial and not accepting). Combining two such properties results in an automaton state property with their
- * equal initial state and state acceptance information.
+ * A combiner for {@link AutomatonStateProperty automaton state properties}.
+ *
+ * <p>
+ * Any two such properties can be combined if they agree on states being initial and accepting (i.e., either both states
+ * are initial and accepting or both states are not initial and not accepting). Combining two such properties results in
+ * an automaton state property with their equal initial state and state acceptance information.
+ * </p>
  */
 public class AutomatonStatePropertyCombiner extends Combiner<AutomatonStateProperty> {
     @Override
