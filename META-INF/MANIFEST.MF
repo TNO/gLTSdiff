@@ -5,7 +5,7 @@ Bundle-SymbolicName: com.github.tno.gltsdiff
 Bundle-Version: 0.1.0.qualifier
 Bundle-Vendor: TNO
 Automatic-Module-Name: com.github.tno.gltsdiff
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.apache.commons.math3;bundle-version="3.5.0",
  com.google.guava;bundle-version="27.1.0",
