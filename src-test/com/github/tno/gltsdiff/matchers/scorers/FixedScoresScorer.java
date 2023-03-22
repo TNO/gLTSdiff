@@ -16,7 +16,7 @@ import com.github.tno.gltsdiff.glts.LTS;
 import com.google.common.base.Preconditions;
 
 /**
- * A similarity scorer that simply returns predefined similarity scores.
+ * A similarity scorer that simply returns fixed similarity scores.
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
@@ -27,7 +27,7 @@ public class FixedScoresScorer<S, T, U extends LTS<S, T>> implements SimilarityS
     private final RealMatrix scores;
 
     /**
-     * Instantiates a new stub similarity scorer.
+     * Instantiates a new fixed scores similarity scorer.
      *
      * @param scores The fixed matrix of similarity scores.
      */
