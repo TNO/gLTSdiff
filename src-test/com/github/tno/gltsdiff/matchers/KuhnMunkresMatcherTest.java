@@ -20,7 +20,7 @@ import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.util.Pair;
 import org.junit.jupiter.api.Test;
 
-import com.github.tno.gltsdiff.StubAutomata;
+import com.github.tno.gltsdiff.TestAutomata;
 import com.github.tno.gltsdiff.glts.AutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.SimpleAutomaton;
 import com.github.tno.gltsdiff.glts.State;
@@ -41,7 +41,7 @@ public class KuhnMunkresMatcherTest extends MatcherTest {
     @Test
     public void testPreviouslyNonTerminatingExample() {
         // Obtain LHS and RHS.
-        Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = StubAutomata
+        Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = TestAutomata
                 .smallThreeStateLoopWithSwappedEvents();
         SimpleAutomaton<String> lhs = automata.getFirst();
         SimpleAutomaton<String> rhs = automata.getSecond();

@@ -16,7 +16,7 @@ import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.util.Pair;
 import org.junit.jupiter.api.Test;
 
-import com.github.tno.gltsdiff.StubAutomata;
+import com.github.tno.gltsdiff.TestAutomata;
 import com.github.tno.gltsdiff.glts.AutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.SimpleAutomaton;
 import com.github.tno.gltsdiff.operators.combiners.AutomatonStatePropertyCombiner;
@@ -26,7 +26,7 @@ public class WalkinshawLocalScorerTest extends WalkinshawScorerTest {
     @Test
     public void testSmallExampleWalkinshaw() {
         // Obtain stub automata.
-        Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = StubAutomata.smallExampleWalkinshaw();
+        Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = TestAutomata.smallExampleWalkinshaw();
         SimpleAutomaton<String> lhs = automata.getFirst();
         SimpleAutomaton<String> rhs = automata.getSecond();
 
@@ -54,7 +54,7 @@ public class WalkinshawLocalScorerTest extends WalkinshawScorerTest {
     @Test
     public void testSmallExampleWalkinshawWithTwoRefinements() {
         // Obtain stub automata.
-        Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = StubAutomata.smallExampleWalkinshaw();
+        Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = TestAutomata.smallExampleWalkinshaw();
         SimpleAutomaton<String> lhs = automata.getFirst();
         SimpleAutomaton<String> rhs = automata.getSecond();
 

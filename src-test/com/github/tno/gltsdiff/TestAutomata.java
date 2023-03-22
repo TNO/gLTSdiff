@@ -16,9 +16,18 @@ import com.github.tno.gltsdiff.glts.AutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.SimpleAutomaton;
 import com.github.tno.gltsdiff.glts.State;
 
-public class StubAutomata {
+/** Automata to use for testing. */
+public class TestAutomata {
+    /** Constructor for the {@link TestAutomata} class. */
+    private TestAutomata() {
+        // Static class.
+    }
+
     /**
-     * Gives an automata pair. The LHS is a 'e1,e2' cycle of two states. The RHS is a 'e1,e2,e3' cycle of three states.
+     * Returns a test automata pair. The LHS is an 'e1,e2' cycle of two states. The RHS is an 'e1,e2,e3' cycle of three
+     * states.
+     *
+     * @return The test automata pair.
      */
     public static Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> smallThreeStateExample() {
         // Initialize and configure the LHS automaton.
@@ -45,7 +54,10 @@ public class StubAutomata {
     }
 
     /**
-     * Gives the two automata in the small example in Figure 3 of the article by Walkinshaw et al. (TOSEM 2014).
+     * Returns a test automata pair matching the small example in Figure 3 of the article by Walkinshaw et al. (TOSEM
+     * 2014).
+     *
+     * @return The test automata pair.
      */
     public static Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> smallExampleWalkinshaw() {
         // Initialize and configure the LHS automaton.
@@ -76,47 +88,52 @@ public class StubAutomata {
     }
 
     /**
-     * Gives the two automata that are compared in the running (text editor) example in the TOSEM 2014 article of
-     * Walkinshaw et al. (Figure 1).
+     * Returns a test automata pair matching the running (text editor) example in the TOSEM 2014 article of Walkinshaw
+     * et al. (Figure 1).
+     *
+     * @return The test automata pair.
      */
     public static Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> runningExampleWalkinshaw() {
         // Initialize and configure the LHS automaton.
         SimpleAutomaton<String> lhs = new SimpleAutomaton<>();
 
-        State<AutomatonStateProperty> A = lhs.addInitialState(true);
-        State<AutomatonStateProperty> B = lhs.addState(true);
-        State<AutomatonStateProperty> C = lhs.addState(true);
-        State<AutomatonStateProperty> D = lhs.addState(true);
+        State<AutomatonStateProperty> sA = lhs.addInitialState(true);
+        State<AutomatonStateProperty> sB = lhs.addState(true);
+        State<AutomatonStateProperty> sC = lhs.addState(true);
+        State<AutomatonStateProperty> sD = lhs.addState(true);
 
-        lhs.addTransition(A, "load", B);
-        lhs.addTransition(A, "exit", C);
-        lhs.addTransition(B, "close", A);
-        lhs.addTransition(B, "edit", B);
-        lhs.addTransition(B, "save as", D);
-        lhs.addTransition(D, "ok", B);
+        lhs.addTransition(sA, "load", sB);
+        lhs.addTransition(sA, "exit", sC);
+        lhs.addTransition(sB, "close", sA);
+        lhs.addTransition(sB, "edit", sB);
+        lhs.addTransition(sB, "save as", sD);
+        lhs.addTransition(sD, "ok", sB);
 
         // Initialize and configure the RHS automaton.
         SimpleAutomaton<String> rhs = new SimpleAutomaton<>();
 
-        State<AutomatonStateProperty> E = rhs.addInitialState(true);
-        State<AutomatonStateProperty> F = rhs.addState(true);
-        State<AutomatonStateProperty> G = rhs.addState(true);
-        State<AutomatonStateProperty> H = rhs.addState(true);
-        State<AutomatonStateProperty> I = rhs.addState(true);
+        State<AutomatonStateProperty> sE = rhs.addInitialState(true);
+        State<AutomatonStateProperty> sF = rhs.addState(true);
+        State<AutomatonStateProperty> sG = rhs.addState(true);
+        State<AutomatonStateProperty> sH = rhs.addState(true);
+        State<AutomatonStateProperty> sI = rhs.addState(true);
 
-        rhs.addTransition(E, "load", F);
-        rhs.addTransition(E, "exit", H);
-        rhs.addTransition(F, "close", E);
-        rhs.addTransition(F, "save as", I);
-        rhs.addTransition(F, "edit", G);
-        rhs.addTransition(G, "edit", G);
-        rhs.addTransition(I, "ok", F);
+        rhs.addTransition(sE, "load", sF);
+        rhs.addTransition(sE, "exit", sH);
+        rhs.addTransition(sF, "close", sE);
+        rhs.addTransition(sF, "save as", sI);
+        rhs.addTransition(sF, "edit", sG);
+        rhs.addTransition(sG, "edit", sG);
+        rhs.addTransition(sI, "ok", sF);
 
         return Pair.create(lhs, rhs);
     }
 
     /**
-     * Gives a small industrial example of two automata that are similar but not quite identical.
+     * Returns a test automata pair matching an industrial example of two automata that are similar but not quite
+     * identical.
+     *
+     * @return The test automata pair.
      */
     public static Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> industrialExample1() {
         // Initialize and configure the LHS automaton.
@@ -145,8 +162,10 @@ public class StubAutomata {
     }
 
     /**
-     * Gives a slightly bigger industrial example (with respect to {@link #industrialExample1}) of two automata that are
-     * similar but not quite identical.
+     * Returns a test automata pair for a slightly bigger industrial example (with respect to
+     * {@link #industrialExample1}) of two automata that are similar but not quite identical.
+     *
+     * @return The test automata pair.
      */
     public static Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> industrialExample2() {
         // Initialize and configure the LHS automaton.
@@ -219,8 +238,10 @@ public class StubAutomata {
     }
 
     /**
-     * Gives a pair of two example automata that are both 3-state cycles and share the same alphabet, but with a
-     * slightly different order of events: one is a 'b,d,c' cycle while the other is a 'b,c,d' cycle.
+     * Returns a test automata pair of two example automata that are both 3-state cycles and share the same alphabet,
+     * but with a slightly different order of events: one is a 'b,d,c' cycle while the other is a 'b,c,d' cycle.
+     *
+     * @return The test automata pair.
      */
     public static Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> smallThreeStateLoopWithSwappedEvents() {
         // Initialize and configure the LHS automaton.
@@ -249,7 +270,9 @@ public class StubAutomata {
     }
 
     /**
-     * @return A pair of automata to be used for testing the brute force scorer and matcher.
+     * Returns a test automata pair to be used for testing the brute force scorer and matcher.
+     *
+     * @return The test automata pair.
      */
     public static Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> smallAutomataForBruteForceTesting() {
         // Define the LHS automaton.

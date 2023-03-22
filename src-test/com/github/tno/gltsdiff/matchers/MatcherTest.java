@@ -18,7 +18,7 @@ import java.util.Map;
 import org.apache.commons.math3.util.Pair;
 import org.junit.jupiter.api.Test;
 
-import com.github.tno.gltsdiff.StubAutomata;
+import com.github.tno.gltsdiff.TestAutomata;
 import com.github.tno.gltsdiff.glts.AutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.SimpleAutomaton;
 import com.github.tno.gltsdiff.glts.State;
@@ -34,7 +34,7 @@ public abstract class MatcherTest {
     @Test
     public void testSmallThreeStateExample() {
         // Obtain stub automata.
-        Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = StubAutomata.smallThreeStateExample();
+        Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = TestAutomata.smallThreeStateExample();
         SimpleAutomaton<String> lhs = automata.getFirst();
         SimpleAutomaton<String> rhs = automata.getSecond();
 
@@ -61,7 +61,7 @@ public abstract class MatcherTest {
     @Test
     public void testSmallExampleWalkinshaw() {
         // Obtain stub automata.
-        Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = StubAutomata.smallExampleWalkinshaw();
+        Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = TestAutomata.smallExampleWalkinshaw();
         SimpleAutomaton<String> lhs = automata.getFirst();
         SimpleAutomaton<String> rhs = automata.getSecond();
 
@@ -86,7 +86,7 @@ public abstract class MatcherTest {
     @Test
     public void testRunningExampleWalkinshaw() {
         // Obtain stub automata.
-        Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = StubAutomata.runningExampleWalkinshaw();
+        Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = TestAutomata.runningExampleWalkinshaw();
         SimpleAutomaton<String> lhs = automata.getFirst();
         SimpleAutomaton<String> rhs = automata.getSecond();
 
@@ -116,7 +116,7 @@ public abstract class MatcherTest {
     @Test
     public void testIndustrialExample1() {
         // Obtain stub automata.
-        Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = StubAutomata.industrialExample1();
+        Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = TestAutomata.industrialExample1();
         SimpleAutomaton<String> lhs = automata.getFirst();
         SimpleAutomaton<String> rhs = automata.getSecond();
 
@@ -144,7 +144,7 @@ public abstract class MatcherTest {
     @Test
     public void testIndustrialExample2() {
         // Obtain stub automata.
-        Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = StubAutomata.industrialExample2();
+        Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = TestAutomata.industrialExample2();
         SimpleAutomaton<String> lhs = automata.getFirst();
         SimpleAutomaton<String> rhs = automata.getSecond();
 
