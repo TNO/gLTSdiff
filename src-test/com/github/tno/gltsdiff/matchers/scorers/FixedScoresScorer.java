@@ -16,42 +16,32 @@ import com.github.tno.gltsdiff.glts.LTS;
 import com.google.common.base.Preconditions;
 
 /**
- * A stub similarity scorer, that simply returns predefined similarity scores.
+ * A similarity scorer that simply returns predefined similarity scores.
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs.
  */
-public class StubScorer<S, T, U extends LTS<S, T>> implements SimilarityScorer<S, T, U> {
-    /** The left-hand-side LTS. */
-    private final U lhs;
-
-    /** The right-hand-side LTS. */
-    private final U rhs;
-
-    /** The predefined matrix of similarity scores. */
+public class FixedScoresScorer<S, T, U extends LTS<S, T>> implements SimilarityScorer<S, T, U> {
+    /** The fixed matrix of similarity scores. */
     private final RealMatrix scores;
 
     /**
      * Instantiates a new stub similarity scorer.
      *
-     * @param lhs The left-hand-side LTS.
-     * @param rhs The right-hand-side LTS.
-     * @param scores The predefined matrix of similarity scores.
+     * @param scores The fixed matrix of similarity scores.
      */
-    public StubScorer(U lhs, U rhs, RealMatrix scores) {
-        Preconditions.checkArgument(scores.getRowDimension() == lhs.size(),
-                "Expected the score matrix to contain a row for every LHS state.");
-        Preconditions.checkArgument(scores.getColumnDimension() == rhs.size(),
-                "Expected the score matrix to contain a column for every RHS state.");
-
-        this.lhs = lhs;
-        this.rhs = rhs;
+    public FixedScoresScorer(RealMatrix scores) {
         this.scores = scores;
     }
 
     @Override
     public RealMatrix compute(U lhs, U rhs) {
+        Preconditions.checkArgument(scores.getRowDimension() == lhs.size(),
+                "Mismatch between the number of score matrix rows and the number of LHS states.");
+        Preconditions.checkArgument(scores.getColumnDimension() == rhs.size(),
+                "Mismatch between the number of score matrix columns and the number of RLHS states.");
+
         return scores;
     }
 }
