@@ -25,10 +25,12 @@ import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.operators.combiners.AutomatonStatePropertyCombiner;
 import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;
 
+/** {@link BruteForceLTSMatcher} tests. */
 public class BruteForceMatcherTest {
+    /** Test {@link TestAutomata#smallAutomataForBruteForceTesting}. */
     @Test
     public void testSuccessOnSmallInput() {
-        // Obtain stub automata.
+        // Obtain test automata.
         Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = TestAutomata
                 .smallAutomataForBruteForceTesting();
         SimpleAutomaton<String> lhs = automata.getFirst();
