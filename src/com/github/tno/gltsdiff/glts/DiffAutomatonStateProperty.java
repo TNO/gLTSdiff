@@ -22,7 +22,7 @@ public class DiffAutomatonStateProperty extends AutomatonStateProperty {
 
     /**
      * The non-{@code null} difference kind of the initial state arrow, which is {@link Optional#empty()} if and only if
-     * the associated state is not initial, i.e., if {@link #isInitial()} is {@code false};
+     * the associated state is not initial, i.e., if {@link #isInitial()} is {@code false}.
      */
     private final Optional<DiffKind> initDiffKind;
 

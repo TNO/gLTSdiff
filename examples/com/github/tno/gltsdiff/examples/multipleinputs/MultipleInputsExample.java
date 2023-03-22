@@ -36,6 +36,11 @@ import com.google.common.collect.ImmutableSet;
 
 /** Example that compares and merges multiple inputs. */
 public class MultipleInputsExample {
+    /** Constructor for the {@link MultipleInputsExample} class. */
+    private MultipleInputsExample() {
+        // Static class.
+    }
+
     /**
      * Main method to run the example.
      *

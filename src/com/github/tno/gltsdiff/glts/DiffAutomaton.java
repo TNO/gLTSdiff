@@ -95,11 +95,6 @@ public class DiffAutomaton<T> extends Automaton<DiffAutomatonStateProperty, Diff
         super.addTransition(source, property, target);
     }
 
-    @Override
-    public DiffAutomaton<T> clone() {
-        return map(DiffAutomaton::new, property -> property, property -> property);
-    }
-
     /**
      * Projects this difference automaton along a given difference kind.
      *
