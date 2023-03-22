@@ -27,7 +27,7 @@ import com.github.tno.gltsdiff.matchers.scorers.WalkinshawGlobalLTSScorer;
 import com.github.tno.gltsdiff.operators.combiners.AutomatonStatePropertyCombiner;
 import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;
 
-/** Base class for matcher tests. */
+/** Base class for {@link Matcher} tests. */
 public abstract class MatcherTest {
     /**
      * Construct the matcher to use for testing.
