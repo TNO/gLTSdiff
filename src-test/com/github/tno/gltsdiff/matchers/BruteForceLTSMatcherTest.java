@@ -26,7 +26,7 @@ import com.github.tno.gltsdiff.operators.combiners.AutomatonStatePropertyCombine
 import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;
 
 /** {@link BruteForceLTSMatcher} tests. */
-public class BruteForceMatcherTest {
+public class BruteForceLTSMatcherTest {
     /** Test {@link TestAutomata#smallAutomataForBruteForceTesting}. */
     @Test
     public void testSuccessOnSmallInput() {
