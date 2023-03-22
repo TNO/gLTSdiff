@@ -22,21 +22,34 @@ import org.junit.jupiter.params.provider.MethodSource;
 import com.github.tno.gltsdiff.glts.DiffKind;
 import com.github.tno.gltsdiff.glts.DiffProperty;
 
+/** {@link Hider} tests. */
 public class HidersTest {
+    /** Test {@link SubstitutionHider}. */
     @Test
     public void testSubstitutionHider() {
         Hider<String> hider = new SubstitutionHider<>("tau");
         assertEquals("tau", hider.hide("event"));
     }
 
-    @ParameterizedTest()
-    @MethodSource("testDiffKindProjectorProvider")
+    /**
+     * Test {@link DiffPropertyHider}.
+     *
+     * @param expected Expected test output.
+     * @param input Test input.
+     */
+    @ParameterizedTest
+    @MethodSource("testDiffPropertyHiderData")
     public void testDiffPropertyHider(DiffProperty<String> expected, DiffProperty<String> input) {
         Hider<DiffProperty<String>> hider = new DiffPropertyHider<>(new SubstitutionHider<>("tau"));
         assertEquals(expected, hider.hide(input));
     }
 
-    private static Stream<Arguments> testDiffKindProjectorProvider() {
+    /**
+     * Returns test input with expected output for {@link #testDiffPropertyHider}.
+     *
+     * @return Test input with expected output.
+     */
+    private static Stream<Arguments> testDiffPropertyHiderData() {
         return Stream.of(
                 // Hiding should preserve the 'UNCHANGED' difference kind.
                 Arguments.of(new DiffProperty<>("tau", DiffKind.UNCHANGED),
