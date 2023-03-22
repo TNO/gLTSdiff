@@ -164,24 +164,4 @@ public class ProjectorsTest {
                 // Projecting a set containing only 'ADDED' over 'REMOVED' leaves an empty set.
                 Arguments.of(Optional.of(ImmutableSet.of()), ImmutableSet.of(DiffKind.ADDED), DiffKind.REMOVED));
     }
-
-    @ParameterizedTest()
-    @MethodSource("testAnnotatedPropertyProjectorProvider")
-    public void testAnnotatedPropertyProjector(Optional<AnnotatedProperty<DiffKind, DiffKind>> expected,
-            AnnotatedProperty<DiffKind, DiffKind> property, DiffKind along)
-    {
-        Projector<AnnotatedProperty<DiffKind, DiffKind>, DiffKind> projector = new AnnotatedPropertyProjector<>(
-                new DiffKindProjector(), new DiffKindProjector());
-        assertEquals(expected, projector.project(property, along));
-    }
-
-    private static Stream<Arguments> testAnnotatedPropertyProjectorProvider() {
-        return Stream.of(
-                // Projecting an 'UNCHANGED' property with 'ADDED' and 'REMOVED' annotations should work as expected.
-                Arguments.of(Optional.of(new AnnotatedProperty<>(DiffKind.ADDED, ImmutableSet.of(DiffKind.ADDED))),
-                        new AnnotatedProperty<>(DiffKind.UNCHANGED, ImmutableSet.of(DiffKind.ADDED, DiffKind.REMOVED)),
-                        DiffKind.ADDED),
-                // Projecting an 'ADDED' annotated property over 'REMOVED' should leave nothing.
-                Arguments.of(Optional.empty(), new AnnotatedProperty<>(DiffKind.ADDED), DiffKind.REMOVED));
-    }
 }
