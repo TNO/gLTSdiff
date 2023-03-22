@@ -24,12 +24,13 @@ import com.github.tno.gltsdiff.TestAutomata;
 import com.github.tno.gltsdiff.glts.AutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.SimpleAutomaton;
 import com.github.tno.gltsdiff.glts.State;
+import com.github.tno.gltsdiff.matchers.scorers.FixedScoresScorer;
 import com.github.tno.gltsdiff.matchers.scorers.SimilarityScorer;
-import com.github.tno.gltsdiff.matchers.scorers.StubScorer;
 import com.github.tno.gltsdiff.matchers.scorers.WalkinshawGlobalLTSScorer;
 import com.github.tno.gltsdiff.operators.combiners.AutomatonStatePropertyCombiner;
 import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;
 
+/** {@link KuhnMunkresMatcher} tests. */
 public class KuhnMunkresMatcherTest extends MatcherTest {
     @Override
     public <T> Matcher<AutomatonStateProperty, T, SimpleAutomaton<T>>
@@ -38,6 +39,7 @@ public class KuhnMunkresMatcherTest extends MatcherTest {
         return new KuhnMunkresMatcher<>(scorer, new AutomatonStatePropertyCombiner());
     }
 
+    /** Test {@link TestAutomata#smallThreeStateLoopWithSwappedEvents}. */
     @Test
     public void testPreviouslyNonTerminatingExample() {
         // Obtain LHS and RHS.
@@ -53,8 +55,9 @@ public class KuhnMunkresMatcherTest extends MatcherTest {
         scores.setRow(2, new double[] {0.25d, 0.25d, 0d});
 
         // Compute a matching based on the scores.
-        Map<State<AutomatonStateProperty>, State<AutomatonStateProperty>> matching = newMatcher(
-                new StubScorer<>(lhs, rhs, scores)).compute(lhs, rhs);
+        Matcher<AutomatonStateProperty, String, SimpleAutomaton<String>> matcher = newMatcher(
+                new FixedScoresScorer<>(scores));
+        Map<State<AutomatonStateProperty>, State<AutomatonStateProperty>> matching = matcher.compute(lhs, rhs);
 
         // State abbreviations.
         State<?> l0 = lhs.getStateById(0);
@@ -73,6 +76,7 @@ public class KuhnMunkresMatcherTest extends MatcherTest {
         assertTrue(matchingCase1 || matchingCase2);
     }
 
+    /** Test for state acceptance matching. */
     @Test
     public void testMatchingsShouldAlwaysAgreeOnStateAcceptance() {
         // Obtain the LHS.
