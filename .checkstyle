@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<fileset-config file-format-version="1.2.0" simple-config="false" sync-formatter="false">
+  <local-check-config name="gLTSdiff" location="checkstyle.xml" type="project" description="gLTSdiff Checkstyle.
+
+Copyright (c) 2010-2023 Contributors to the GitHub community.
+
+This program and the accompanying materials are made available under the terms
+of the MIT License which is available at https://opensource.org/licenses/MIT.
+
+SPDX-License-Identifier: MIT">
+    <additional-data name="protect-config-file" value="false"/>
+  </local-check-config>
+  <fileset name="gLTSdiff" enabled="true" check-config-name="gLTSdiff" local="true">
+    <file-match-pattern match-pattern="^(src.*|examples.*)/" include-pattern="true"/>
+  </fileset>
+  <filter name="NonSrcDirs" enabled="false"/>
+</fileset-config>
