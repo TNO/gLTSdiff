@@ -12,6 +12,6 @@ package com.github.tno.gltsdiff.matchers.scorers;
 
 public abstract class WalkinshawScorerTest {
     protected double roundToTwoDecimals(double d) {
-        return Math.round(d * 100.0d) / 100.0d;
+        return (Double.isInfinite(d)) ? d : Math.round(d * 100.0d) / 100.0d;
     }
 }

@@ -44,11 +44,11 @@ public class WalkinshawLocalScorerTest extends WalkinshawScorerTest {
 
         // Check whether the scores are as expected.
         assertEquals(0.38d, roundToTwoDecimals(scores.getEntry(a, e)));
-        assertEquals(0.08d, roundToTwoDecimals(scores.getEntry(a, f)));
-        assertEquals(0.17d, roundToTwoDecimals(scores.getEntry(b, e)));
+        assertEquals(Double.NEGATIVE_INFINITY, roundToTwoDecimals(scores.getEntry(a, f)));
+        assertEquals(Double.NEGATIVE_INFINITY, roundToTwoDecimals(scores.getEntry(b, e)));
         assertEquals(0.29d, roundToTwoDecimals(scores.getEntry(b, f)));
-        assertEquals(0.0d, roundToTwoDecimals(scores.getEntry(c, e)));
-        assertEquals(0.08d, roundToTwoDecimals(scores.getEntry(c, f)));
+        assertEquals(Double.NEGATIVE_INFINITY, roundToTwoDecimals(scores.getEntry(c, e)));
+        assertEquals(0.06d, roundToTwoDecimals(scores.getEntry(c, f)));
     }
 
     @Test
@@ -72,10 +72,10 @@ public class WalkinshawLocalScorerTest extends WalkinshawScorerTest {
 
         // Check whether the scores are as expected.
         assertEquals(0.42d, roundToTwoDecimals(scores.getEntry(a, e)));
-        assertEquals(0.1d, roundToTwoDecimals(scores.getEntry(a, f)));
-        assertEquals(0.19d, roundToTwoDecimals(scores.getEntry(b, e)));
-        assertEquals(0.34d, roundToTwoDecimals(scores.getEntry(b, f)));
-        assertEquals(0.0d, roundToTwoDecimals(scores.getEntry(c, e)));
-        assertEquals(0.09d, roundToTwoDecimals(scores.getEntry(c, f)));
+        assertEquals(Double.NEGATIVE_INFINITY, roundToTwoDecimals(scores.getEntry(a, f)));
+        assertEquals(Double.NEGATIVE_INFINITY, roundToTwoDecimals(scores.getEntry(b, e)));
+        assertEquals(0.28d, roundToTwoDecimals(scores.getEntry(b, f)));
+        assertEquals(Double.NEGATIVE_INFINITY, roundToTwoDecimals(scores.getEntry(c, e)));
+        assertEquals(0.03d, roundToTwoDecimals(scores.getEntry(c, f)));
     }
 }

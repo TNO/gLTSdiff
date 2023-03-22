@@ -43,11 +43,11 @@ public class WalkinshawGlobalScorerTest extends WalkinshawScorerTest {
         int e = 2;
 
         // Earlier observations, for the sake of regression testing.
-        assertEquals(0.41d, roundToTwoDecimals(scores.getEntry(a, c)));
-        assertEquals(0d, roundToTwoDecimals(scores.getEntry(a, d)));
-        assertEquals(0.17d, roundToTwoDecimals(scores.getEntry(a, e)));
-        assertEquals(0d, roundToTwoDecimals(scores.getEntry(b, c)));
-        assertEquals(0.53d, roundToTwoDecimals(scores.getEntry(b, d)));
+        assertEquals(0.36d, roundToTwoDecimals(scores.getEntry(a, c)));
+        assertEquals(Double.NEGATIVE_INFINITY, roundToTwoDecimals(scores.getEntry(a, d)));
+        assertEquals(Double.NEGATIVE_INFINITY, roundToTwoDecimals(scores.getEntry(a, e)));
+        assertEquals(Double.NEGATIVE_INFINITY, roundToTwoDecimals(scores.getEntry(b, c)));
+        assertEquals(0.38d, roundToTwoDecimals(scores.getEntry(b, d)));
         assertEquals(0d, roundToTwoDecimals(scores.getEntry(b, e)));
     }
 
@@ -70,14 +70,13 @@ public class WalkinshawGlobalScorerTest extends WalkinshawScorerTest {
         int e = 0;
         int f = 1;
 
-        // Check whether the scores match the expected scores as reported in the paper (Table 5, Page 16).
-        // The first score 0.43d is slightly different from the paper, due to accounting for initial state properties.
-        assertEquals(0.43d, roundToTwoDecimals(scores.getEntry(a, e)));
-        assertEquals(0.1d, roundToTwoDecimals(scores.getEntry(a, f)));
-        assertEquals(0.18d, roundToTwoDecimals(scores.getEntry(b, e)));
-        assertEquals(0.34d, roundToTwoDecimals(scores.getEntry(b, f)));
-        assertEquals(0.0d, roundToTwoDecimals(scores.getEntry(c, e)));
-        assertEquals(0.08d, roundToTwoDecimals(scores.getEntry(c, f))); // Slightly different from paper.
+        // Earlier observations, for the sake of regression testing. Scores are different from the paper.
+        assertEquals(0.42d, roundToTwoDecimals(scores.getEntry(a, e)));
+        assertEquals(Double.NEGATIVE_INFINITY, roundToTwoDecimals(scores.getEntry(a, f)));
+        assertEquals(Double.NEGATIVE_INFINITY, roundToTwoDecimals(scores.getEntry(b, e)));
+        assertEquals(0.28d, roundToTwoDecimals(scores.getEntry(b, f)));
+        assertEquals(Double.NEGATIVE_INFINITY, roundToTwoDecimals(scores.getEntry(c, e)));
+        assertEquals(0.03d, roundToTwoDecimals(scores.getEntry(c, f)));
     }
 
     @Test
@@ -133,12 +132,12 @@ public class WalkinshawGlobalScorerTest extends WalkinshawScorerTest {
 
         // These assertions are based on previous observations, for the sake of regression testing.
         assertEquals(0.5d, roundToTwoDecimals(scores.getEntry(L1, R1)));
-        assertEquals(0d, roundToTwoDecimals(scores.getEntry(L1, R2)));
-        assertEquals(0d, roundToTwoDecimals(scores.getEntry(L2, R1)));
+        assertEquals(Double.NEGATIVE_INFINITY, roundToTwoDecimals(scores.getEntry(L1, R2)));
+        assertEquals(Double.NEGATIVE_INFINITY, roundToTwoDecimals(scores.getEntry(L2, R1)));
         assertEquals(0.33d, roundToTwoDecimals(scores.getEntry(L2, R2)));
-        assertEquals(0d, roundToTwoDecimals(scores.getEntry(L3, R1)));
+        assertEquals(Double.NEGATIVE_INFINITY, roundToTwoDecimals(scores.getEntry(L3, R1)));
         assertEquals(0d, roundToTwoDecimals(scores.getEntry(L3, R2)));
-        assertEquals(0d, roundToTwoDecimals(scores.getEntry(L4, R1)));
+        assertEquals(Double.NEGATIVE_INFINITY, roundToTwoDecimals(scores.getEntry(L4, R1)));
         assertEquals(0.33d, roundToTwoDecimals(scores.getEntry(L4, R2)));
     }
 
@@ -157,13 +156,13 @@ public class WalkinshawGlobalScorerTest extends WalkinshawScorerTest {
 
         // Earlier observations, for the sake of regression testing.
         assertEquals(0.33d, roundToTwoDecimals(scores.getEntry(0, 0)));
-        assertEquals(0d, roundToTwoDecimals(scores.getEntry(0, 1)));
-        assertEquals(0.13d, roundToTwoDecimals(scores.getEntry(0, 2)));
-        assertEquals(0d, roundToTwoDecimals(scores.getEntry(1, 0)));
+        assertEquals(Double.NEGATIVE_INFINITY, roundToTwoDecimals(scores.getEntry(0, 1)));
+        assertEquals(Double.NEGATIVE_INFINITY, roundToTwoDecimals(scores.getEntry(0, 2)));
+        assertEquals(Double.NEGATIVE_INFINITY, roundToTwoDecimals(scores.getEntry(1, 0)));
         assertEquals(0.28d, roundToTwoDecimals(scores.getEntry(1, 1)));
-        assertEquals(0.25d, roundToTwoDecimals(scores.getEntry(1, 2)));
-        assertEquals(0.13d, roundToTwoDecimals(scores.getEntry(2, 0)));
-        assertEquals(0.25d, roundToTwoDecimals(scores.getEntry(2, 1)));
+        assertEquals(0.1d, roundToTwoDecimals(scores.getEntry(1, 2)));
+        assertEquals(Double.NEGATIVE_INFINITY, roundToTwoDecimals(scores.getEntry(2, 0)));
+        assertEquals(0.1d, roundToTwoDecimals(scores.getEntry(2, 1)));
         assertEquals(0d, roundToTwoDecimals(scores.getEntry(2, 2)));
     }
 }
