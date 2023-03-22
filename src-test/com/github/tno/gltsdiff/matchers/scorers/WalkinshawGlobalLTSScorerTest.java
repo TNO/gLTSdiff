@@ -22,9 +22,11 @@ import com.github.tno.gltsdiff.glts.SimpleAutomaton;
 import com.github.tno.gltsdiff.operators.combiners.AutomatonStatePropertyCombiner;
 import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;
 
+/** {@link WalkinshawGlobalLTSScorer} tests. */
 public class WalkinshawGlobalLTSScorerTest extends WalkinshawScorerTest {
+    /** Test {@link TestAutomata#smallTwoAndThreeStatesExample}. */
     @Test
-    public void testSmallThreeStateExample() {
+    public void testSmallTwoAndThreeStatesExample() {
         // Obtain test automata.
         Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = TestAutomata.smallTwoAndThreeStatesExample();
         SimpleAutomaton<String> lhs = automata.getFirst();
@@ -51,8 +53,9 @@ public class WalkinshawGlobalLTSScorerTest extends WalkinshawScorerTest {
         assertEquals(0d, roundToTwoDecimals(scores.getEntry(b, e)));
     }
 
+    /** Test {@link TestAutomata#smallWalkinshawExample}. */
     @Test
-    public void testSmallExampleWalkinshaw() {
+    public void testSmallWalkinshawExample() {
         // Obtain test automata.
         Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = TestAutomata.smallWalkinshawExample();
         SimpleAutomaton<String> lhs = automata.getFirst();
@@ -79,6 +82,7 @@ public class WalkinshawGlobalLTSScorerTest extends WalkinshawScorerTest {
         assertEquals(0.03d, roundToTwoDecimals(scores.getEntry(c, f)));
     }
 
+    /** Test {@link TestAutomata#runningExampleWalkinshaw}. */
     @Test
     public void testRunningExampleWalkinshaw() {
         // Obtain test automata.
@@ -92,24 +96,23 @@ public class WalkinshawGlobalLTSScorerTest extends WalkinshawScorerTest {
         RealMatrix scores = scorer.compute(lhs, rhs);
 
         // State names, as they appear in the paper.
-        int A = 0;
-        int B = 1;
-        int C = 2;
-        int D = 3;
-        int E = 0;
-        int F = 1;
-        int H = 3;
-        int I = 4;
+        int sA = 0;
+        int sB = 1;
+        int sC = 2;
+        int sD = 3;
+        int sE = 0;
+        int sF = 1;
+        int sH = 3;
+        int sI = 4;
 
-        // Note: the scores reported in the paper (Table B, page 42) seem to make zero sense at all. Because of that, I
-        // added some earlier observations, just for the sake of regression testing.
-
-        assertEquals(0.58d, roundToTwoDecimals(scores.getEntry(A, E)));
-        assertEquals(0.55d, roundToTwoDecimals(scores.getEntry(B, F)));
-        assertEquals(0.34d, roundToTwoDecimals(scores.getEntry(C, H)));
-        assertEquals(0.67d, roundToTwoDecimals(scores.getEntry(D, I)));
+        // Earlier observations, for the sake of regression testing. Scores are different from the paper.
+        assertEquals(0.58d, roundToTwoDecimals(scores.getEntry(sA, sE)));
+        assertEquals(0.55d, roundToTwoDecimals(scores.getEntry(sB, sF)));
+        assertEquals(0.34d, roundToTwoDecimals(scores.getEntry(sC, sH)));
+        assertEquals(0.67d, roundToTwoDecimals(scores.getEntry(sD, sI)));
     }
 
+    /** Test {@link TestAutomata#industrialExample1}. */
     @Test
     public void testIndustrialExample1() {
         // Obtain test automata.
@@ -123,26 +126,27 @@ public class WalkinshawGlobalLTSScorerTest extends WalkinshawScorerTest {
         RealMatrix scores = scorer.compute(lhs, rhs);
 
         // State name abbreviations.
-        int L1 = 0;
-        int L2 = 1;
-        int L3 = 2;
-        int L4 = 3;
-        int R1 = 0;
-        int R2 = 1;
+        int sL1 = 0;
+        int sL2 = 1;
+        int sL3 = 2;
+        int sL4 = 3;
+        int sR1 = 0;
+        int sR2 = 1;
 
-        // These assertions are based on previous observations, for the sake of regression testing.
-        assertEquals(0.5d, roundToTwoDecimals(scores.getEntry(L1, R1)));
-        assertEquals(Double.NEGATIVE_INFINITY, roundToTwoDecimals(scores.getEntry(L1, R2)));
-        assertEquals(Double.NEGATIVE_INFINITY, roundToTwoDecimals(scores.getEntry(L2, R1)));
-        assertEquals(0.33d, roundToTwoDecimals(scores.getEntry(L2, R2)));
-        assertEquals(Double.NEGATIVE_INFINITY, roundToTwoDecimals(scores.getEntry(L3, R1)));
-        assertEquals(0d, roundToTwoDecimals(scores.getEntry(L3, R2)));
-        assertEquals(Double.NEGATIVE_INFINITY, roundToTwoDecimals(scores.getEntry(L4, R1)));
-        assertEquals(0.33d, roundToTwoDecimals(scores.getEntry(L4, R2)));
+        // Earlier observations, for the sake of regression testing.
+        assertEquals(0.5d, roundToTwoDecimals(scores.getEntry(sL1, sR1)));
+        assertEquals(Double.NEGATIVE_INFINITY, roundToTwoDecimals(scores.getEntry(sL1, sR2)));
+        assertEquals(Double.NEGATIVE_INFINITY, roundToTwoDecimals(scores.getEntry(sL2, sR1)));
+        assertEquals(0.33d, roundToTwoDecimals(scores.getEntry(sL2, sR2)));
+        assertEquals(Double.NEGATIVE_INFINITY, roundToTwoDecimals(scores.getEntry(sL3, sR1)));
+        assertEquals(0d, roundToTwoDecimals(scores.getEntry(sL3, sR2)));
+        assertEquals(Double.NEGATIVE_INFINITY, roundToTwoDecimals(scores.getEntry(sL4, sR1)));
+        assertEquals(0.33d, roundToTwoDecimals(scores.getEntry(sL4, sR2)));
     }
 
+    /** Test {@link TestAutomata#smallThreeStateLoopWithSwappedEvents}. */
     @Test
-    public void testSwappedThreeStateLoopExample() {
+    public void testSmallThreeStateLoopWithSwappedEvents() {
         // Obtain test automata.
         Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = TestAutomata
                 .smallThreeStateLoopWithSwappedEvents();

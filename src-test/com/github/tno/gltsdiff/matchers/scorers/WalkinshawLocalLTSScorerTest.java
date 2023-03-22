@@ -22,9 +22,11 @@ import com.github.tno.gltsdiff.glts.SimpleAutomaton;
 import com.github.tno.gltsdiff.operators.combiners.AutomatonStatePropertyCombiner;
 import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;
 
+/** {@link WalkinshawLocalLTSScorer} tests. */
 public class WalkinshawLocalLTSScorerTest extends WalkinshawScorerTest {
+    /** Test {@link TestAutomata#smallWalkinshawExample} with one refinement. */
     @Test
-    public void testSmallExampleWalkinshaw() {
+    public void testSmallWalkinshawExampleWithOneRefinement() {
         // Obtain test automata.
         Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = TestAutomata.smallWalkinshawExample();
         SimpleAutomaton<String> lhs = automata.getFirst();
@@ -51,8 +53,9 @@ public class WalkinshawLocalLTSScorerTest extends WalkinshawScorerTest {
         assertEquals(0.06d, roundToTwoDecimals(scores.getEntry(c, f)));
     }
 
+    /** Test {@link TestAutomata#smallWalkinshawExample} with two refinements. */
     @Test
-    public void testSmallExampleWalkinshawWithTwoRefinements() {
+    public void testSmallWalkinshawExampleWithTwoRefinements() {
         // Obtain test automata.
         Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = TestAutomata.smallWalkinshawExample();
         SimpleAutomaton<String> lhs = automata.getFirst();
