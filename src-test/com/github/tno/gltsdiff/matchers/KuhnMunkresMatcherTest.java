@@ -33,9 +33,9 @@ import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;
 public class KuhnMunkresMatcherTest extends MatcherTest {
     @Override
     public <T> Matcher<AutomatonStateProperty, T, SimpleAutomaton<T>>
-            newMatcher(SimilarityScorer<AutomatonStateProperty, T, SimpleAutomaton<T>> scoring)
+            newMatcher(SimilarityScorer<AutomatonStateProperty, T, SimpleAutomaton<T>> scorer)
     {
-        return new KuhnMunkresMatcher<>(scoring, new AutomatonStatePropertyCombiner());
+        return new KuhnMunkresMatcher<>(scorer, new AutomatonStatePropertyCombiner());
     }
 
     @Test
@@ -46,7 +46,7 @@ public class KuhnMunkresMatcherTest extends MatcherTest {
         SimpleAutomaton<String> lhs = automata.getFirst();
         SimpleAutomaton<String> rhs = automata.getSecond();
 
-        // Construct a scoring matrix (higher score means better match).
+        // Construct a scores matrix (higher score means better match).
         RealMatrix scores = new Array2DRowRealMatrix(3, 3);
         scores.setRow(0, new double[] {0.25d, 0d, 0.25d});
         scores.setRow(1, new double[] {0d, 0.25d, 0.25d});

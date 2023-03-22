@@ -19,8 +19,8 @@ import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;
 public class WalkinshawMatcherTest extends MatcherTest {
     @Override
     public <T> Matcher<AutomatonStateProperty, T, SimpleAutomaton<T>>
-            newMatcher(SimilarityScorer<AutomatonStateProperty, T, SimpleAutomaton<T>> scoring)
+            newMatcher(SimilarityScorer<AutomatonStateProperty, T, SimpleAutomaton<T>> scorer)
     {
-        return new WalkinshawLTSMatcher<>(scoring, new AutomatonStatePropertyCombiner(), new EqualityCombiner<>());
+        return new WalkinshawLTSMatcher<>(scorer, new AutomatonStatePropertyCombiner(), new EqualityCombiner<>());
     }
 }
