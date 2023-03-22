@@ -16,6 +16,7 @@ import com.github.tno.gltsdiff.matchers.scorers.SimilarityScorer;
 import com.github.tno.gltsdiff.operators.combiners.AutomatonStatePropertyCombiner;
 import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;
 
+/** Tests for the {@link WalkinshawLTSMatcher}. */
 public class WalkinshawMatcherTest extends MatcherTest {
     @Override
     public <T> Matcher<AutomatonStateProperty, T, SimpleAutomaton<T>>
