@@ -34,12 +34,12 @@ public class HidersTest {
     /**
      * Test {@link DiffPropertyHider}.
      *
-     * @param expected Expected test output.
      * @param input Test input.
+     * @param expected Expected test output.
      */
     @ParameterizedTest
     @MethodSource("testDiffPropertyHiderData")
-    public void testDiffPropertyHider(DiffProperty<String> expected, DiffProperty<String> input) {
+    public void testDiffPropertyHider(DiffProperty<String> input, DiffProperty<String> expected) {
         Hider<DiffProperty<String>> hider = new DiffPropertyHider<>(new SubstitutionHider<>("tau"));
         assertEquals(expected, hider.hide(input));
     }
@@ -52,12 +52,14 @@ public class HidersTest {
     private static Stream<Arguments> testDiffPropertyHiderData() {
         return Stream.of(
                 // Hiding should preserve the 'UNCHANGED' difference kind.
-                Arguments.of(new DiffProperty<>("tau", DiffKind.UNCHANGED),
-                        new DiffProperty<>("test", DiffKind.UNCHANGED)),
+                Arguments.of(new DiffProperty<>("test", DiffKind.UNCHANGED),
+                        new DiffProperty<>("tau", DiffKind.UNCHANGED)),
+
                 // Hiding should preserve the 'ADDED' difference kind.
-                Arguments.of(new DiffProperty<>("tau", DiffKind.ADDED), new DiffProperty<>("test", DiffKind.ADDED)),
+                Arguments.of(new DiffProperty<>("test", DiffKind.ADDED), new DiffProperty<>("tau", DiffKind.ADDED)),
+
                 // Hiding should preserve the 'REMOVED' difference kind.
-                Arguments.of(new DiffProperty<>("tau", DiffKind.REMOVED),
-                        new DiffProperty<>("event", DiffKind.REMOVED)));
+                Arguments.of(new DiffProperty<>("event", DiffKind.REMOVED),
+                        new DiffProperty<>("tau", DiffKind.REMOVED)));
     }
 }
