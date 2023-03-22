@@ -22,10 +22,10 @@ import com.github.tno.gltsdiff.glts.SimpleAutomaton;
 import com.github.tno.gltsdiff.operators.combiners.AutomatonStatePropertyCombiner;
 import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;
 
-public class WalkinshawGlobalScorerTest extends WalkinshawScorerTest {
+public class WalkinshawGlobalLTSScorerTest extends WalkinshawScorerTest {
     @Test
     public void testSmallThreeStateExample() {
-        // Obtain stub automata.
+        // Obtain test automata.
         Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = TestAutomata.smallTwoAndThreeStatesExample();
         SimpleAutomaton<String> lhs = automata.getFirst();
         SimpleAutomaton<String> rhs = automata.getSecond();
@@ -53,7 +53,7 @@ public class WalkinshawGlobalScorerTest extends WalkinshawScorerTest {
 
     @Test
     public void testSmallExampleWalkinshaw() {
-        // Obtain stub automata.
+        // Obtain test automata.
         Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = TestAutomata.smallWalkinshawExample();
         SimpleAutomaton<String> lhs = automata.getFirst();
         SimpleAutomaton<String> rhs = automata.getSecond();
@@ -81,7 +81,7 @@ public class WalkinshawGlobalScorerTest extends WalkinshawScorerTest {
 
     @Test
     public void testRunningExampleWalkinshaw() {
-        // Obtain stub automata.
+        // Obtain test automata.
         Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = TestAutomata.runningExampleWalkinshaw();
         SimpleAutomaton<String> lhs = automata.getFirst();
         SimpleAutomaton<String> rhs = automata.getSecond();
@@ -112,7 +112,7 @@ public class WalkinshawGlobalScorerTest extends WalkinshawScorerTest {
 
     @Test
     public void testIndustrialExample1() {
-        // Obtain stub automata.
+        // Obtain test automata.
         Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = TestAutomata.industrialExample1();
         SimpleAutomaton<String> lhs = automata.getFirst();
         SimpleAutomaton<String> rhs = automata.getSecond();
@@ -143,7 +143,7 @@ public class WalkinshawGlobalScorerTest extends WalkinshawScorerTest {
 
     @Test
     public void testSwappedThreeStateLoopExample() {
-        // Obtain stub automata.
+        // Obtain test automata.
         Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = TestAutomata
                 .smallThreeStateLoopWithSwappedEvents();
         SimpleAutomaton<String> lhs = automata.getFirst();
