@@ -24,13 +24,13 @@ public class TestAutomata {
     }
 
     /**
-     * Returns a test automata pair. The LHS is an 'e1,e2' cycle of two states. The RHS is an 'e1,e2,e3' cycle of three
-     * states.
+     * Returns a test automata pair. The LHS is an 'e1, e2' cycle of two states. The RHS is an 'e1, e2, e3' cycle of
+     * three states.
      *
      * @return The test automata pair.
      */
     public static Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> smallThreeStateExample() {
-        // Initialize and configure the LHS automaton.
+        // Create the LHS automaton.
         SimpleAutomaton<String> lhs = new SimpleAutomaton<>();
 
         State<AutomatonStateProperty> a = lhs.addInitialState(true);
@@ -39,7 +39,7 @@ public class TestAutomata {
         lhs.addTransition(a, "e1", b);
         lhs.addTransition(b, "e2", a);
 
-        // Initialize and configure RHS automaton.
+        // Create RHS automaton.
         SimpleAutomaton<String> rhs = new SimpleAutomaton<>();
 
         State<AutomatonStateProperty> c = rhs.addInitialState(true);
@@ -50,6 +50,7 @@ public class TestAutomata {
         rhs.addTransition(d, "e2", e);
         rhs.addTransition(e, "e3", c);
 
+        // Return the test automata pair.
         return Pair.create(lhs, rhs);
     }
 
@@ -60,7 +61,7 @@ public class TestAutomata {
      * @return The test automata pair.
      */
     public static Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> smallExampleWalkinshaw() {
-        // Initialize and configure the LHS automaton.
+        // Create the LHS automaton.
         SimpleAutomaton<String> lhs = new SimpleAutomaton<>();
 
         State<AutomatonStateProperty> a = lhs.addInitialState(true);
@@ -72,7 +73,7 @@ public class TestAutomata {
         lhs.addTransition(b, "a", b);
         lhs.addTransition(b, "c", c);
 
-        // Initialize and configure the RHS automaton.
+        // Create the RHS automaton.
         SimpleAutomaton<String> rhs = new SimpleAutomaton<>();
 
         State<AutomatonStateProperty> e = rhs.addInitialState(true);
@@ -84,6 +85,7 @@ public class TestAutomata {
         rhs.addTransition(f, "a", f);
         rhs.addTransition(f, "d", f);
 
+        // Return the test automata pair.
         return Pair.create(lhs, rhs);
     }
 
@@ -94,7 +96,7 @@ public class TestAutomata {
      * @return The test automata pair.
      */
     public static Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> runningExampleWalkinshaw() {
-        // Initialize and configure the LHS automaton.
+        // Create the LHS automaton.
         SimpleAutomaton<String> lhs = new SimpleAutomaton<>();
 
         State<AutomatonStateProperty> sA = lhs.addInitialState(true);
@@ -109,7 +111,7 @@ public class TestAutomata {
         lhs.addTransition(sB, "save as", sD);
         lhs.addTransition(sD, "ok", sB);
 
-        // Initialize and configure the RHS automaton.
+        // Create the RHS automaton.
         SimpleAutomaton<String> rhs = new SimpleAutomaton<>();
 
         State<AutomatonStateProperty> sE = rhs.addInitialState(true);
@@ -126,6 +128,7 @@ public class TestAutomata {
         rhs.addTransition(sG, "edit", sG);
         rhs.addTransition(sI, "ok", sF);
 
+        // Return the test automata pair.
         return Pair.create(lhs, rhs);
     }
 
@@ -136,7 +139,7 @@ public class TestAutomata {
      * @return The test automata pair.
      */
     public static Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> industrialExample1() {
-        // Initialize and configure the LHS automaton.
+        // Create the LHS automaton.
         SimpleAutomaton<String> lhs = new SimpleAutomaton<>();
 
         State<AutomatonStateProperty> s1 = lhs.addInitialState(true);
@@ -149,7 +152,7 @@ public class TestAutomata {
         lhs.addTransition(s3, "e3", s4);
         lhs.addTransition(s4, "e4", s1);
 
-        // Initialize and configure the RHS automaton.
+        // Create the RHS automaton.
         SimpleAutomaton<String> rhs = new SimpleAutomaton<>();
 
         State<AutomatonStateProperty> t1 = rhs.addInitialState(true);
@@ -158,6 +161,7 @@ public class TestAutomata {
         rhs.addTransition(t1, "e1", t2);
         rhs.addTransition(t2, "e4", t1);
 
+        // Return the test automata pair.
         return Pair.create(lhs, rhs);
     }
 
@@ -168,7 +172,7 @@ public class TestAutomata {
      * @return The test automata pair.
      */
     public static Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> industrialExample2() {
-        // Initialize and configure the LHS automaton.
+        // Create the LHS automaton.
         SimpleAutomaton<String> lhs = new SimpleAutomaton<>();
 
         State<AutomatonStateProperty> s4 = lhs.addInitialState(true);
@@ -200,7 +204,7 @@ public class TestAutomata {
         lhs.addTransition(s15, "e10", s16);
         lhs.addTransition(s16, "e11", s8);
 
-        // Initialize and configure the RHS automaton.
+        // Create the RHS automaton.
         SimpleAutomaton<String> rhs = new SimpleAutomaton<>();
 
         State<AutomatonStateProperty> t1 = rhs.addState(true);
@@ -234,17 +238,18 @@ public class TestAutomata {
         rhs.addTransition(t14, "e5", t15);
         rhs.addTransition(t15, "e3", t4);
 
+        // Return the test automata pair.
         return Pair.create(lhs, rhs);
     }
 
     /**
      * Returns a test automata pair of two example automata that are both 3-state cycles and share the same alphabet,
-     * but with a slightly different order of events: one is a 'b,d,c' cycle while the other is a 'b,c,d' cycle.
+     * but with a slightly different order of events: one is a 'b, d, c' cycle while the other is a 'b, c, d' cycle.
      *
      * @return The test automata pair.
      */
     public static Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> smallThreeStateLoopWithSwappedEvents() {
-        // Initialize and configure the LHS automaton.
+        // Create the LHS automaton.
         SimpleAutomaton<String> lhs = new SimpleAutomaton<>();
 
         State<AutomatonStateProperty> s1 = lhs.addInitialState(true);
@@ -255,7 +260,7 @@ public class TestAutomata {
         lhs.addTransition(s2, "d", s3);
         lhs.addTransition(s3, "c", s1);
 
-        // Initialize and configure the RHS automaton.
+        // Create the RHS automaton.
         SimpleAutomaton<String> rhs = new SimpleAutomaton<>();
 
         State<AutomatonStateProperty> t1 = rhs.addInitialState(true);
@@ -266,6 +271,7 @@ public class TestAutomata {
         rhs.addTransition(t2, "c", t3);
         rhs.addTransition(t3, "d", t1);
 
+        // Return the test automata pair.
         return Pair.create(lhs, rhs);
     }
 
@@ -275,7 +281,7 @@ public class TestAutomata {
      * @return The test automata pair.
      */
     public static Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> smallAutomataForBruteForceTesting() {
-        // Define the LHS automaton.
+        // Create the LHS automaton.
         SimpleAutomaton<String> lhs = new SimpleAutomaton<>();
 
         State<AutomatonStateProperty> s1 = lhs.addInitialState(true);
@@ -286,7 +292,7 @@ public class TestAutomata {
         lhs.addTransition(s2, "c", s3);
         lhs.addTransition(s3, "d", s1);
 
-        // Define the RHS automaton.
+        // Create the RHS automaton.
         SimpleAutomaton<String> rhs = new SimpleAutomaton<>();
 
         State<AutomatonStateProperty> t1 = rhs.addInitialState(true);
@@ -300,6 +306,7 @@ public class TestAutomata {
         rhs.addTransition(t2, "b", t4);
         rhs.addTransition(t4, "c", t3);
 
+        // Return the test automata pair.
         return Pair.create(lhs, rhs);
     }
 }
