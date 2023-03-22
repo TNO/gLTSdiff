@@ -28,7 +28,7 @@ public class DiffPropertyHtmlPrinter<T> implements HtmlPrinter<DiffProperty<T>> 
 
     /**
      * Instantiates a new difference property printer.
-     * 
+     *
      * @param propertyPrinter The printer for the inner properties.
      */
     public DiffPropertyHtmlPrinter(HtmlPrinter<T> propertyPrinter) {
