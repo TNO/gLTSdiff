@@ -34,7 +34,7 @@ public abstract class MatcherTest {
     @Test
     public void testSmallThreeStateExample() {
         // Obtain stub automata.
-        Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = TestAutomata.smallThreeStateExample();
+        Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = TestAutomata.smallTwoAndThreeStatesExample();
         SimpleAutomaton<String> lhs = automata.getFirst();
         SimpleAutomaton<String> rhs = automata.getSecond();
 
@@ -61,7 +61,7 @@ public abstract class MatcherTest {
     @Test
     public void testSmallExampleWalkinshaw() {
         // Obtain stub automata.
-        Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = TestAutomata.smallExampleWalkinshaw();
+        Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = TestAutomata.smallWalkinshawExample();
         SimpleAutomaton<String> lhs = automata.getFirst();
         SimpleAutomaton<String> rhs = automata.getSecond();
 

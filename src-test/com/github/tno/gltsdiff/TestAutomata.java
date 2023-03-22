@@ -29,7 +29,7 @@ public class TestAutomata {
      *
      * @return The test automata pair.
      */
-    public static Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> smallThreeStateExample() {
+    public static Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> smallTwoAndThreeStatesExample() {
         // Create the LHS automaton.
         SimpleAutomaton<String> lhs = new SimpleAutomaton<>();
 
@@ -60,7 +60,7 @@ public class TestAutomata {
      *
      * @return The test automata pair.
      */
-    public static Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> smallExampleWalkinshaw() {
+    public static Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> smallWalkinshawExample() {
         // Create the LHS automaton.
         SimpleAutomaton<String> lhs = new SimpleAutomaton<>();
 
