@@ -49,9 +49,4 @@ public class SimpleAutomaton<T> extends Automaton<AutomatonStateProperty, T> imp
     public State<AutomatonStateProperty> addState(boolean isAccepting) {
         return addState(new AutomatonStateProperty(false, isAccepting));
     }
-
-    @Override
-    public SimpleAutomaton<T> clone() {
-        return map(SimpleAutomaton::new, property -> property, property -> property);
-    }
 }
