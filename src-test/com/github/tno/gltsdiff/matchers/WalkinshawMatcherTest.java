@@ -10,10 +10,8 @@
 
 package com.github.tno.gltsdiff.matchers;
 
-import com.github.tno.gltsdiff.lts.AutomatonStateProperty;
-import com.github.tno.gltsdiff.lts.SimpleAutomaton;
-import com.github.tno.gltsdiff.matchers.Matcher;
-import com.github.tno.gltsdiff.matchers.WalkinshawMatcher;
+import com.github.tno.gltsdiff.glts.AutomatonStateProperty;
+import com.github.tno.gltsdiff.glts.SimpleAutomaton;
 import com.github.tno.gltsdiff.matchers.scorers.SimilarityScorer;
 import com.github.tno.gltsdiff.operators.combiners.AutomatonStatePropertyCombiner;
 import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;

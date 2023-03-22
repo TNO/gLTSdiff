@@ -16,9 +16,8 @@ import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.util.Pair;
 import org.junit.jupiter.api.Test;
 
-import com.github.tno.gltsdiff.lts.SimpleAutomaton;
-import com.github.tno.gltsdiff.matchers.scorers.SimilarityScorer;
-import com.github.tno.gltsdiff.matchers.scorers.WalkinshawLocalScorer;
+import com.github.tno.gltsdiff.StubAutomata;
+import com.github.tno.gltsdiff.glts.SimpleAutomaton;
 import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;
 
 public class WalkinshawLocalScorerTest extends WalkinshawScorerTest {

@@ -12,9 +12,9 @@ package com.github.tno.gltsdiff;
 
 import org.apache.commons.math3.util.Pair;
 
-import com.github.tno.gltsdiff.lts.AutomatonStateProperty;
-import com.github.tno.gltsdiff.lts.SimpleAutomaton;
-import com.github.tno.gltsdiff.lts.State;
+import com.github.tno.gltsdiff.glts.AutomatonStateProperty;
+import com.github.tno.gltsdiff.glts.SimpleAutomaton;
+import com.github.tno.gltsdiff.glts.State;
 
 public class StubAutomata {
     /**

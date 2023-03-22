@@ -18,12 +18,11 @@ import java.util.Map;
 import org.apache.commons.math3.util.Pair;
 import org.junit.jupiter.api.Test;
 
-import com.github.tno.gltsdiff.lts.AutomatonStateProperty;
-import com.github.tno.gltsdiff.lts.SimpleAutomaton;
-import com.github.tno.gltsdiff.lts.State;
-import com.github.tno.gltsdiff.matchers.Matcher;
+import com.github.tno.gltsdiff.StubAutomata;
+import com.github.tno.gltsdiff.glts.AutomatonStateProperty;
+import com.github.tno.gltsdiff.glts.SimpleAutomaton;
+import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.matchers.scorers.SimilarityScorer;
-import com.github.tno.gltsdiff.matchers.scorers.WalkinshawGlobalScorer;
 import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;
 
 public abstract class MatcherTest {

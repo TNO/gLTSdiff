@@ -19,13 +19,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.github.tno.gltsdiff.lts.AnnotatedProperty;
-import com.github.tno.gltsdiff.lts.DiffKind;
-import com.github.tno.gltsdiff.lts.DiffProperty;
-import com.github.tno.gltsdiff.operators.hiders.AnnotatedPropertyHider;
-import com.github.tno.gltsdiff.operators.hiders.DiffPropertyHider;
-import com.github.tno.gltsdiff.operators.hiders.Hider;
-import com.github.tno.gltsdiff.operators.hiders.SubstitutionHider;
+import com.github.tno.gltsdiff.glts.DiffKind;
+import com.github.tno.gltsdiff.glts.DiffProperty;
 import com.google.common.collect.ImmutableSet;
 
 public class HidersTest {
