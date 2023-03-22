@@ -26,15 +26,16 @@ import com.github.tno.gltsdiff.glts.SimpleAutomaton;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.matchers.scorers.SimilarityScorer;
 import com.github.tno.gltsdiff.matchers.scorers.StubScorer;
+import com.github.tno.gltsdiff.matchers.scorers.WalkinshawGlobalLTSScorer;
 import com.github.tno.gltsdiff.operators.combiners.AutomatonStatePropertyCombiner;
 import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;
 
 public class KuhnMunkresMatcherTest extends MatcherTest {
     @Override
-    public <T> Matcher<AutomatonStateProperty, T, SimpleAutomaton<T>> newMatcher(SimpleAutomaton<T> lhs,
-            SimpleAutomaton<T> rhs, SimilarityScorer<AutomatonStateProperty, T, SimpleAutomaton<T>> scoring)
+    public <T> Matcher<AutomatonStateProperty, T, SimpleAutomaton<T>>
+            newMatcher(SimilarityScorer<AutomatonStateProperty, T, SimpleAutomaton<T>> scoring)
     {
-        return new KuhnMunkresMatcher<>(lhs, rhs, scoring, new AutomatonStatePropertyCombiner());
+        return new KuhnMunkresMatcher<>(scoring, new AutomatonStatePropertyCombiner());
     }
 
     @Test
@@ -52,8 +53,8 @@ public class KuhnMunkresMatcherTest extends MatcherTest {
         scores.setRow(2, new double[] {0.25d, 0.25d, 0d});
 
         // Compute a matching based on the scores.
-        Map<State<AutomatonStateProperty>, State<AutomatonStateProperty>> matching = newMatcher(lhs, rhs,
-                new StubScorer<>(lhs, rhs, scores)).compute();
+        Map<State<AutomatonStateProperty>, State<AutomatonStateProperty>> matching = newMatcher(
+                new StubScorer<>(lhs, rhs, scores)).compute(lhs, rhs);
 
         // State abbreviations.
         State<?> l0 = lhs.getStateById(0);
@@ -89,8 +90,9 @@ public class KuhnMunkresMatcherTest extends MatcherTest {
         rhs.addTransition(t2, "e2", t1);
 
         // Compute a matching.
-        Map<State<AutomatonStateProperty>, State<AutomatonStateProperty>> matching = newMatcher(lhs, rhs,
-                new WalkinshawGlobalScorer<>(lhs, rhs, new EqualityCombiner<>())).compute();
+        Matcher<AutomatonStateProperty, String, SimpleAutomaton<String>> matcher = newMatcher(
+                new WalkinshawGlobalLTSScorer<>(new AutomatonStatePropertyCombiner(), new EqualityCombiner<>()));
+        Map<State<AutomatonStateProperty>, State<AutomatonStateProperty>> matching = matcher.compute(lhs, rhs);
 
         // Expected only the initial states to be matched.
         assertEquals(1, matching.size());

@@ -35,8 +35,9 @@ public class BruteForceMatcherTest {
         SimpleAutomaton<String> rhs = automata.getSecond();
 
         // Apply the brute force matcher.
-        Map<State<AutomatonStateProperty>, State<AutomatonStateProperty>> matching = new BruteForceMatcher<>(lhs, rhs,
-                new AutomatonStatePropertyCombiner(), new EqualityCombiner<>()).compute();
+        Matcher<AutomatonStateProperty, String, SimpleAutomaton<String>> matcher = new BruteForceLTSMatcher<>(
+                new AutomatonStatePropertyCombiner(), new EqualityCombiner<>());
+        Map<State<AutomatonStateProperty>, State<AutomatonStateProperty>> matching = matcher.compute(lhs, rhs);
 
         // State abbreviations.
         State<?> l0 = lhs.getStateById(0);

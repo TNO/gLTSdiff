@@ -17,7 +17,9 @@ import org.apache.commons.math3.util.Pair;
 import org.junit.jupiter.api.Test;
 
 import com.github.tno.gltsdiff.StubAutomata;
+import com.github.tno.gltsdiff.glts.AutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.SimpleAutomaton;
+import com.github.tno.gltsdiff.operators.combiners.AutomatonStatePropertyCombiner;
 import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;
 
 public class WalkinshawGlobalScorerTest extends WalkinshawScorerTest {
@@ -29,8 +31,9 @@ public class WalkinshawGlobalScorerTest extends WalkinshawScorerTest {
         SimpleAutomaton<String> rhs = automata.getSecond();
 
         // Compute state pair scores.
-        SimilarityScorer<?, ?, ?> scorer = new WalkinshawGlobalScorer<>(lhs, rhs, new EqualityCombiner<>());
-        RealMatrix scores = scorer.compute();
+        SimilarityScorer<AutomatonStateProperty, String, SimpleAutomaton<String>> scorer = new WalkinshawGlobalLTSScorer<>(
+                new AutomatonStatePropertyCombiner(), new EqualityCombiner<>());
+        RealMatrix scores = scorer.compute(lhs, rhs);
 
         // State name abbreviations.
         int a = 0;
@@ -56,8 +59,9 @@ public class WalkinshawGlobalScorerTest extends WalkinshawScorerTest {
         SimpleAutomaton<String> rhs = automata.getSecond();
 
         // Compute state pair scores.
-        SimilarityScorer<?, ?, ?> scorer = new WalkinshawGlobalScorer<>(lhs, rhs, new EqualityCombiner<>());
-        RealMatrix scores = scorer.compute();
+        SimilarityScorer<AutomatonStateProperty, String, SimpleAutomaton<String>> scorer = new WalkinshawGlobalLTSScorer<>(
+                new AutomatonStatePropertyCombiner(), new EqualityCombiner<>());
+        RealMatrix scores = scorer.compute(lhs, rhs);
 
         // State names, as they appear in the paper.
         int a = 0;
@@ -84,8 +88,9 @@ public class WalkinshawGlobalScorerTest extends WalkinshawScorerTest {
         SimpleAutomaton<String> rhs = automata.getSecond();
 
         // Compute state pair scores.
-        SimilarityScorer<?, ?, ?> scorer = new WalkinshawGlobalScorer<>(lhs, rhs, new EqualityCombiner<>());
-        RealMatrix scores = scorer.compute();
+        SimilarityScorer<AutomatonStateProperty, String, SimpleAutomaton<String>> scorer = new WalkinshawGlobalLTSScorer<>(
+                new AutomatonStatePropertyCombiner(), new EqualityCombiner<>());
+        RealMatrix scores = scorer.compute(lhs, rhs);
 
         // State names, as they appear in the paper.
         int A = 0;
@@ -114,8 +119,9 @@ public class WalkinshawGlobalScorerTest extends WalkinshawScorerTest {
         SimpleAutomaton<String> rhs = automata.getSecond();
 
         // Compute state pair scores.
-        SimilarityScorer<?, ?, ?> scorer = new WalkinshawGlobalScorer<>(lhs, rhs, new EqualityCombiner<>());
-        RealMatrix scores = scorer.compute();
+        SimilarityScorer<AutomatonStateProperty, String, SimpleAutomaton<String>> scorer = new WalkinshawGlobalLTSScorer<>(
+                new AutomatonStatePropertyCombiner(), new EqualityCombiner<>());
+        RealMatrix scores = scorer.compute(lhs, rhs);
 
         // State name abbreviations.
         int L1 = 0;
@@ -145,7 +151,9 @@ public class WalkinshawGlobalScorerTest extends WalkinshawScorerTest {
         SimpleAutomaton<String> rhs = automata.getSecond();
 
         // Compute state pair scores.
-        RealMatrix scores = new WalkinshawGlobalScorer<>(lhs, rhs, new EqualityCombiner<>()).compute();
+        SimilarityScorer<AutomatonStateProperty, String, SimpleAutomaton<String>> scorer = new WalkinshawGlobalLTSScorer<>(
+                new AutomatonStatePropertyCombiner(), new EqualityCombiner<>());
+        RealMatrix scores = scorer.compute(lhs, rhs);
 
         // Earlier observations, for the sake of regression testing.
         assertEquals(0.33d, roundToTwoDecimals(scores.getEntry(0, 0)));

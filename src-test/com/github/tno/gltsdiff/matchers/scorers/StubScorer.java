@@ -51,17 +51,7 @@ public class StubScorer<S, T, U extends LTS<S, T>> implements SimilarityScorer<S
     }
 
     @Override
-    public U getLhs() {
-        return lhs;
-    }
-
-    @Override
-    public U getRhs() {
-        return rhs;
-    }
-
-    @Override
-    public RealMatrix compute() {
+    public RealMatrix compute(U lhs, U rhs) {
         return scores;
     }
 }
