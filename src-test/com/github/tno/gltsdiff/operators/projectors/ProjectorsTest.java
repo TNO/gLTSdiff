@@ -38,13 +38,13 @@ public class ProjectorsTest {
     /**
      * Test {@link DiffKindProjector}.
      *
-     * @param expected Expected test output.
      * @param property Test property.
      * @param along The value to project along.
+     * @param expected Expected test output.
      */
     @ParameterizedTest
     @MethodSource("testDiffKindProjectorData")
-    public void testDiffKindProjector(Optional<DiffKind> expected, DiffKind property, DiffKind along) {
+    public void testDiffKindProjector(DiffKind property, DiffKind along, Optional<DiffKind> expected) {
         Projector<DiffKind, DiffKind> projector = new DiffKindProjector();
         assertEquals(expected, projector.project(property, along));
     }
@@ -57,30 +57,30 @@ public class ProjectorsTest {
     private static Stream<Arguments> testDiffKindProjectorData() {
         return Stream.of(
                 // Projecting 'ADDED' along 'ADDED' should leave 'ADDED'.
-                Arguments.of(Optional.of(DiffKind.ADDED), DiffKind.ADDED, DiffKind.ADDED),
+                Arguments.of(DiffKind.ADDED, DiffKind.ADDED, Optional.of(DiffKind.ADDED)),
 
                 // Projecting 'UNCHANGED' along 'REMOVED' should leave 'REMOVED'.
-                Arguments.of(Optional.of(DiffKind.REMOVED), DiffKind.UNCHANGED, DiffKind.REMOVED),
+                Arguments.of(DiffKind.UNCHANGED, DiffKind.REMOVED, Optional.of(DiffKind.REMOVED)),
 
                 // Projecting 'ADDED' along 'REMOVED' should leave nothing.
-                Arguments.of(Optional.empty(), DiffKind.ADDED, DiffKind.REMOVED),
+                Arguments.of(DiffKind.ADDED, DiffKind.REMOVED, Optional.empty()),
 
                 // Projecting 'REMOVED' along 'UNCHANGED' should leave nothing.
-                Arguments.of(Optional.empty(), DiffKind.REMOVED, DiffKind.UNCHANGED));
+                Arguments.of(DiffKind.REMOVED, DiffKind.UNCHANGED, Optional.empty()));
     }
 
     /**
      * Test {@link DiffPropertyProjector} on right argument.
      *
      * @param <T> The type of properties.
-     * @param expected Expected test output.
      * @param property Test property.
      * @param along The value to project along.
+     * @param expected Expected test output.
      */
     @ParameterizedTest
     @MethodSource("testDiffPropertyProjectorOnRightArgumentData")
-    public <T> void testDiffPropertyProjectorOnRightArgument(Optional<DiffProperty<T>> expected,
-            DiffProperty<T> property, DiffKind along)
+    public <T> void testDiffPropertyProjectorOnRightArgument(DiffProperty<T> property, DiffKind along,
+            Optional<DiffProperty<T>> expected)
     {
         Projector<DiffProperty<T>, DiffKind> projector = new DiffPropertyProjector<>(new IdentityProjector<>(),
                 new DiffKindProjector());
@@ -96,24 +96,24 @@ public class ProjectorsTest {
     private static Stream<Arguments> testDiffPropertyProjectorOnRightArgumentData() {
         return Stream.of(
                 // Projecting an 'UNCHANGED' difference property along 'REMOVED' should leave a 'REMOVED' one.
-                Arguments.of(Optional.of(new DiffProperty<>("e", DiffKind.REMOVED)),
-                        new DiffProperty<>("e", DiffKind.UNCHANGED), DiffKind.REMOVED),
+                Arguments.of(new DiffProperty<>("e", DiffKind.UNCHANGED), DiffKind.REMOVED,
+                        Optional.of(new DiffProperty<>("e", DiffKind.REMOVED))),
 
                 // Projecting an 'ADDED' difference property along 'REMOVED' should leave nothing.
-                Arguments.of(Optional.empty(), new DiffProperty<>("e", DiffKind.ADDED), DiffKind.REMOVED));
+                Arguments.of(new DiffProperty<>("e", DiffKind.ADDED), DiffKind.REMOVED, Optional.empty()));
     }
 
     /**
      * Test {@link DiffPropertyProjector} on both arguments.
      *
-     * @param expected Expected test output.
      * @param property Test property.
      * @param along The value to project along.
+     * @param expected Expected test output.
      */
     @ParameterizedTest
     @MethodSource("testDiffPropertyProjectorOnBothArgumentsData")
-    public void testDiffPropertyProjectorOnBothArguments(Optional<DiffProperty<DiffKind>> expected,
-            DiffProperty<DiffKind> property, DiffKind along)
+    public void testDiffPropertyProjectorOnBothArguments(DiffProperty<DiffKind> property, DiffKind along,
+            Optional<DiffProperty<DiffKind>> expected)
     {
         Projector<DiffProperty<DiffKind>, DiffKind> projector = new DiffPropertyProjector<>(new DiffKindProjector(),
                 new DiffKindProjector());
@@ -129,32 +129,32 @@ public class ProjectorsTest {
     private static Stream<Arguments> testDiffPropertyProjectorOnBothArgumentsData() {
         return Stream.of(
                 // Projection should work correctly on the difference kind of a difference property.
-                Arguments.of(Optional.of(new DiffProperty<>(DiffKind.ADDED, DiffKind.ADDED)),
-                        new DiffProperty<>(DiffKind.ADDED, DiffKind.UNCHANGED), DiffKind.ADDED),
+                Arguments.of(new DiffProperty<>(DiffKind.ADDED, DiffKind.UNCHANGED), DiffKind.ADDED,
+                        Optional.of(new DiffProperty<>(DiffKind.ADDED, DiffKind.ADDED))),
 
                 // Projection should work correctly on the inner property of a difference property.
-                Arguments.of(Optional.of(new DiffProperty<>(DiffKind.REMOVED, DiffKind.REMOVED)),
-                        new DiffProperty<>(DiffKind.UNCHANGED, DiffKind.REMOVED), DiffKind.REMOVED),
+                Arguments.of(new DiffProperty<>(DiffKind.UNCHANGED, DiffKind.REMOVED), DiffKind.REMOVED,
+                        Optional.of(new DiffProperty<>(DiffKind.REMOVED, DiffKind.REMOVED))),
 
                 // Projection should leave nothing if projecting the inner property leaves nothing.
-                Arguments.of(Optional.empty(), new DiffProperty<>(DiffKind.ADDED, DiffKind.UNCHANGED),
-                        DiffKind.REMOVED),
+                Arguments.of(new DiffProperty<>(DiffKind.ADDED, DiffKind.UNCHANGED), DiffKind.REMOVED,
+                        Optional.empty()),
 
                 // Projection should leave nothing if projecting the difference kind leaves nothing.
-                Arguments.of(Optional.empty(), new DiffProperty<>(DiffKind.UNCHANGED, DiffKind.REMOVED),
-                        DiffKind.ADDED));
+                Arguments.of(new DiffProperty<>(DiffKind.UNCHANGED, DiffKind.REMOVED), DiffKind.ADDED,
+                        Optional.empty()));
     }
 
     /**
      * Test {@link OptionalProjector}.
      *
-     * @param expected Expected test output.
      * @param property Test property.
      * @param along The value to project along.
+     * @param expected Expected test output.
      */
     @ParameterizedTest
     @MethodSource("testOptionalProjectorData")
-    public void testOptionalProjector(Optional<DiffKind> expected, Optional<DiffKind> property, DiffKind along) {
+    public void testOptionalProjector(Optional<DiffKind> property, DiffKind along, Optional<DiffKind> expected) {
         Projector<Optional<DiffKind>, DiffKind> projector = new OptionalProjector<>(new DiffKindProjector());
         assertEquals(expected, projector.project(property, along));
     }
@@ -167,26 +167,26 @@ public class ProjectorsTest {
     private static Stream<Arguments> testOptionalProjectorData() {
         return Stream.of(
                 // Projecting optional 'UNCHANGED' along 'ADDED' leaves an optional 'ADDED'.
-                Arguments.of(Optional.of(Optional.of(DiffKind.ADDED)), Optional.of(DiffKind.UNCHANGED), DiffKind.ADDED),
+                Arguments.of(Optional.of(DiffKind.UNCHANGED), DiffKind.ADDED, Optional.of(Optional.of(DiffKind.ADDED))),
 
                 // Projecting optional 'REMOVED' along 'ADDED' leaves nothing.
-                Arguments.of(Optional.empty(), Optional.of(DiffKind.REMOVED), DiffKind.ADDED),
+                Arguments.of(Optional.of(DiffKind.REMOVED), DiffKind.ADDED, Optional.empty()),
 
                 // Projecting an empty optional always leaves the empty optional.
-                Arguments.of(Optional.of(Optional.empty()), Optional.empty(), DiffKind.ADDED));
+                Arguments.of(Optional.empty(), DiffKind.ADDED, Optional.of(Optional.empty())));
     }
 
     /**
      * Test {@link DiffAutomatonStatePropertyProjector}.
      *
-     * @param expected Expected test output.
      * @param property Test property.
      * @param along The value to project along.
+     * @param expected Expected test output.
      */
     @ParameterizedTest
     @MethodSource("testDiffAutomatonStatePropertyProjectorData")
-    public void testDiffAutomatonStatePropertyProjector(Optional<DiffAutomatonStateProperty> expected,
-            DiffAutomatonStateProperty property, DiffKind along)
+    public void testDiffAutomatonStatePropertyProjector(DiffAutomatonStateProperty property, DiffKind along,
+            Optional<DiffAutomatonStateProperty> expected)
     {
         Projector<DiffAutomatonStateProperty, DiffKind> projector = new DiffAutomatonStatePropertyProjector<>(
                 new DiffKindProjector());
@@ -202,36 +202,35 @@ public class ProjectorsTest {
     private static Stream<Arguments> testDiffAutomatonStatePropertyProjectorData() {
         return Stream.of(
                 // Projecting an 'UNCHANGED' non-initial state property along 'ADDED' leaves an 'ADDED' property.
-                Arguments.of(Optional.of(new DiffAutomatonStateProperty(true, DiffKind.ADDED, Optional.empty())),
-                        new DiffAutomatonStateProperty(true, DiffKind.UNCHANGED, Optional.empty()), DiffKind.ADDED),
+                Arguments.of(new DiffAutomatonStateProperty(true, DiffKind.UNCHANGED, Optional.empty()), DiffKind.ADDED,
+                        Optional.of(new DiffAutomatonStateProperty(true, DiffKind.ADDED, Optional.empty()))),
 
                 // Projecting an 'UNCHANGED' initial state property along 'ADDED' leaves an 'ADDED' property.
-                Arguments.of(
-                        Optional.of(new DiffAutomatonStateProperty(false, DiffKind.ADDED, Optional.of(DiffKind.ADDED))),
-                        new DiffAutomatonStateProperty(false, DiffKind.UNCHANGED, Optional.of(DiffKind.UNCHANGED)),
-                        DiffKind.ADDED),
+                Arguments.of(new DiffAutomatonStateProperty(false, DiffKind.UNCHANGED, Optional.of(DiffKind.UNCHANGED)),
+                        DiffKind.ADDED,
+                        Optional.of(
+                                new DiffAutomatonStateProperty(false, DiffKind.ADDED, Optional.of(DiffKind.ADDED)))),
 
                 // Projecting an 'ADDED' initial state arrow along 'REMOVED' removes the initial state arrow.
-                Arguments.of(Optional.of(new DiffAutomatonStateProperty(true, DiffKind.REMOVED, Optional.empty())),
-                        new DiffAutomatonStateProperty(true, DiffKind.UNCHANGED, Optional.of(DiffKind.ADDED)),
-                        DiffKind.REMOVED),
+                Arguments.of(new DiffAutomatonStateProperty(true, DiffKind.UNCHANGED, Optional.of(DiffKind.ADDED)),
+                        DiffKind.REMOVED,
+                        Optional.of(new DiffAutomatonStateProperty(true, DiffKind.REMOVED, Optional.empty()))),
 
                 // Projecting an 'ADDED' state along 'REMOVED' leaves nothing.
-                Arguments.of(Optional.empty(),
-                        new DiffAutomatonStateProperty(false, DiffKind.ADDED, Optional.of(DiffKind.ADDED)),
-                        DiffKind.REMOVED));
+                Arguments.of(new DiffAutomatonStateProperty(false, DiffKind.ADDED, Optional.of(DiffKind.ADDED)),
+                        DiffKind.REMOVED, Optional.empty()));
     }
 
     /**
      * Test {@link SetProjector}.
      *
-     * @param expected Expected test output.
      * @param properties Test properties.
      * @param along The value to project along.
+     * @param expected Expected test output.
      */
     @ParameterizedTest
     @MethodSource("testSetProjectorData")
-    public void testSetProjector(Optional<Set<DiffKind>> expected, Set<DiffKind> properties, DiffKind along) {
+    public void testSetProjector(Set<DiffKind> properties, DiffKind along, Optional<Set<DiffKind>> expected) {
         Projector<Set<DiffKind>, DiffKind> projector = new SetProjector<>(new DiffKindProjector());
         assertEquals(expected, projector.project(properties, along));
     }
@@ -244,17 +243,17 @@ public class ProjectorsTest {
     private static Stream<Arguments> testSetProjectorData() {
         return Stream.of(
                 // Projecting an empty set over some difference kind leaves an empty set.
-                Arguments.of(Optional.of(ImmutableSet.of()), ImmutableSet.of(), DiffKind.ADDED),
+                Arguments.of(ImmutableSet.of(), DiffKind.ADDED, Optional.of(ImmutableSet.of())),
 
                 // Projecting a set containing 'UNCHANGED' and 'ADDED' over 'ADDED' leaves a set with only 'ADDED'.
-                Arguments.of(Optional.of(ImmutableSet.of(DiffKind.ADDED)),
-                        ImmutableSet.of(DiffKind.UNCHANGED, DiffKind.ADDED), DiffKind.ADDED),
+                Arguments.of(ImmutableSet.of(DiffKind.UNCHANGED, DiffKind.ADDED), DiffKind.ADDED,
+                        Optional.of(ImmutableSet.of(DiffKind.ADDED))),
 
                 // Projecting a set containing 'UNCHANGED' and 'ADDED' over 'REMOVED' leaves a set with only 'REMOVED'.
-                Arguments.of(Optional.of(ImmutableSet.of(DiffKind.REMOVED)),
-                        ImmutableSet.of(DiffKind.UNCHANGED, DiffKind.ADDED), DiffKind.REMOVED),
+                Arguments.of(ImmutableSet.of(DiffKind.UNCHANGED, DiffKind.ADDED), DiffKind.REMOVED,
+                        Optional.of(ImmutableSet.of(DiffKind.REMOVED))),
 
                 // Projecting a set containing only 'ADDED' over 'REMOVED' leaves an empty set.
-                Arguments.of(Optional.of(ImmutableSet.of()), ImmutableSet.of(DiffKind.ADDED), DiffKind.REMOVED));
+                Arguments.of(ImmutableSet.of(DiffKind.ADDED), DiffKind.REMOVED, Optional.of(ImmutableSet.of())));
     }
 }
