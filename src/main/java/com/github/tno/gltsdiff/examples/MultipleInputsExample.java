@@ -8,9 +8,14 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.examples.multipleinputs;
+package com.github.tno.gltsdiff.examples;
 
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -31,10 +36,20 @@ import com.github.tno.gltsdiff.operators.combiners.SetCombiner;
 import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
 import com.github.tno.gltsdiff.operators.printers.SetHtmlPrinter;
 import com.github.tno.gltsdiff.operators.printers.StringHtmlPrinter;
+import com.github.tno.gltsdiff.utils.DotRenderUtil;
 import com.github.tno.gltsdiff.writers.AutomatonDotWriter;
 import com.google.common.collect.ImmutableSet;
 
-/** Example that compares and merges multiple inputs. */
+/**
+ * Example that compares and merges multiple inputs.
+ *
+ * <p>
+ * This example demonstrates how to apply gLTSdiff on more than two inputs. For that we use version-annotated GLTSs,
+ * which are GLTSs where the transitions are annotated with a version (number). We construct three such models as input.
+ * Then we compare the structures of these models, and compute a single model that shows how the three input models
+ * relate.
+ * </p>
+ */
 public class MultipleInputsExample {
     /** Constructor for the {@link MultipleInputsExample} class. */
     private MultipleInputsExample() {
@@ -99,7 +114,14 @@ public class MultipleInputsExample {
         HtmlPrinter<Transition<AutomatonStateProperty, Pair<String, Set<Integer>>>> printer = transition -> transitionPropertyPrinter
                 .print(transition.getProperty());
 
-        // Write the result to the console, in DOT format.
-        new AutomatonDotWriter<>(printer).write(result, System.out);
+        // Write the result to a file, in DOT format.
+        Path dotPath = Paths.get("examples/multipleinputs/output/result.dot");
+        try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(dotPath.toFile()))) {
+            new AutomatonDotWriter<>(printer).write(result, stream);
+        }
+
+        // Render the DOT file to an SVG image.
+        DotRenderUtil.renderDot(dotPath);
+        System.out.println("The result is in: " + dotPath + ".svg");
     }
 }
