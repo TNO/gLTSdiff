@@ -16,3 +16,11 @@ Moreover, gLTSdiff implementation comes with significant performance improvement
 * Enable `Show all variables` and configure `Root install folder`, `Installation folder name`, `GitHub account full name` and `GitHub account email address`.
 * Click `Next` and then click `Finish`.
 * Once the installer is done, and a new development environment is launched, click `Finish` in the installer to close it.
+
+## License
+
+Copyright (c) 2021-2023 Contributors to the GitHub community
+
+This program and the accompanying materials are made available under the terms of the [MIT License](LICENSE.txt).
+
+SPDX-License-Identifier: MIT
