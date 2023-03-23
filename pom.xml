@@ -21,6 +21,24 @@ SPDX-License-Identifier: MIT
     <url>https://github.com/TNO/gLTSdiff</url>
     <description>gLTSdiff: Generalized LTS differencing</description>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>30.1-jre</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+            <version>3.6.1</version>
+        </dependency>
+    </dependencies>
+
     <licenses>
         <license>
             <name>MIT</name>
