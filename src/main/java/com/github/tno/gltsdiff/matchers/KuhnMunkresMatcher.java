@@ -26,8 +26,8 @@ import org.apache.commons.math3.util.Pair;
 
 import com.github.tno.gltsdiff.glts.GLTS;
 import com.github.tno.gltsdiff.glts.State;
-import com.github.tno.gltsdiff.matchers.scorers.SimilarityScorer;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
+import com.github.tno.gltsdiff.scorers.SimilarityScorer;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashBiMap;
 
@@ -43,7 +43,7 @@ import com.google.common.collect.HashBiMap;
  *
  * <p>
  * If one experiences performance problems with {@link KuhnMunkresMatcher}, for example because the input GLTSs are
- * large or dense, consider switching to a more lightweight matcher like for example {@link WalkinshawGLTSMatcher}.
+ * large or dense, consider switching to a more lightweight matcher like for example {@link WalkinshawMatcher}.
  * </p>
  *
  * @param <S> The type of state properties.

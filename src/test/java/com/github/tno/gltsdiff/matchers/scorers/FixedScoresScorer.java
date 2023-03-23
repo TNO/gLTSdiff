@@ -12,7 +12,8 @@ package com.github.tno.gltsdiff.matchers.scorers;
 
 import org.apache.commons.math3.linear.RealMatrix;
 
-import com.github.tno.gltsdiff.glts.LTS;
+import com.github.tno.gltsdiff.glts.lts.LTS;
+import com.github.tno.gltsdiff.scorers.SimilarityScorer;
 import com.google.common.base.Preconditions;
 
 /**

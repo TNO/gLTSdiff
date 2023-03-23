@@ -22,22 +22,22 @@ import java.util.Set;
 import org.apache.commons.math3.util.Pair;
 
 import com.github.tno.gltsdiff.StructureComparator;
-import com.github.tno.gltsdiff.glts.AutomatonStateProperty;
-import com.github.tno.gltsdiff.glts.SimpleAutomaton;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.Transition;
-import com.github.tno.gltsdiff.matchers.BruteForceLTSMatcher;
+import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
+import com.github.tno.gltsdiff.glts.lts.automaton.SimpleAutomaton;
+import com.github.tno.gltsdiff.matchers.lts.BruteForceLTSMatcher;
 import com.github.tno.gltsdiff.mergers.DefaultMerger;
-import com.github.tno.gltsdiff.operators.combiners.AutomatonStatePropertyCombiner;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;
 import com.github.tno.gltsdiff.operators.combiners.PairCombiner;
 import com.github.tno.gltsdiff.operators.combiners.SetCombiner;
+import com.github.tno.gltsdiff.operators.combiners.lts.automaton.AutomatonStatePropertyCombiner;
 import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
 import com.github.tno.gltsdiff.operators.printers.SetHtmlPrinter;
 import com.github.tno.gltsdiff.operators.printers.StringHtmlPrinter;
-import com.github.tno.gltsdiff.utils.DotRenderUtil;
-import com.github.tno.gltsdiff.writers.AutomatonDotWriter;
+import com.github.tno.gltsdiff.writers.DotRenderer;
+import com.github.tno.gltsdiff.writers.lts.automaton.AutomatonDotWriter;
 import com.google.common.collect.ImmutableSet;
 
 /**
@@ -110,7 +110,7 @@ public class MultipleInputsExample {
             try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(dotPath.toFile()))) {
                 new AutomatonDotWriter<>(printer).write(input, stream);
             }
-            DotRenderUtil.renderDot(dotPath);
+            DotRenderer.renderDot(dotPath);
         }
 
         // Instantiate combiners for the states and transitions of the three input automata.
@@ -131,7 +131,7 @@ public class MultipleInputsExample {
         try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(dotPath.toFile()))) {
             new AutomatonDotWriter<>(printer).write(result, stream);
         }
-        Path svgPath = DotRenderUtil.renderDot(dotPath);
+        Path svgPath = DotRenderer.renderDot(dotPath);
         System.out.println("The result is in: " + svgPath);
     }
 }

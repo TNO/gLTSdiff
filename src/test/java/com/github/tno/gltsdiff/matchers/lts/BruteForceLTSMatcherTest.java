@@ -8,15 +8,13 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.matchers;
+package com.github.tno.gltsdiff.matchers.lts;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Map;
 
-import org.apache.commons.math3.linear.Array2DRowRealMatrix;
-import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.util.Pair;
 import org.junit.jupiter.api.Test;
 
@@ -24,37 +22,32 @@ import com.github.tno.gltsdiff.TestAutomata;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.lts.automaton.SimpleAutomaton;
-import com.github.tno.gltsdiff.matchers.scorers.FixedScoresScorer;
+import com.github.tno.gltsdiff.matchers.Matcher;
+import com.github.tno.gltsdiff.matchers.MatcherTest;
+import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;
 import com.github.tno.gltsdiff.operators.combiners.lts.automaton.AutomatonStatePropertyCombiner;
 import com.github.tno.gltsdiff.scorers.SimilarityScorer;
 
-/** {@link KuhnMunkresMatcher} tests. */
-public class KuhnMunkresMatcherTest extends MatcherTest {
+/** {@link BruteForceLTSMatcher} tests. */
+public class BruteForceLTSMatcherTest extends MatcherTest {
     @Override
     public <T> Matcher<AutomatonStateProperty, T, SimpleAutomaton<T>>
             newMatcher(SimilarityScorer<AutomatonStateProperty, T, SimpleAutomaton<T>> scorer)
     {
-        return new KuhnMunkresMatcher<>(scorer, new AutomatonStatePropertyCombiner());
+        return new BruteForceLTSMatcher<>(new AutomatonStatePropertyCombiner(), new EqualityCombiner<>());
     }
 
-    /** Test {@link TestAutomata#smallThreeStateLoopWithSwappedEvents}. */
+    /** Test {@link TestAutomata#smallAutomataForBruteForceTesting}. */
     @Test
-    public void testPreviouslyNonTerminatingExample() {
-        // Obtain LHS and RHS.
+    public void testSuccessOnSmallInput() {
+        // Obtain test automata.
         Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = TestAutomata
-                .smallThreeStateLoopWithSwappedEvents();
+                .smallAutomataForBruteForceTesting();
         SimpleAutomaton<String> lhs = automata.getFirst();
         SimpleAutomaton<String> rhs = automata.getSecond();
 
-        // Construct a scores matrix (higher score means better match).
-        RealMatrix scores = new Array2DRowRealMatrix(3, 3);
-        scores.setRow(0, new double[] {0.25d, 0d, 0.25d});
-        scores.setRow(1, new double[] {0d, 0.25d, 0.25d});
-        scores.setRow(2, new double[] {0.25d, 0.25d, 0d});
-
-        // Compute a matching based on the scores.
-        Matcher<AutomatonStateProperty, String, SimpleAutomaton<String>> matcher = newMatcher(
-                new FixedScoresScorer<>(scores));
+        // Apply the brute force matcher.
+        Matcher<AutomatonStateProperty, String, SimpleAutomaton<String>> matcher = newMatcher(null);
         Map<State<AutomatonStateProperty>, State<AutomatonStateProperty>> matching = matcher.compute(lhs, rhs);
 
         // State abbreviations.
@@ -65,12 +58,13 @@ public class KuhnMunkresMatcherTest extends MatcherTest {
         State<?> r1 = rhs.getStateById(1);
         State<?> r2 = rhs.getStateById(2);
 
-        // There are two possible best matchings for this example. Assert that one of them is chosen.
-        boolean matchingCase1 = matching.get(l0) == r0 && matching.get(l1) == r2 && matching.get(l2) == r1;
-        boolean matchingCase2 = matching.get(l0) == r2 && matching.get(l1) == r1 && matching.get(l2) == r0;
-
         // Expected matchings.
         assertEquals(3, matching.size());
-        assertTrue(matchingCase1 || matchingCase2);
+        assertTrue(matching.containsKey(l0));
+        assertTrue(matching.containsKey(l1));
+        assertTrue(matching.containsKey(l2));
+        assertTrue(matching.get(l0) == r0);
+        assertTrue(matching.get(l1) == r1);
+        assertTrue(matching.get(l2) == r2);
     }
 }

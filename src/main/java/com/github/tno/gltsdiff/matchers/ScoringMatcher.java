@@ -17,7 +17,7 @@ import org.apache.commons.math3.linear.RealMatrix;
 
 import com.github.tno.gltsdiff.glts.GLTS;
 import com.github.tno.gltsdiff.glts.State;
-import com.github.tno.gltsdiff.matchers.scorers.SimilarityScorer;
+import com.github.tno.gltsdiff.scorers.SimilarityScorer;
 import com.google.common.base.Preconditions;
 
 /**

@@ -10,6 +10,8 @@
 
 package com.github.tno.gltsdiff.matchers.scorers;
 
+import com.github.tno.gltsdiff.scorers.WalkinshawScorer;
+
 /** Base class for {@link WalkinshawScorer} tests. */
 public abstract class WalkinshawScorerTest {
     /**
