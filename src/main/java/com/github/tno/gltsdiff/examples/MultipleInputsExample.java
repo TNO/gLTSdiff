@@ -16,8 +16,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import org.apache.commons.math3.util.Pair;
 
@@ -93,6 +93,26 @@ public class MultipleInputsExample {
         third.addTransition(t3, Pair.create("d", ImmutableSet.of(3)), t1);
         third.addTransition(t1, Pair.create("e", ImmutableSet.of(3)), t2);
 
+        // Get all inputs.
+        List<SimpleAutomaton<Pair<String, Set<Integer>>>> inputs = List.of(first, second, third);
+
+        // Prepare DOT (HTML) printers for printing version-annotated GLTSs.
+        HtmlPrinter<Set<Integer>> versionSetPrinter = new SetHtmlPrinter<>(new StringHtmlPrinter<>(), "", ",", "");
+        HtmlPrinter<Pair<String, Set<Integer>>> transitionPropertyPrinter = pair -> pair.getFirst() + "<br/>" + "{"
+                + versionSetPrinter.print(pair.getSecond()) + "}";
+        HtmlPrinter<Transition<AutomatonStateProperty, Pair<String, Set<Integer>>>> printer = transition -> transitionPropertyPrinter
+                .print(transition.getProperty());
+
+        // Write the inputs to files in DOT format, and render them to SVG.
+        for (int i = 0; i < inputs.size(); i++) {
+            SimpleAutomaton<Pair<String, Set<Integer>>> input = inputs.get(i);
+            Path dotPath = Paths.get("examples/multipleinputs/input" + (i + 1) + ".dot");
+            try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(dotPath.toFile()))) {
+                new AutomatonDotWriter<>(printer).write(input, stream);
+            }
+            DotRenderUtil.renderDot(dotPath);
+        }
+
         // Instantiate combiners for the states and transitions of the three input automata.
         Combiner<AutomatonStateProperty> statePropertyCombiner = new AutomatonStatePropertyCombiner();
         Combiner<Pair<String, Set<Integer>>> transitionPropertyCombiner = new PairCombiner<>(new EqualityCombiner<>(),
@@ -104,23 +124,13 @@ public class MultipleInputsExample {
                 new DefaultMerger<>(statePropertyCombiner, transitionPropertyCombiner, SimpleAutomaton::new));
 
         // Apply structural comparison to the three input automata.
-        SimpleAutomaton<Pair<String, Set<Integer>>> result = Stream.of(first, second, third).reduce(comparator::compare)
-                .get();
+        SimpleAutomaton<Pair<String, Set<Integer>>> result = inputs.stream().reduce(comparator::compare).get();
 
-        // Prepare DOT (HTML) printers for printing the result.
-        HtmlPrinter<Set<Integer>> versionSetPrinter = new SetHtmlPrinter<>(new StringHtmlPrinter<>(), "", ",", "");
-        HtmlPrinter<Pair<String, Set<Integer>>> transitionPropertyPrinter = pair -> pair.getFirst() + "<br/>" + "{"
-                + versionSetPrinter.print(pair.getSecond()) + "}";
-        HtmlPrinter<Transition<AutomatonStateProperty, Pair<String, Set<Integer>>>> printer = transition -> transitionPropertyPrinter
-                .print(transition.getProperty());
-
-        // Write the result to a file, in DOT format.
-        Path dotPath = Paths.get("examples/multipleinputs/output/result.dot");
+        // Write the result to a file in DOT format, and render it to SVG.
+        Path dotPath = Paths.get("examples/multipleinputs/result.dot");
         try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(dotPath.toFile()))) {
             new AutomatonDotWriter<>(printer).write(result, stream);
         }
-
-        // Render the DOT file to an SVG image.
         Path svgPath = DotRenderUtil.renderDot(dotPath);
         System.out.println("The result is in: " + svgPath);
     }
