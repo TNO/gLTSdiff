@@ -8,7 +8,7 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.glts;
+package com.github.tno.gltsdiff.glts.lts.automaton.diff;
 
 /**
  * A difference kind.

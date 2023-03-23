@@ -17,12 +17,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.github.tno.gltsdiff.glts.DiffAutomaton;
-import com.github.tno.gltsdiff.glts.DiffAutomatonStateProperty;
-import com.github.tno.gltsdiff.glts.DiffKind;
-import com.github.tno.gltsdiff.glts.DiffProperty;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.Transition;
+import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomaton;
+import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomatonStateProperty;
+import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffKind;
+import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffProperty;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 

@@ -10,7 +10,7 @@
 
 package com.github.tno.gltsdiff.operators.combiners;
 
-import com.github.tno.gltsdiff.glts.LTSStateProperty;
+import com.github.tno.gltsdiff.glts.lts.LTSStateProperty;
 
 /**
  * A combiner for {@link LTSStateProperty LTS state properties}.

@@ -8,11 +8,15 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.glts;
+package com.github.tno.gltsdiff.glts.lts.automaton.diff;
 
 import java.util.Optional;
 import java.util.function.Function;
 
+import com.github.tno.gltsdiff.glts.State;
+import com.github.tno.gltsdiff.glts.lts.automaton.Automaton;
+import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
+import com.github.tno.gltsdiff.glts.lts.automaton.SimpleAutomaton;
 import com.github.tno.gltsdiff.operators.projectors.DiffAutomatonStatePropertyProjector;
 import com.github.tno.gltsdiff.operators.projectors.DiffKindProjector;
 import com.github.tno.gltsdiff.operators.projectors.DiffPropertyProjector;

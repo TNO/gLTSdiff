@@ -8,9 +8,11 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.glts;
+package com.github.tno.gltsdiff.glts.lts.automaton;
 
 import java.util.Objects;
+
+import com.github.tno.gltsdiff.glts.lts.LTSStateProperty;
 
 /** A property that is associated to states in {@link Automaton automata}. */
 public class AutomatonStateProperty extends LTSStateProperty {

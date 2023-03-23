@@ -10,8 +10,8 @@
 
 package com.github.tno.gltsdiff.matchers.scorers;
 
-import com.github.tno.gltsdiff.glts.LTS;
 import com.github.tno.gltsdiff.glts.State;
+import com.github.tno.gltsdiff.glts.lts.LTS;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 
 /**

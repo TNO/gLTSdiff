@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
 
-import com.github.tno.gltsdiff.glts.DiffAutomaton;
-import com.github.tno.gltsdiff.glts.DiffAutomatonStateProperty;
-import com.github.tno.gltsdiff.glts.DiffProperty;
+import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomaton;
+import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomatonStateProperty;
+import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffProperty;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.operators.combiners.DiffPropertyCombiner;
 import com.github.tno.gltsdiff.operators.hiders.DiffPropertyHider;

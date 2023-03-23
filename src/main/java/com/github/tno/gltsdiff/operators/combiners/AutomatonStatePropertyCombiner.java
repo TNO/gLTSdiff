@@ -10,7 +10,7 @@
 
 package com.github.tno.gltsdiff.operators.combiners;
 
-import com.github.tno.gltsdiff.glts.AutomatonStateProperty;
+import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
 
 /**
  * A combiner for {@link AutomatonStateProperty automaton state properties}.

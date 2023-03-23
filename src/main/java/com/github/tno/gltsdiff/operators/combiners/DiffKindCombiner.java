@@ -10,7 +10,7 @@
 
 package com.github.tno.gltsdiff.operators.combiners;
 
-import com.github.tno.gltsdiff.glts.DiffKind;
+import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffKind;
 
 /**
  * A combiner for {@link DiffKind difference kinds}.

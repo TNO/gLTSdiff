@@ -21,9 +21,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.github.tno.gltsdiff.glts.DiffAutomatonStateProperty;
-import com.github.tno.gltsdiff.glts.DiffKind;
-import com.github.tno.gltsdiff.glts.DiffProperty;
+import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomatonStateProperty;
+import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffKind;
+import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffProperty;
 import com.google.common.collect.ImmutableSet;
 
 /** {@link Projector} tests. */

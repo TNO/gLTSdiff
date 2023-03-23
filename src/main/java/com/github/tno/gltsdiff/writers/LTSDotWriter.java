@@ -14,9 +14,9 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Comparator;
 
-import com.github.tno.gltsdiff.glts.LTS;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.Transition;
+import com.github.tno.gltsdiff.glts.lts.LTS;
 import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
 
 /**

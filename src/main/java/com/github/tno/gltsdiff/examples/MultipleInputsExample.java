@@ -22,10 +22,10 @@ import java.util.Set;
 import org.apache.commons.math3.util.Pair;
 
 import com.github.tno.gltsdiff.StructureComparator;
-import com.github.tno.gltsdiff.glts.AutomatonStateProperty;
-import com.github.tno.gltsdiff.glts.SimpleAutomaton;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.Transition;
+import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
+import com.github.tno.gltsdiff.glts.lts.automaton.SimpleAutomaton;
 import com.github.tno.gltsdiff.matchers.BruteForceLTSMatcher;
 import com.github.tno.gltsdiff.mergers.DefaultMerger;
 import com.github.tno.gltsdiff.operators.combiners.AutomatonStatePropertyCombiner;

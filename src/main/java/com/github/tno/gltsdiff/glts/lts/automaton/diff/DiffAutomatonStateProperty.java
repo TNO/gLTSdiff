@@ -8,11 +8,12 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.glts;
+package com.github.tno.gltsdiff.glts.lts.automaton.diff;
 
 import java.util.Objects;
 import java.util.Optional;
 
+import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
 import com.google.common.base.Preconditions;
 
 /** A property that is associated to states in {@link DiffAutomaton difference automata}. */

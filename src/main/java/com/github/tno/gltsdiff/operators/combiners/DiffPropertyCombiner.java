@@ -10,8 +10,8 @@
 
 package com.github.tno.gltsdiff.operators.combiners;
 
-import com.github.tno.gltsdiff.glts.DiffKind;
-import com.github.tno.gltsdiff.glts.DiffProperty;
+import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffKind;
+import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffProperty;
 
 /**
  * A combiner for {@link DiffProperty difference properties}.

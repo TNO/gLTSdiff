@@ -12,7 +12,7 @@ package com.github.tno.gltsdiff.operators.projectors;
 
 import java.util.Optional;
 
-import com.github.tno.gltsdiff.glts.DiffKind;
+import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffKind;
 import com.google.common.base.Preconditions;
 
 /** A projector for projecting {@link DiffKind difference kinds}. */

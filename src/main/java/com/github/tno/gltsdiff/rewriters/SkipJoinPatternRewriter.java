@@ -15,11 +15,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiPredicate;
 
-import com.github.tno.gltsdiff.glts.DiffAutomaton;
-import com.github.tno.gltsdiff.glts.DiffAutomatonStateProperty;
-import com.github.tno.gltsdiff.glts.DiffProperty;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.Transition;
+import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomaton;
+import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomatonStateProperty;
+import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffProperty;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.operators.combiners.DiffAutomatonStatePropertyCombiner;
 import com.github.tno.gltsdiff.operators.hiders.Hider;

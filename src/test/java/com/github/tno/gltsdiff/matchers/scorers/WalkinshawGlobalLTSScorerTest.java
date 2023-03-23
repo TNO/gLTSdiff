@@ -17,8 +17,8 @@ import org.apache.commons.math3.util.Pair;
 import org.junit.jupiter.api.Test;
 
 import com.github.tno.gltsdiff.TestAutomata;
-import com.github.tno.gltsdiff.glts.AutomatonStateProperty;
-import com.github.tno.gltsdiff.glts.SimpleAutomaton;
+import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
+import com.github.tno.gltsdiff.glts.lts.automaton.SimpleAutomaton;
 import com.github.tno.gltsdiff.operators.combiners.AutomatonStatePropertyCombiner;
 import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;
 

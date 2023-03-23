@@ -12,9 +12,9 @@ package com.github.tno.gltsdiff;
 
 import org.apache.commons.math3.util.Pair;
 
-import com.github.tno.gltsdiff.glts.AutomatonStateProperty;
-import com.github.tno.gltsdiff.glts.SimpleAutomaton;
 import com.github.tno.gltsdiff.glts.State;
+import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
+import com.github.tno.gltsdiff.glts.lts.automaton.SimpleAutomaton;
 
 /** Automata to use for testing. */
 public class TestAutomata {
