@@ -40,7 +40,7 @@ public class FixedScoresScorer<S, T, U extends LTS<S, T>> implements SimilarityS
         Preconditions.checkArgument(scores.getRowDimension() == lhs.size(),
                 "Mismatch between the number of score matrix rows and the number of LHS states.");
         Preconditions.checkArgument(scores.getColumnDimension() == rhs.size(),
-                "Mismatch between the number of score matrix columns and the number of RLHS states.");
+                "Mismatch between the number of score matrix columns and the number of RHS states.");
 
         return scores;
     }

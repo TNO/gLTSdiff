@@ -56,7 +56,7 @@ public class TestAutomata {
 
     /**
      * Returns a test automata pair matching the small example in Figure 3 of the article by Walkinshaw et al. (TOSEM
-     * 2014).
+     * 2013).
      *
      * @return The test automata pair.
      */
@@ -90,7 +90,7 @@ public class TestAutomata {
     }
 
     /**
-     * Returns a test automata pair matching the running (text editor) example in the TOSEM 2014 article of Walkinshaw
+     * Returns a test automata pair matching the running (text editor) example in the TOSEM 2013 article of Walkinshaw
      * et al. (Figure 1).
      *
      * @return The test automata pair.

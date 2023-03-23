@@ -37,7 +37,7 @@ public class WalkinshawLocalLTSScorerTest extends WalkinshawScorerTest {
                 new AutomatonStatePropertyCombiner(), new EqualityCombiner<>(), 1);
         RealMatrix scores = scorer.compute(lhs, rhs);
 
-        // State names, as they appear in the paper (Figure 3).
+        // State names, as they appear in the TOSEM'13 paper of Walkinshaw et al. (Figure 3).
         int a = 0;
         int b = 1;
         int c = 2;
@@ -66,7 +66,7 @@ public class WalkinshawLocalLTSScorerTest extends WalkinshawScorerTest {
                 new AutomatonStatePropertyCombiner(), new EqualityCombiner<>(), 2);
         RealMatrix scores = scorer.compute(lhs, rhs);
 
-        // State names, as they appear in the paper (Figure 3).
+        // State names, as they appear in the TOSEM'13 paper of Walkinshaw et al. (Figure 3).
         int a = 0;
         int b = 1;
         int c = 2;

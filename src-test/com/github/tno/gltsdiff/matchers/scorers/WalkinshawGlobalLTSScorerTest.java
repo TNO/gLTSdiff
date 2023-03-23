@@ -66,14 +66,14 @@ public class WalkinshawGlobalLTSScorerTest extends WalkinshawScorerTest {
                 new AutomatonStatePropertyCombiner(), new EqualityCombiner<>());
         RealMatrix scores = scorer.compute(lhs, rhs);
 
-        // State names, as they appear in the paper.
+        // State names, as they appear in the TOSEM'13 paper of Walkinshaw et al.
         int a = 0;
         int b = 1;
         int c = 2;
         int e = 0;
         int f = 1;
 
-        // Earlier observations, for the sake of regression testing. Scores are different from the paper.
+        // Earlier observations, for the sake of regression testing. Scores are different from the TOSEM'13 paper.
         assertEquals(0.42d, roundToTwoDecimals(scores.getEntry(a, e)));
         assertEquals(Double.NEGATIVE_INFINITY, roundToTwoDecimals(scores.getEntry(a, f)));
         assertEquals(Double.NEGATIVE_INFINITY, roundToTwoDecimals(scores.getEntry(b, e)));
@@ -95,7 +95,7 @@ public class WalkinshawGlobalLTSScorerTest extends WalkinshawScorerTest {
                 new AutomatonStatePropertyCombiner(), new EqualityCombiner<>());
         RealMatrix scores = scorer.compute(lhs, rhs);
 
-        // State names, as they appear in the paper.
+        // State names, as they appear in the TOSEM'13 paper of Walkinshaw et al.
         int sA = 0;
         int sB = 1;
         int sC = 2;
@@ -105,7 +105,7 @@ public class WalkinshawGlobalLTSScorerTest extends WalkinshawScorerTest {
         int sH = 3;
         int sI = 4;
 
-        // Earlier observations, for the sake of regression testing. Scores are different from the paper.
+        // Earlier observations, for the sake of regression testing. Scores are different from the TOSEM'13 paper.
         assertEquals(0.58d, roundToTwoDecimals(scores.getEntry(sA, sE)));
         assertEquals(0.55d, roundToTwoDecimals(scores.getEntry(sB, sF)));
         assertEquals(0.34d, roundToTwoDecimals(scores.getEntry(sC, sH)));
