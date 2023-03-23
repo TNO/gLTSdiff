@@ -14,6 +14,7 @@ import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -107,6 +108,7 @@ public class MoreThanTwoInputsExample {
         for (int i = 0; i < inputs.size(); i++) {
             SimpleAutomaton<Pair<String, Set<Integer>>> input = inputs.get(i);
             Path dotPath = Paths.get("examples/MoreThanTwoInputs/input" + (i + 1) + ".dot");
+            Files.createDirectories(dotPath.getParent());
             try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(dotPath.toFile()))) {
                 new AutomatonDotWriter<>(printer).write(input, stream);
             }
