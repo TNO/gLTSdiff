@@ -8,7 +8,7 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.utils;
+package com.github.tno.gltsdiff.writers;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -17,10 +17,10 @@ import java.util.List;
 
 import com.google.common.base.Preconditions;
 
-/** Utilities for rendering DOT files. */
-public class DotRenderUtil {
-    /** Constructor for the DotRenderUtil class. */
-    private DotRenderUtil() {
+/** Renderer for rendering DOT files. */
+public class DotRenderer {
+    /** Constructor for the {@link DotRenderer} class. */
+    private DotRenderer() {
         // Static class.
     }
 

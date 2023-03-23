@@ -36,7 +36,7 @@ import com.github.tno.gltsdiff.operators.combiners.lts.automaton.AutomatonStateP
 import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
 import com.github.tno.gltsdiff.operators.printers.SetHtmlPrinter;
 import com.github.tno.gltsdiff.operators.printers.StringHtmlPrinter;
-import com.github.tno.gltsdiff.utils.DotRenderUtil;
+import com.github.tno.gltsdiff.writers.DotRenderer;
 import com.github.tno.gltsdiff.writers.lts.automaton.AutomatonDotWriter;
 import com.google.common.collect.ImmutableSet;
 
@@ -110,7 +110,7 @@ public class MultipleInputsExample {
             try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(dotPath.toFile()))) {
                 new AutomatonDotWriter<>(printer).write(input, stream);
             }
-            DotRenderUtil.renderDot(dotPath);
+            DotRenderer.renderDot(dotPath);
         }
 
         // Instantiate combiners for the states and transitions of the three input automata.
@@ -131,7 +131,7 @@ public class MultipleInputsExample {
         try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(dotPath.toFile()))) {
             new AutomatonDotWriter<>(printer).write(result, stream);
         }
-        Path svgPath = DotRenderUtil.renderDot(dotPath);
+        Path svgPath = DotRenderer.renderDot(dotPath);
         System.out.println("The result is in: " + svgPath);
     }
 }
