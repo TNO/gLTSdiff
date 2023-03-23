@@ -192,4 +192,31 @@ public abstract class MatcherTest {
         assertEquals(sR14, matching.get(sL14));
         assertEquals(sR15, matching.get(sL15));
     }
+
+    /** Test for state acceptance matching. */
+    @Test
+    public void testMatchingsShouldAlwaysAgreeOnStateAcceptance() {
+        // Obtain the LHS.
+        SimpleAutomaton<String> lhs = new SimpleAutomaton<>();
+        State<AutomatonStateProperty> s1 = lhs.addInitialState(true);
+        State<AutomatonStateProperty> s2 = lhs.addState(true);
+        lhs.addTransition(s1, "e1", s2);
+        lhs.addTransition(s2, "e2", s1);
+
+        // Obtain the RHS.
+        SimpleAutomaton<String> rhs = new SimpleAutomaton<>();
+        State<AutomatonStateProperty> t1 = rhs.addInitialState(true);
+        State<AutomatonStateProperty> t2 = rhs.addState(false);
+        rhs.addTransition(t1, "e1", t2);
+        rhs.addTransition(t2, "e2", t1);
+
+        // Compute a matching.
+        Matcher<AutomatonStateProperty, String, SimpleAutomaton<String>> matcher = newMatcher(
+                new WalkinshawGlobalLTSScorer<>(new AutomatonStatePropertyCombiner(), new EqualityCombiner<>()));
+        Map<State<AutomatonStateProperty>, State<AutomatonStateProperty>> matching = matcher.compute(lhs, rhs);
+
+        // Expected only the initial states to be matched.
+        assertEquals(1, matching.size());
+        assertEquals(t1, matching.get(s1));
+    }
 }
