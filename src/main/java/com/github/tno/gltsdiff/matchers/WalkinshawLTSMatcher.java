@@ -17,8 +17,8 @@ import org.apache.commons.math3.util.Pair;
 
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.lts.LTS;
-import com.github.tno.gltsdiff.matchers.scorers.SimilarityScorer;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
+import com.github.tno.gltsdiff.scorers.SimilarityScorer;
 import com.google.common.collect.ImmutableSet;
 
 /**

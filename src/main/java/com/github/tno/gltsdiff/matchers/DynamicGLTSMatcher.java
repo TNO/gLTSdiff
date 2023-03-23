@@ -15,9 +15,9 @@ import java.util.function.BiFunction;
 
 import com.github.tno.gltsdiff.glts.GLTS;
 import com.github.tno.gltsdiff.glts.State;
-import com.github.tno.gltsdiff.matchers.scorers.DynamicGLTSScorer;
-import com.github.tno.gltsdiff.matchers.scorers.SimilarityScorer;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
+import com.github.tno.gltsdiff.scorers.DynamicGLTSScorer;
+import com.github.tno.gltsdiff.scorers.SimilarityScorer;
 
 /**
  * Matcher that computes state matchings for {@link GLTS GLTSs}, making a trade-off between computational intensity and

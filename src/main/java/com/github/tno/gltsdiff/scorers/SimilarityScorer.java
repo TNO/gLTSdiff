@@ -8,7 +8,7 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.matchers.scorers;
+package com.github.tno.gltsdiff.scorers;
 
 import org.apache.commons.math3.linear.RealMatrix;
 

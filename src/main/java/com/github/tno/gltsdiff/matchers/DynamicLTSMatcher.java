@@ -13,9 +13,9 @@ package com.github.tno.gltsdiff.matchers;
 import java.util.function.BiFunction;
 
 import com.github.tno.gltsdiff.glts.lts.LTS;
-import com.github.tno.gltsdiff.matchers.scorers.DynamicLTSScorer;
-import com.github.tno.gltsdiff.matchers.scorers.SimilarityScorer;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
+import com.github.tno.gltsdiff.scorers.DynamicLTSScorer;
+import com.github.tno.gltsdiff.scorers.SimilarityScorer;
 
 /**
  * Matcher that computes state matchings for {@link LTS LTSs}, that makes a trade-off between computational intensity
