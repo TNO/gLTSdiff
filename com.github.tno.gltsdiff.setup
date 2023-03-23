@@ -267,7 +267,7 @@
       <requirement
           name="com.google.guava"/>
       <requirement
-          name="org.apache.commons.lang"/>
+          name="org.apache.commons.lang3"/>
       <requirement
           name="org.apache.commons.math3"/>
       <repositoryList
