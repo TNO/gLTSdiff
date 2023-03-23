@@ -56,7 +56,7 @@ public abstract class WalkinshawScorer<S, T, U extends GLTS<S, T>> implements Si
      * <p>
      * This factor can be tweaked a bit if the comparison results come out unsatisfactory. A ratio of 0 would mean that
      * only local similarity scores are used. Note that, if one is only interested in local similarity,
-     * {@link WalkinshawLocalGLTSScorer} should be used instead, which gives the same result but is much faster. A ratio
+     * {@link WalkinshawLocalScorer} should be used instead, which gives the same result but is much faster. A ratio
      * of 1 would mean that far-away state similarities contribute equally much as local ones.
      * </p>
      */
@@ -86,7 +86,7 @@ public abstract class WalkinshawScorer<S, T, U extends GLTS<S, T>> implements Si
      * @param attenuationFactor The attenuation factor, the ratio in the range [0,1] that determines how much the
      *     similarity scores of far-away states influence the final similarity scores. This factor can be tweaked a bit
      *     if the comparison results come out unsatisfactory. A ratio of 0 would mean that only local similarity scores
-     *     are used. Note that, if one is only interested in local similarity, {@link WalkinshawLocalGLTSScorer} should
+     *     are used. Note that, if one is only interested in local similarity, {@link WalkinshawLocalScorer} should
      *     be used instead, which gives the same result but is much faster. A ratio of 1 would mean that far-away state
      *     similarities contribute equally much as local ones.
      */

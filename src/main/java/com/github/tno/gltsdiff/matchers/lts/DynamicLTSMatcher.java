@@ -17,8 +17,8 @@ import com.github.tno.gltsdiff.matchers.DynamicMatcher;
 import com.github.tno.gltsdiff.matchers.KuhnMunkresMatcher;
 import com.github.tno.gltsdiff.matchers.Matcher;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
-import com.github.tno.gltsdiff.scorers.DynamicLTSScorer;
 import com.github.tno.gltsdiff.scorers.SimilarityScorer;
+import com.github.tno.gltsdiff.scorers.lts.DynamicLTSScorer;
 
 /**
  * Matcher that computes state matchings for {@link LTS LTSs}, that makes a trade-off between computational intensity

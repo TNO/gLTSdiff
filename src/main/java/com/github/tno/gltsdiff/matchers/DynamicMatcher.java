@@ -16,7 +16,7 @@ import java.util.function.BiFunction;
 import com.github.tno.gltsdiff.glts.GLTS;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
-import com.github.tno.gltsdiff.scorers.DynamicGLTSScorer;
+import com.github.tno.gltsdiff.scorers.DynamicScorer;
 import com.github.tno.gltsdiff.scorers.SimilarityScorer;
 
 /**
@@ -73,7 +73,7 @@ public class DynamicMatcher<S, T, U extends GLTS<S, T>> implements Matcher<S, T,
     private static final <S, T, U extends GLTS<S, T>> Matcher<S, T, U>
             defaultMatchingAlgorithmCreator(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner)
     {
-        SimilarityScorer<S, T, U> scorer = new DynamicGLTSScorer<>(statePropertyCombiner, transitionPropertyCombiner);
+        SimilarityScorer<S, T, U> scorer = new DynamicScorer<>(statePropertyCombiner, transitionPropertyCombiner);
         Matcher<S, T, U> walkinshawMatcher = new WalkinshawMatcher<>(scorer, statePropertyCombiner,
                 transitionPropertyCombiner);
         Matcher<S, T, U> kuhnMunkresMatcher = new KuhnMunkresMatcher<>(scorer, statePropertyCombiner);

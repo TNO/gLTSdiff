@@ -22,7 +22,7 @@ import com.github.tno.gltsdiff.glts.lts.automaton.SimpleAutomaton;
 import com.github.tno.gltsdiff.operators.combiners.AutomatonStatePropertyCombiner;
 import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;
 import com.github.tno.gltsdiff.scorers.SimilarityScorer;
-import com.github.tno.gltsdiff.scorers.WalkinshawLocalLTSScorer;
+import com.github.tno.gltsdiff.scorers.lts.WalkinshawLocalLTSScorer;
 
 /** {@link WalkinshawLocalLTSScorer} tests. */
 public class WalkinshawLocalLTSScorerTest extends WalkinshawScorerTest {
