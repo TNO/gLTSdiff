@@ -9,7 +9,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.apache.commons.math3;bundle-version="3.5.0",
  com.google.guava;bundle-version="27.1.0",
- org.apache.commons.lang;bundle-version="2.6.0"
+ org.apache.commons.lang3;bundle-version="3.1.0"
 Export-Package: com.github.tno.gltsdiff,
  com.github.tno.gltsdiff.examples.multipleinputs;x-internal:=true,
  com.github.tno.gltsdiff.examples.multipleinputs.input;x-internal:=true,
