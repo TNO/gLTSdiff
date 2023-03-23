@@ -20,10 +20,10 @@ import org.apache.commons.math3.util.Pair;
 
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 
-/** Utilities for working with GLTSs. */
-public class GLTSUtils {
-    /** Constructor for the {@link GLTSUtils} class. */
-    private GLTSUtils() {
+/** Utilities for working with multiple GLTSs. */
+public class GLTSs {
+    /** Constructor for the {@link GLTSs} class. */
+    private GLTSs() {
         // Static class.
     }
 

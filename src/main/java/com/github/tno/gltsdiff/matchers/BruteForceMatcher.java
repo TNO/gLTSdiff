@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.math3.util.Pair;
 
 import com.github.tno.gltsdiff.glts.GLTS;
-import com.github.tno.gltsdiff.glts.GLTSUtils;
+import com.github.tno.gltsdiff.glts.GLTSs;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.utils.Maps;
@@ -120,8 +120,8 @@ public class BruteForceMatcher<S, T, U extends GLTS<S, T>> implements Matcher<S,
 
         Pair<State<S>, State<S>> statePair = Pair.create(lhsState, rhsState);
 
-        return GLTSUtils.hasCommonIncomingTransitions(lhs, rhs, transitionPropertyCombiner, statePair)
-                || GLTSUtils.hasCommonOutgoingTransitions(lhs, rhs, transitionPropertyCombiner, statePair);
+        return GLTSs.hasCommonIncomingTransitions(lhs, rhs, transitionPropertyCombiner, statePair)
+                || GLTSs.hasCommonOutgoingTransitions(lhs, rhs, transitionPropertyCombiner, statePair);
     }
 
     /**
@@ -307,7 +307,7 @@ public class BruteForceMatcher<S, T, U extends GLTS<S, T>> implements Matcher<S,
 
         for (Pair<State<S>, State<S>> pair: fixed) {
             // Account for combinable transitions.
-            count += GLTSUtils.commonOutgoingTransitions(lhs, rhs, transitionPropertyCombiner, pair)
+            count += GLTSs.commonOutgoingTransitions(lhs, rhs, transitionPropertyCombiner, pair)
                     .map(t -> Pair.create(t.getFirst().getTarget(), t.getSecond().getTarget())).filter(fixed::contains)
                     .count();
 
