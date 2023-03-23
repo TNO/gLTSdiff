@@ -8,12 +8,13 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.writers;
+package com.github.tno.gltsdiff.writers.lts.automaton;
 
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.Transition;
 import com.github.tno.gltsdiff.glts.lts.automaton.Automaton;
 import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
+import com.github.tno.gltsdiff.writers.lts.LTSDotWriter;
 
 /**
  * Writer for writing {@link Automaton automata} in DOT format.
@@ -24,7 +25,7 @@ import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
  */
 public class AutomatonDotWriter<S, T, U extends Automaton<S, T>> extends LTSDotWriter<S, T, U> {
     /** The double circle shape style to use. */
-    static final String SHAPE_DOUBLE_CIRCLE = "doublecircle";
+    protected static final String SHAPE_DOUBLE_CIRCLE = "doublecircle";
 
     /**
      * Instantiates a writer for automata, which prints state identifiers as state labels.

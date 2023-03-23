@@ -35,13 +35,13 @@ import com.google.common.base.Preconditions;
  */
 public class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
     /** The default color to use. */
-    static final String DEFAULT_COLOR = "#000000";
+    protected static final String DEFAULT_COLOR = "#000000";
 
     /** The default style to use. */
-    static final String DEFAULT_STYLE = "";
+    protected static final String DEFAULT_STYLE = "";
 
     /** The circle shape style to use. */
-    static final String SHAPE_CIRCLE = "circle";
+    protected static final String SHAPE_CIRCLE = "circle";
 
     /** A printer for printing state labels. */
     protected final HtmlPrinter<State<S>> stateLabelPrinter;

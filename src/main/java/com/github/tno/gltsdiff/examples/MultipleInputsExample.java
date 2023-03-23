@@ -37,7 +37,7 @@ import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
 import com.github.tno.gltsdiff.operators.printers.SetHtmlPrinter;
 import com.github.tno.gltsdiff.operators.printers.StringHtmlPrinter;
 import com.github.tno.gltsdiff.utils.DotRenderUtil;
-import com.github.tno.gltsdiff.writers.AutomatonDotWriter;
+import com.github.tno.gltsdiff.writers.lts.automaton.AutomatonDotWriter;
 import com.google.common.collect.ImmutableSet;
 
 /**

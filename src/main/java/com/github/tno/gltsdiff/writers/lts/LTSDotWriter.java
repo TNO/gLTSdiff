@@ -8,7 +8,7 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.writers;
+package com.github.tno.gltsdiff.writers.lts;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -18,6 +18,7 @@ import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.Transition;
 import com.github.tno.gltsdiff.glts.lts.LTS;
 import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
+import com.github.tno.gltsdiff.writers.GLTSDotWriter;
 
 /**
  * Writer for writing {@link LTS LTSs} in DOT format.
