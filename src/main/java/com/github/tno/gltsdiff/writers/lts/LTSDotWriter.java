@@ -18,7 +18,7 @@ import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.Transition;
 import com.github.tno.gltsdiff.glts.lts.LTS;
 import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
-import com.github.tno.gltsdiff.writers.GLTSDotWriter;
+import com.github.tno.gltsdiff.writers.DotWriter;
 
 /**
  * Writer for writing {@link LTS LTSs} in DOT format.
@@ -27,7 +27,7 @@ import com.github.tno.gltsdiff.writers.GLTSDotWriter;
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs to be written.
  */
-public class LTSDotWriter<S, T, U extends LTS<S, T>> extends GLTSDotWriter<S, T, U> {
+public class LTSDotWriter<S, T, U extends LTS<S, T>> extends DotWriter<S, T, U> {
     /**
      * Instantiates a writer for LTSs, which prints state identifiers as state labels.
      *

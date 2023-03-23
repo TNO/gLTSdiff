@@ -33,7 +33,7 @@ import com.google.common.base.Preconditions;
  * @param <T> The type of transition properties.
  * @param <U> The type of GLTSs to be written.
  */
-public class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
+public class DotWriter<S, T, U extends GLTS<S, T>> {
     /** The default color to use. */
     protected static final String DEFAULT_COLOR = "#000000";
 
@@ -54,8 +54,8 @@ public class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
      *
      * @param transitionLabelPrinter A printer for printing transition labels.
      */
-    public GLTSDotWriter(HtmlPrinter<Transition<S, T>> transitionLabelPrinter) {
-        this(GLTSDotWriter::stateLabel, transitionLabelPrinter);
+    public DotWriter(HtmlPrinter<Transition<S, T>> transitionLabelPrinter) {
+        this(DotWriter::stateLabel, transitionLabelPrinter);
     }
 
     /**
@@ -64,9 +64,7 @@ public class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
      * @param stateLabelPrinter A printer for printing state labels.
      * @param transitionLabelPrinter A printer for printing transition labels.
      */
-    public GLTSDotWriter(HtmlPrinter<State<S>> stateLabelPrinter,
-            HtmlPrinter<Transition<S, T>> transitionLabelPrinter)
-    {
+    public DotWriter(HtmlPrinter<State<S>> stateLabelPrinter, HtmlPrinter<Transition<S, T>> transitionLabelPrinter) {
         this.stateLabelPrinter = stateLabelPrinter;
         this.transitionLabelPrinter = transitionLabelPrinter;
     }
