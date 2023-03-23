@@ -41,18 +41,18 @@ import com.github.tno.gltsdiff.writers.lts.automaton.AutomatonDotWriter;
 import com.google.common.collect.ImmutableSet;
 
 /**
- * Example that compares and merges multiple inputs.
+ * Example that compares and merges more than two inputs.
  *
  * <p>
- * This example demonstrates how to apply gLTSdiff on more than two inputs. For that we use version-annotated GLTSs,
+ * This example demonstrates how to apply gLTSdiff on any number of inputs. For that we use version-annotated GLTSs,
  * which are GLTSs where the transitions are annotated with a version (number). We construct three such models as input.
  * Then we compare the structures of these models, and compute a single model that shows how the three input models
  * relate.
  * </p>
  */
-public class MultipleInputsExample {
-    /** Constructor for the {@link MultipleInputsExample} class. */
-    private MultipleInputsExample() {
+public class MoreThanTwoInputsExample {
+    /** Constructor for the {@link MoreThanTwoInputsExample} class. */
+    private MoreThanTwoInputsExample() {
         // Static class.
     }
 
@@ -106,7 +106,7 @@ public class MultipleInputsExample {
         // Write the inputs to files in DOT format, and render them to SVG.
         for (int i = 0; i < inputs.size(); i++) {
             SimpleAutomaton<Pair<String, Set<Integer>>> input = inputs.get(i);
-            Path dotPath = Paths.get("examples/multipleinputs/input" + (i + 1) + ".dot");
+            Path dotPath = Paths.get("examples/MoreThanTwoInputs/input" + (i + 1) + ".dot");
             try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(dotPath.toFile()))) {
                 new AutomatonDotWriter<>(printer).write(input, stream);
             }
@@ -127,7 +127,7 @@ public class MultipleInputsExample {
         SimpleAutomaton<Pair<String, Set<Integer>>> result = inputs.stream().reduce(comparator::compare).get();
 
         // Write the result to a file in DOT format, and render it to SVG.
-        Path dotPath = Paths.get("examples/multipleinputs/result.dot");
+        Path dotPath = Paths.get("examples/MoreThanTwoInputs/result.dot");
         try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(dotPath.toFile()))) {
             new AutomatonDotWriter<>(printer).write(result, stream);
         }
