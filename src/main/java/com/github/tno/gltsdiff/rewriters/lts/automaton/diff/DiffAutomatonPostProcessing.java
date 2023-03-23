@@ -18,8 +18,6 @@ import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffProperty;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
-import com.github.tno.gltsdiff.operators.combiners.lts.automaton.diff.DiffPropertyCombiner;
-import com.github.tno.gltsdiff.operators.hiders.DiffPropertyHider;
 import com.github.tno.gltsdiff.operators.hiders.Hider;
 import com.github.tno.gltsdiff.rewriters.LocalRedundancyRewriter;
 import com.github.tno.gltsdiff.rewriters.Rewriter;
@@ -40,20 +38,18 @@ public class DiffAutomatonPostProcessing {
      * @param hider The hider for transition properties.
      * @return The post processed difference automaton.
      */
-    public static <T> DiffAutomaton<T> rewrite(DiffAutomaton<T> diff, Combiner<T> combiner, Hider<T> hider) {
-        // Instantiate a combiner and hider for difference transition properties.
-        Combiner<DiffProperty<T>> diffCombiner = new DiffPropertyCombiner<>(combiner);
-        Hider<DiffProperty<T>> diffHider = new DiffPropertyHider<>(hider);
-
+    public static <T> DiffAutomaton<T> rewrite(DiffAutomaton<T> diff, Combiner<DiffProperty<T>> combiner,
+            Hider<DiffProperty<T>> hider)
+    {
         // Defines a standard transition property inclusion relation.
-        BiPredicate<DiffProperty<T>, DiffProperty<T>> isIncludedIn = (l, r) -> r.equals(diffCombiner.combine(l, r));
+        BiPredicate<DiffProperty<T>, DiffProperty<T>> isIncludedIn = (l, r) -> r.equals(combiner.combine(l, r));
 
         // Instantiate all rewriters to be used for post-processing.
         List<Rewriter<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>> rewriters = new ArrayList<>();
         rewriters.add(new EntanglementRewriter<>());
-        rewriters.add(new LocalRedundancyRewriter<>(diffCombiner));
-        rewriters.add(new SkipForkPatternRewriter<>(diffCombiner, diffHider, isIncludedIn));
-        rewriters.add(new SkipJoinPatternRewriter<>(diffCombiner, diffHider, isIncludedIn));
+        rewriters.add(new LocalRedundancyRewriter<>(combiner));
+        rewriters.add(new SkipForkPatternRewriter<>(combiner, hider, isIncludedIn));
+        rewriters.add(new SkipJoinPatternRewriter<>(combiner, hider, isIncludedIn));
 
         // Repeatedly rewrite the difference automaton until rewriting no longer has effect.
         boolean changed = true;
