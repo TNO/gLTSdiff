@@ -8,9 +8,10 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.operators.combiners;
+package com.github.tno.gltsdiff.operators.combiners.lts;
 
 import com.github.tno.gltsdiff.glts.lts.LTSStateProperty;
+import com.github.tno.gltsdiff.operators.combiners.Combiner;
 
 /**
  * A combiner for {@link LTSStateProperty LTS state properties}.

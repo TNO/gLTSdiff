@@ -8,9 +8,10 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.operators.combiners;
+package com.github.tno.gltsdiff.operators.combiners.lts.automaton;
 
 import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
+import com.github.tno.gltsdiff.operators.combiners.Combiner;
 
 /**
  * A combiner for {@link AutomatonStateProperty automaton state properties}.

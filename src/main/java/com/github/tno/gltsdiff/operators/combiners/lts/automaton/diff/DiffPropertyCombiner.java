@@ -8,10 +8,11 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.operators.combiners;
+package com.github.tno.gltsdiff.operators.combiners.lts.automaton.diff;
 
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffKind;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffProperty;
+import com.github.tno.gltsdiff.operators.combiners.Combiner;
 
 /**
  * A combiner for {@link DiffProperty difference properties}.

@@ -21,7 +21,7 @@ import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffProperty;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
-import com.github.tno.gltsdiff.operators.combiners.DiffAutomatonStatePropertyCombiner;
+import com.github.tno.gltsdiff.operators.combiners.lts.automaton.diff.DiffAutomatonStatePropertyCombiner;
 import com.github.tno.gltsdiff.operators.hiders.Hider;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;

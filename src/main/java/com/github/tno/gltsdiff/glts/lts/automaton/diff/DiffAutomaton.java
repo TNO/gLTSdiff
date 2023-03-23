@@ -17,10 +17,10 @@ import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.lts.automaton.Automaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.lts.automaton.SimpleAutomaton;
-import com.github.tno.gltsdiff.operators.projectors.DiffAutomatonStatePropertyProjector;
-import com.github.tno.gltsdiff.operators.projectors.DiffKindProjector;
-import com.github.tno.gltsdiff.operators.projectors.DiffPropertyProjector;
 import com.github.tno.gltsdiff.operators.projectors.Projector;
+import com.github.tno.gltsdiff.operators.projectors.lts.automaton.diff.DiffAutomatonStatePropertyProjector;
+import com.github.tno.gltsdiff.operators.projectors.lts.automaton.diff.DiffKindProjector;
+import com.github.tno.gltsdiff.operators.projectors.lts.automaton.diff.DiffPropertyProjector;
 import com.google.common.base.Preconditions;
 
 /**

@@ -16,8 +16,8 @@ import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffKind;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffProperty;
-import com.github.tno.gltsdiff.operators.printers.DiffKindHtmlPrinter;
 import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
+import com.github.tno.gltsdiff.operators.printers.lts.automaton.diff.DiffKindHtmlPrinter;
 import com.github.tno.gltsdiff.writers.lts.automaton.AutomatonDotWriter;
 import com.google.common.base.Preconditions;
 

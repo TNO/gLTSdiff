@@ -18,7 +18,7 @@ import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffProperty;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
-import com.github.tno.gltsdiff.operators.combiners.DiffPropertyCombiner;
+import com.github.tno.gltsdiff.operators.combiners.lts.automaton.diff.DiffPropertyCombiner;
 import com.github.tno.gltsdiff.operators.hiders.DiffPropertyHider;
 import com.github.tno.gltsdiff.operators.hiders.Hider;
 import com.github.tno.gltsdiff.rewriters.LocalRedundancyRewriter;

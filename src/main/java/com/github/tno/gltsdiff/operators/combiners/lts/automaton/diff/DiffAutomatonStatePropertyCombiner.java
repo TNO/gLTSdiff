@@ -8,12 +8,14 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.operators.combiners;
+package com.github.tno.gltsdiff.operators.combiners.lts.automaton.diff;
 
 import java.util.Optional;
 
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffKind;
+import com.github.tno.gltsdiff.operators.combiners.Combiner;
+import com.github.tno.gltsdiff.operators.combiners.OptionalCombiner;
 
 /**
  * A combiner for {@link DiffAutomatonStateProperty difference automaton state properties}.

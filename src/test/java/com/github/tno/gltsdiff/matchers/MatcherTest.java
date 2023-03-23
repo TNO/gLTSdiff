@@ -22,8 +22,8 @@ import com.github.tno.gltsdiff.TestAutomata;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.lts.automaton.SimpleAutomaton;
-import com.github.tno.gltsdiff.operators.combiners.AutomatonStatePropertyCombiner;
 import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;
+import com.github.tno.gltsdiff.operators.combiners.lts.automaton.AutomatonStatePropertyCombiner;
 import com.github.tno.gltsdiff.scorers.SimilarityScorer;
 import com.github.tno.gltsdiff.scorers.lts.WalkinshawGlobalLTSScorer;
 
