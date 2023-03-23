@@ -7,18 +7,9 @@
     xmlns:projects="http://www.eclipse.org/oomph/setup/projects/1.0"
     xmlns:setup="http://www.eclipse.org/oomph/setup/1.0"
     xmlns:setup.p2="http://www.eclipse.org/oomph/setup/p2/1.0"
-    xmlns:setup.targlets="http://www.eclipse.org/oomph/setup/targlets/1.0"
-    xsi:schemaLocation="http://www.eclipse.org/oomph/setup/git/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Git.ecore http://www.eclipse.org/oomph/setup/projects/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Projects.ecore http://www.eclipse.org/oomph/setup/targlets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupTarglets.ecore"
+    xsi:schemaLocation="http://www.eclipse.org/oomph/setup/git/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Git.ecore http://www.eclipse.org/oomph/setup/projects/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Projects.ecore"
     name="gltsdiff"
     label="gLTSdiff">
-  <setupTask
-      xsi:type="setup:VariableTask"
-      name="eclipse.ide.version"
-      value="2021-12"/>
-  <setupTask
-      xsi:type="setup:VariableTask"
-      name="eclipse.orbit.version"
-      value="R20211213173813"/>
   <setupTask
       xsi:type="setup:VariableTask"
       name="eclipse-checkstyle.version.major"
@@ -223,61 +214,6 @@
     <sourceLocator
         rootFolder="${com.github.tno.gltsdiff.git.clone.location}"
         locateNestedProjects="true"/>
-  </setupTask>
-  <setupTask
-      xsi:type="setup.targlets:TargletTask">
-    <targlet
-        name="${scope.project.label}"
-        activeRepositoryList="gLTSdiff">
-      <annotation
-          source="http:/www.eclipse.org/oomph/targlets/TargetDefinitionGenerator">
-        <detail
-            key="location">
-          <value>${com.github.tno.gltsdiff.git.clone.location}/com.github.tno.gltsdiff.target</value>
-        </detail>
-        <detail
-            key="extraUnits">
-          <value></value>
-        </detail>
-        <detail
-            key="generateImplicitUnits">
-          <value>true</value>
-        </detail>
-        <detail
-            key="minimizeImplicitUnits">
-          <value>false</value>
-        </detail>
-        <detail
-            key="includeMode">
-          <value>planner</value>
-        </detail>
-        <detail
-            key="generateVersions">
-          <value>true</value>
-        </detail>
-        <detail
-            key="includeAllPlatforms">
-          <value>false</value>
-        </detail>
-        <detail
-            key="includeSource">
-          <value>true</value>
-        </detail>
-      </annotation>
-      <requirement
-          name="com.google.guava"/>
-      <requirement
-          name="org.apache.commons.lang3"/>
-      <requirement
-          name="org.apache.commons.math3"/>
-      <repositoryList
-          name="gLTSdiff">
-        <repository
-            url="https://download.eclipse.org/releases/${eclipse.ide.version}"/>
-        <repository
-            url="https://download.eclipse.org/tools/orbit/downloads/drops/${eclipse.orbit.version}/repository"/>
-      </repositoryList>
-    </targlet>
   </setupTask>
   <stream name="main"
       label="main"/>
