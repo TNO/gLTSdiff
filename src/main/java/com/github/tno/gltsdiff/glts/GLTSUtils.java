@@ -8,7 +8,7 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.utils;
+package com.github.tno.gltsdiff.glts;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -18,9 +18,6 @@ import java.util.stream.Stream;
 
 import org.apache.commons.math3.util.Pair;
 
-import com.github.tno.gltsdiff.glts.GLTS;
-import com.github.tno.gltsdiff.glts.State;
-import com.github.tno.gltsdiff.glts.Transition;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 
 /** Utilities for working with GLTSs. */
