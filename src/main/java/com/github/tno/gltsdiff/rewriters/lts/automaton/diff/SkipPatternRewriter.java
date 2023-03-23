@@ -8,7 +8,7 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.rewriters;
+package com.github.tno.gltsdiff.rewriters.lts.automaton.diff;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -17,6 +17,7 @@ import java.util.function.Function;
 
 import com.github.tno.gltsdiff.glts.GLTS;
 import com.github.tno.gltsdiff.glts.State;
+import com.github.tno.gltsdiff.rewriters.Rewriter;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;

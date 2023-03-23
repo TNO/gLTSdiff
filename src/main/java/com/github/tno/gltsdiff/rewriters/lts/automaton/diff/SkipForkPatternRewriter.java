@@ -8,7 +8,7 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.rewriters;
+package com.github.tno.gltsdiff.rewriters.lts.automaton.diff;
 
 import java.util.LinkedList;
 import java.util.List;

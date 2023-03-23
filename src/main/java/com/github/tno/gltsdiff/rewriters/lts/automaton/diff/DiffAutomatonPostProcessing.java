@@ -8,7 +8,7 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.rewriters;
+package com.github.tno.gltsdiff.rewriters.lts.automaton.diff;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +21,8 @@ import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.operators.combiners.DiffPropertyCombiner;
 import com.github.tno.gltsdiff.operators.hiders.DiffPropertyHider;
 import com.github.tno.gltsdiff.operators.hiders.Hider;
+import com.github.tno.gltsdiff.rewriters.LocalRedundancyRewriter;
+import com.github.tno.gltsdiff.rewriters.Rewriter;
 
 /** A default post processor for difference automata. */
 public class DiffAutomatonPostProcessing {
