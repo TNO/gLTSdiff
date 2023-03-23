@@ -32,13 +32,25 @@ public class DotRenderUtil {
      * "dot" is used as executable, and 'dot' must on the 'PATH'.
      * </p>
      *
+     * <p>
+     * The path for the resulting SVG file is the DOT file path with its '.dot' file extension removed (if present), and
+     * the '.svg' file extension added to it.
+     * </p>
+     *
      * @param dotFilePath The path to the DOT file to render.
-     * @note The path for the resulting SVG file is the DOT file path with '.svg' added to it.
+     * @return The path to the rendered SVG file.
      * @throws IOException In case of an I/O error.
      * @throws IllegalStateException If the DOT executable did not successfully terminate.
      */
-    public static void renderDot(Path dotFilePath) throws IOException {
-        renderDot(dotFilePath, null);
+    public static Path renderDot(Path dotFilePath) throws IOException {
+        String svgFileName = dotFilePath.getFileName().toString();
+        if (svgFileName.endsWith(".dot")) {
+            svgFileName = svgFileName.substring(0, svgFileName.length() - ".dot".length());
+        }
+        svgFileName += ".svg";
+        Path svgFilePath = dotFilePath.resolveSibling(svgFileName);
+        renderDot(dotFilePath, svgFilePath);
+        return svgFilePath;
     }
 
     /**
@@ -50,8 +62,7 @@ public class DotRenderUtil {
      * </p>
      *
      * @param dotFilePath The path to the DOT file to render.
-     * @param svgFilePath The path to the SVG file to produce. May be {@code null} to use the DOT file path with '.svg'
-     *     added to it.
+     * @param svgFilePath The path to the SVG file to produce.
      * @throws IOException In case of an I/O error.
      * @throws IllegalStateException If the DOT executable did not successfully terminate.
      */
@@ -67,12 +78,8 @@ public class DotRenderUtil {
         List<String> command = new ArrayList<>();
         command.add(dotExecPath);
         command.add("-Tsvg");
-        if (svgFilePath == null) {
-            command.add("-O");
-        } else {
-            command.add("-o");
-            command.add(svgFilePath.toString());
-        }
+        command.add("-o");
+        command.add(svgFilePath.toString());
         command.add(dotFilePath.toString());
         builder.command(command);
         builder.inheritIO();

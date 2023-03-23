@@ -121,7 +121,7 @@ public class MultipleInputsExample {
         }
 
         // Render the DOT file to an SVG image.
-        DotRenderUtil.renderDot(dotPath);
-        System.out.println("The result is in: " + dotPath + ".svg");
+        Path svgPath = DotRenderUtil.renderDot(dotPath);
+        System.out.println("The result is in: " + svgPath);
     }
 }
