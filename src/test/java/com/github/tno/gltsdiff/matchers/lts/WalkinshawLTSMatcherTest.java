@@ -8,11 +8,12 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.matchers;
+package com.github.tno.gltsdiff.matchers.lts;
 
 import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.lts.automaton.SimpleAutomaton;
-import com.github.tno.gltsdiff.matchers.lts.WalkinshawLTSMatcher;
+import com.github.tno.gltsdiff.matchers.Matcher;
+import com.github.tno.gltsdiff.matchers.MatcherTest;
 import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;
 import com.github.tno.gltsdiff.operators.combiners.lts.automaton.AutomatonStatePropertyCombiner;
 import com.github.tno.gltsdiff.scorers.SimilarityScorer;

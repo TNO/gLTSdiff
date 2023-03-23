@@ -8,7 +8,7 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.matchers.scorers;
+package com.github.tno.gltsdiff.matchers.scorers.lts;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import com.github.tno.gltsdiff.TestAutomata;
 import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.lts.automaton.SimpleAutomaton;
+import com.github.tno.gltsdiff.matchers.scorers.WalkinshawScorerTest;
 import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;
 import com.github.tno.gltsdiff.operators.combiners.lts.automaton.AutomatonStatePropertyCombiner;
 import com.github.tno.gltsdiff.scorers.SimilarityScorer;
