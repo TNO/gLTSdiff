@@ -51,7 +51,7 @@ import com.google.common.collect.Sets;
  * @param <T> The type of transition properties.
  * @param <U> The type of GLTSs.
  */
-public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matcher<S, T, U> {
+public class BruteForceMatcher<S, T, U extends GLTS<S, T>> implements Matcher<S, T, U> {
     /** The combiner for state properties. */
     protected final Combiner<S> statePropertyCombiner;
 
@@ -64,7 +64,7 @@ public class BruteForceGLTSMatcher<S, T, U extends GLTS<S, T>> implements Matche
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
-    public BruteForceGLTSMatcher(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner) {
+    public BruteForceMatcher(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner) {
         this.statePropertyCombiner = statePropertyCombiner;
         this.transitionPropertyCombiner = transitionPropertyCombiner;
     }

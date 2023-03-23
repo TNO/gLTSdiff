@@ -46,7 +46,7 @@ import com.google.common.collect.ImmutableSet;
  * @param <T> The type of transition properties.
  * @param <U> The type of GLTSs.
  */
-public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatcher<S, T, U> {
+public class WalkinshawMatcher<S, T, U extends GLTS<S, T>> extends ScoringMatcher<S, T, U> {
     /** The combiner for state properties. */
     private final Combiner<S> statePropertyCombiner;
 
@@ -88,7 +88,7 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
-    public WalkinshawGLTSMatcher(SimilarityScorer<S, T, U> scorer, Combiner<S> statePropertyCombiner,
+    public WalkinshawMatcher(SimilarityScorer<S, T, U> scorer, Combiner<S> statePropertyCombiner,
             Combiner<T> transitionPropertyCombiner)
     {
         this(scorer, statePropertyCombiner, transitionPropertyCombiner, 0.25d, 1.5d);
@@ -114,7 +114,7 @@ public class WalkinshawGLTSMatcher<S, T, U extends GLTS<S, T>> extends ScoringMa
      *     conflicting matches. In such a scenario, lowering this ratio might help. It does not make sense to have it
      *     lower than 1.0.
      */
-    public WalkinshawGLTSMatcher(SimilarityScorer<S, T, U> scorer, Combiner<S> statePropertyCombiner,
+    public WalkinshawMatcher(SimilarityScorer<S, T, U> scorer, Combiner<S> statePropertyCombiner,
             Combiner<T> transitionPropertyCombiner, double landmarkThreshold, double landmarkRatio)
     {
         super(scorer);

@@ -26,7 +26,7 @@ import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.Transition;
 import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.lts.automaton.SimpleAutomaton;
-import com.github.tno.gltsdiff.matchers.BruteForceLTSMatcher;
+import com.github.tno.gltsdiff.matchers.lts.BruteForceLTSMatcher;
 import com.github.tno.gltsdiff.mergers.DefaultMerger;
 import com.github.tno.gltsdiff.operators.combiners.AutomatonStatePropertyCombiner;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;

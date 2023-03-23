@@ -8,10 +8,11 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.matchers;
+package com.github.tno.gltsdiff.matchers.lts;
 
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.lts.LTS;
+import com.github.tno.gltsdiff.matchers.BruteForceMatcher;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 
 /**
@@ -22,7 +23,7 @@ import com.github.tno.gltsdiff.operators.combiners.Combiner;
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs.
  */
-public class BruteForceLTSMatcher<S, T, U extends LTS<S, T>> extends BruteForceGLTSMatcher<S, T, U> {
+public class BruteForceLTSMatcher<S, T, U extends LTS<S, T>> extends BruteForceMatcher<S, T, U> {
     /**
      * Instantiates a new brute force matcher for LTSs.
      *

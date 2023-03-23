@@ -8,7 +8,7 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.matchers;
+package com.github.tno.gltsdiff.matchers.lts;
 
 import java.util.Set;
 import java.util.function.BiFunction;
@@ -17,6 +17,7 @@ import org.apache.commons.math3.util.Pair;
 
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.lts.LTS;
+import com.github.tno.gltsdiff.matchers.WalkinshawMatcher;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.scorers.SimilarityScorer;
 import com.google.common.collect.ImmutableSet;
@@ -29,7 +30,7 @@ import com.google.common.collect.ImmutableSet;
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs.
  */
-public class WalkinshawLTSMatcher<S, T, U extends LTS<S, T>> extends WalkinshawGLTSMatcher<S, T, U> {
+public class WalkinshawLTSMatcher<S, T, U extends LTS<S, T>> extends WalkinshawMatcher<S, T, U> {
     /**
      * Instantiates a new Walkinshaw matcher for LTSs.
      *

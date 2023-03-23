@@ -10,44 +10,54 @@
 
 package com.github.tno.gltsdiff.matchers;
 
+import java.util.Map;
 import java.util.function.BiFunction;
 
-import com.github.tno.gltsdiff.glts.lts.LTS;
+import com.github.tno.gltsdiff.glts.GLTS;
+import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
-import com.github.tno.gltsdiff.scorers.DynamicLTSScorer;
+import com.github.tno.gltsdiff.scorers.DynamicGLTSScorer;
 import com.github.tno.gltsdiff.scorers.SimilarityScorer;
 
 /**
- * Matcher that computes state matchings for {@link LTS LTSs}, that makes a trade-off between computational intensity
- * and the quality of the computed matchings.
+ * Matcher that computes state matchings for {@link GLTS GLTSs}, making a trade-off between computational intensity and
+ * the quality of the computed matchings.
+ *
+ * <p>
+ * Different matching algorithms can be used for different input GLTSs, e.g. based on their sizes (numbers of states)
+ * from "heavyweight" (for smaller GLTSs) to "lightweight" (for larger GLTSs).
+ * </p>
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
- * @param <U> The type of LTSs.
+ * @param <U> The type of GLTSs.
  */
-public class DynamicLTSMatcher<S, T, U extends LTS<S, T>> extends DynamicGLTSMatcher<S, T, U> {
+public class DynamicMatcher<S, T, U extends GLTS<S, T>> implements Matcher<S, T, U> {
+    /** The matching algorithm to use. */
+    private final Matcher<S, T, U> matcher;
+
     /**
-     * Instantiates a new dynamic matcher for LTSs, that uses a default configuration of matching algorithms.
+     * Instantiates a new dynamic matcher for GLTSs, that uses a default configuration of matching algorithms.
      *
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
-    public DynamicLTSMatcher(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner) {
+    public DynamicMatcher(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner) {
         this(statePropertyCombiner, transitionPropertyCombiner, (s, t) -> defaultMatchingAlgorithmCreator(s, t));
     }
 
     /**
-     * Instantiates a new dynamic matcher for LTSs.
+     * Instantiates a new dynamic matcher for GLTSs.
      *
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
-     * @param matchingAlgorithmCreator The matching algorithm creator. Given the input LTSs and appropriate combiners,
-     *     creates a suitable algorithm.
+     * @param matchingAlgorithmCreator The matching algorithm creator. Given appropriate combiners, creates a suitable
+     *     algorithm.
      */
-    public DynamicLTSMatcher(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner,
+    public DynamicMatcher(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner,
             BiFunction<Combiner<S>, Combiner<T>, Matcher<S, T, U>> matchingAlgorithmCreator)
     {
-        super(statePropertyCombiner, transitionPropertyCombiner, matchingAlgorithmCreator);
+        this.matcher = matchingAlgorithmCreator.apply(statePropertyCombiner, transitionPropertyCombiner);
     }
 
     /**
@@ -55,16 +65,16 @@ public class DynamicLTSMatcher<S, T, U extends LTS<S, T>> extends DynamicGLTSMat
      *
      * @param <S> The type of state properties.
      * @param <T> The type of transition properties.
-     * @param <U> The type of LTSs.
+     * @param <U> The type of GLTSs.
      * @param statePropertyCombiner The state property combiner.
      * @param transitionPropertyCombiner The transition property combiner.
      * @return The matcher.
      */
-    private static final <S, T, U extends LTS<S, T>> Matcher<S, T, U>
+    private static final <S, T, U extends GLTS<S, T>> Matcher<S, T, U>
             defaultMatchingAlgorithmCreator(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner)
     {
-        SimilarityScorer<S, T, U> scorer = new DynamicLTSScorer<>(statePropertyCombiner, transitionPropertyCombiner);
-        Matcher<S, T, U> walkinshawMatcher = new WalkinshawLTSMatcher<>(scorer, statePropertyCombiner,
+        SimilarityScorer<S, T, U> scorer = new DynamicGLTSScorer<>(statePropertyCombiner, transitionPropertyCombiner);
+        Matcher<S, T, U> walkinshawMatcher = new WalkinshawMatcher<>(scorer, statePropertyCombiner,
                 transitionPropertyCombiner);
         Matcher<S, T, U> kuhnMunkresMatcher = new KuhnMunkresMatcher<>(scorer, statePropertyCombiner);
         return (lhs, rhs) -> {
@@ -74,5 +84,10 @@ public class DynamicLTSMatcher<S, T, U extends LTS<S, T>> extends DynamicGLTSMat
                 return kuhnMunkresMatcher.compute(lhs, rhs);
             }
         };
+    }
+
+    @Override
+    public Map<State<S>, State<S>> compute(U lhs, U rhs) {
+        return matcher.compute(lhs, rhs);
     }
 }

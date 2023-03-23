@@ -43,7 +43,7 @@ import com.google.common.collect.HashBiMap;
  *
  * <p>
  * If one experiences performance problems with {@link KuhnMunkresMatcher}, for example because the input GLTSs are
- * large or dense, consider switching to a more lightweight matcher like for example {@link WalkinshawGLTSMatcher}.
+ * large or dense, consider switching to a more lightweight matcher like for example {@link WalkinshawMatcher}.
  * </p>
  *
  * @param <S> The type of state properties.
