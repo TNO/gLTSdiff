@@ -34,12 +34,12 @@ public abstract class Combiner<T> {
      *
      * <p>
      * This binary relation must be implemented to satisfy the following two properties:
+     * </p>
      * <ul>
      * <li>It must be an <u>equivalence relation</u>, meaning that it must be reflexive, symmetric and transitive.</li>
      * <li>It must <u>agree with Java value equality</u>: if {@code left} and {@code right} are {@link Object#equals
      * equal} in the Java sense then they must also necessarily be combinable.</li>
      * </ul>
-     * </p>
      *
      * @param left The first input property, which must be non-{@code null}.
      * @param right The second input property, which must be non-{@code null}.
@@ -53,6 +53,7 @@ public abstract class Combiner<T> {
      *
      * <p>
      * This binary operation must be implemented to satisfy the following four properties:
+     * </p>
      * <ul>
      * <li><u>Combinability preserving</u>: for every two combinable properties <i>e1</i> and <i>e2</i> it must hold
      * that both these properties are again combinable with <i>combine(e1, e2)</i>.</li>
@@ -61,7 +62,6 @@ public abstract class Combiner<T> {
      * <li><u>Commutative:</u> for every two combinable properties <i>e1</i> and <i>e2</i> it holds that <i>combine(e1,
      * e2) = combine(e2, e1)</i>.</li>
      * </ul>
-     * </p>
      *
      * @param left The first input property, which must be non-{@code null}.
      * @param right The second input property, which must be non-{@code null}.

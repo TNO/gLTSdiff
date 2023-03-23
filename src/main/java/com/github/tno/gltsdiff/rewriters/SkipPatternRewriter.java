@@ -36,6 +36,7 @@ public abstract class SkipPatternRewriter<S, T, U extends GLTS<S, T>> implements
      *
      * <p>
      * A <u>pattern of intuitively skippable structure</u> is defined to be a non-empty set <i>X</i> of states such that
+     * </p>
      * <ol>
      * <li><i>X</i> does not include {@code source}, {@code target} nor any states in {@code forbidden}.</li>
      * <li>All states in <i>X</i> are reachable from {@code source} without using {@code forbidden} states.</li>
@@ -43,7 +44,6 @@ public abstract class SkipPatternRewriter<S, T, U extends GLTS<S, T>> implements
      * <li>All predecessors of states in <i>X</i> must be included in '<i>X</i> union {@code source}'.</li>
      * <li>All successors of states in <i>X</i> must be included in '<i>X</i> union {@code target}'.</li>
      * </ol>
-     * </p>
      *
      * <p>
      * Note that this function does not check entire (fork/join) skip patterns, but just the parts of them that may (or

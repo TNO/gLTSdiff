@@ -25,13 +25,13 @@ import com.google.common.base.Preconditions;
  *
  * <p>
  * Difference automata maintain the invariant that difference kinds are always properly nested, meaning that:
+ * </p>
  * <ul>
  * <li>State/transition properties that are {@link DiffKind#ADDED added} cannot contain nested properties that are
  * {@link DiffKind#REMOVED removed} or {@link DiffKind#UNCHANGED unchanged}.</li>
  * <li>State/transition properties that are {@link DiffKind#REMOVED removed} cannot contain nested properties that are
  * {@link DiffKind#ADDED added} or {@link DiffKind#UNCHANGED unchanged}.</li>
  * </ul>
- * </p>
  *
  * @param <T> The type of transition properties.
  */

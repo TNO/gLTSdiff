@@ -55,13 +55,13 @@ public class SkipForkPatternRewriter<T>
      * <p>
      * The specified {@code transitionPropertyCombiner} and {@code transitionPropertyHider} are <u>required to
      * interact</u> in the following ways:
+     * </p>
      * <ol>
      * <li>All hidden properties are combinable with each other: for any <i>e1</i> and <i>e2</i>, if <i>hidden(e1)</i>
      * and <i>hidden(e2)</i> then <i>combinable(e1, e2)</i>.</li>
      * <li>The combination of any two hidden properties is again hidden: for any <i>e1</i> and <i>e2</i>, if
      * <i>hidden(e1)</i> and <i>hidden(e2)</i> then <i>hidden(combine(e1, e2))</i>.</li>
      * </ol>
-     * </p>
      *
      * @param transitionPropertyCombiner The combiner for transition properties.
      * @param transitionPropertyHider The hider for transition properties.
@@ -119,6 +119,7 @@ public class SkipForkPatternRewriter<T>
      *
      * <p>
      * The input transitions form a skip fork pattern if:
+     * </p>
      * <ol>
      * <li>{@code left} and {@code right} have the same source state, and have different target states (i.e., they form
      * a proper fork pattern).</li>
@@ -131,7 +132,6 @@ public class SkipForkPatternRewriter<T>
      * transitions, etc., of the source and target states of {@code left} and {@code right} are such that the
      * introduction of a new skip transition would not change the language of {@code diff}.</li>
      * </ol>
-     * </p>
      *
      * @param diff The contextual input difference automaton.
      * @param left The left transition, which must be different from {@code right} but must have the same source state.
