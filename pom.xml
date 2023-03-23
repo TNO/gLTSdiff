@@ -22,10 +22,12 @@ SPDX-License-Identifier: MIT
     <description>gLTSdiff: Generalized LTS differencing</description>
 
     <properties>
-        <apache.commons.lang3.version>3.1</apache.commons.lang3.version>        <apache.commons.math3.version>3.6.1</apache.commons.math3.version>
+        <apache.commons.lang3.version>3.1</apache.commons.lang3.version>
+        <apache.commons.math3.version>3.6.1</apache.commons.math3.version>
         <google.guava.version>30.1-jre</google.guava.version>
         <java.version>11</java.version>
-        <junit.jupiter.version>5.9.1</junit.jupiter.version>
+        <junit.jupiter.version>5.9.2</junit.jupiter.version>
+        <junit.platform.version>1.9.2</junit.platform.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -61,6 +63,12 @@ SPDX-License-Identifier: MIT
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
             <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-runner</artifactId>
+            <version>${junit.platform.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -102,6 +110,24 @@ SPDX-License-Identifier: MIT
                     <showWarnings>true</showWarnings>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.junit.platform</groupId>
+                        <artifactId>junit-platform-surefire-provider</artifactId>
+                        <version>1.3.2</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <additionalClasspathElements>
+                        <additionalClasspathElement>src/test/java/</additionalClasspathElement>
+                    </additionalClasspathElements>
                 </configuration>
             </plugin>
 
