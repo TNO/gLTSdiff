@@ -10,7 +10,7 @@
 
 package com.github.tno.gltsdiff.operators.printers;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import com.google.common.base.Preconditions;
 
@@ -23,6 +23,6 @@ public class StringHtmlPrinter<T> implements HtmlPrinter<T> {
     @Override
     public String print(T property) {
         Preconditions.checkNotNull(property, "Expected a non-null property.");
-        return StringEscapeUtils.escapeHtml(property.toString().trim());
+        return StringEscapeUtils.escapeHtml4(property.toString().trim());
     }
 }
