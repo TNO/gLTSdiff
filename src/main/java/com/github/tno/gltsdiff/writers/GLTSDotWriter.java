@@ -90,6 +90,7 @@ public class GLTSDotWriter<S, T, U extends GLTS<S, T>> {
 
             // Close graph scope.
             writer.append("}");
+            writer.write(System.lineSeparator());
         }
     }
 

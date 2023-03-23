@@ -8,11 +8,16 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.examples.multipleinputs;
+package com.github.tno.gltsdiff.examples;
 
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import org.apache.commons.math3.util.Pair;
 
@@ -31,10 +36,20 @@ import com.github.tno.gltsdiff.operators.combiners.SetCombiner;
 import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
 import com.github.tno.gltsdiff.operators.printers.SetHtmlPrinter;
 import com.github.tno.gltsdiff.operators.printers.StringHtmlPrinter;
+import com.github.tno.gltsdiff.utils.DotRenderUtil;
 import com.github.tno.gltsdiff.writers.AutomatonDotWriter;
 import com.google.common.collect.ImmutableSet;
 
-/** Example that compares and merges multiple inputs. */
+/**
+ * Example that compares and merges multiple inputs.
+ *
+ * <p>
+ * This example demonstrates how to apply gLTSdiff on more than two inputs. For that we use version-annotated GLTSs,
+ * which are GLTSs where the transitions are annotated with a version (number). We construct three such models as input.
+ * Then we compare the structures of these models, and compute a single model that shows how the three input models
+ * relate.
+ * </p>
+ */
 public class MultipleInputsExample {
     /** Constructor for the {@link MultipleInputsExample} class. */
     private MultipleInputsExample() {
@@ -78,6 +93,26 @@ public class MultipleInputsExample {
         third.addTransition(t3, Pair.create("d", ImmutableSet.of(3)), t1);
         third.addTransition(t1, Pair.create("e", ImmutableSet.of(3)), t2);
 
+        // Get all inputs.
+        List<SimpleAutomaton<Pair<String, Set<Integer>>>> inputs = List.of(first, second, third);
+
+        // Prepare DOT (HTML) printers for printing version-annotated GLTSs.
+        HtmlPrinter<Set<Integer>> versionSetPrinter = new SetHtmlPrinter<>(new StringHtmlPrinter<>(), "", ",", "");
+        HtmlPrinter<Pair<String, Set<Integer>>> transitionPropertyPrinter = pair -> pair.getFirst() + "<br/>" + "{"
+                + versionSetPrinter.print(pair.getSecond()) + "}";
+        HtmlPrinter<Transition<AutomatonStateProperty, Pair<String, Set<Integer>>>> printer = transition -> transitionPropertyPrinter
+                .print(transition.getProperty());
+
+        // Write the inputs to files in DOT format, and render them to SVG.
+        for (int i = 0; i < inputs.size(); i++) {
+            SimpleAutomaton<Pair<String, Set<Integer>>> input = inputs.get(i);
+            Path dotPath = Paths.get("examples/multipleinputs/input" + (i + 1) + ".dot");
+            try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(dotPath.toFile()))) {
+                new AutomatonDotWriter<>(printer).write(input, stream);
+            }
+            DotRenderUtil.renderDot(dotPath);
+        }
+
         // Instantiate combiners for the states and transitions of the three input automata.
         Combiner<AutomatonStateProperty> statePropertyCombiner = new AutomatonStatePropertyCombiner();
         Combiner<Pair<String, Set<Integer>>> transitionPropertyCombiner = new PairCombiner<>(new EqualityCombiner<>(),
@@ -89,17 +124,14 @@ public class MultipleInputsExample {
                 new DefaultMerger<>(statePropertyCombiner, transitionPropertyCombiner, SimpleAutomaton::new));
 
         // Apply structural comparison to the three input automata.
-        SimpleAutomaton<Pair<String, Set<Integer>>> result = Stream.of(first, second, third).reduce(comparator::compare)
-                .get();
+        SimpleAutomaton<Pair<String, Set<Integer>>> result = inputs.stream().reduce(comparator::compare).get();
 
-        // Prepare DOT (HTML) printers for printing the result.
-        HtmlPrinter<Set<Integer>> versionSetPrinter = new SetHtmlPrinter<>(new StringHtmlPrinter<>(), "", ",", "");
-        HtmlPrinter<Pair<String, Set<Integer>>> transitionPropertyPrinter = pair -> pair.getFirst() + "<br/>" + "{"
-                + versionSetPrinter.print(pair.getSecond()) + "}";
-        HtmlPrinter<Transition<AutomatonStateProperty, Pair<String, Set<Integer>>>> printer = transition -> transitionPropertyPrinter
-                .print(transition.getProperty());
-
-        // Write the result to the console, in DOT format.
-        new AutomatonDotWriter<>(printer).write(result, System.out);
+        // Write the result to a file in DOT format, and render it to SVG.
+        Path dotPath = Paths.get("examples/multipleinputs/result.dot");
+        try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(dotPath.toFile()))) {
+            new AutomatonDotWriter<>(printer).write(result, stream);
+        }
+        Path svgPath = DotRenderUtil.renderDot(dotPath);
+        System.out.println("The result is in: " + svgPath);
     }
 }
