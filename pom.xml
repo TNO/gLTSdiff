@@ -22,8 +22,9 @@ SPDX-License-Identifier: MIT
     <description>gLTSdiff: Generalized LTS differencing</description>
 
     <properties>
-        <apache.commons.lang3.version>3.1</apache.commons.lang3.version>
+        <apache.commons.lang3.version>3.12.0</apache.commons.lang3.version>
         <apache.commons.math3.version>3.6.1</apache.commons.math3.version>
+        <apache.commons.text.version>1.10.0</apache.commons.text.version>
         <google.guava.version>30.1-jre</google.guava.version>
         <java.version>11</java.version>
         <junit.version>5.9.2</junit.version>
@@ -57,6 +58,11 @@ SPDX-License-Identifier: MIT
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
             <version>${apache.commons.math3.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>${apache.commons.text.version}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

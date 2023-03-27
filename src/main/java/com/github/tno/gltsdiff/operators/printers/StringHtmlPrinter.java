@@ -10,7 +10,7 @@
 
 package com.github.tno.gltsdiff.operators.printers;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 import com.google.common.base.Preconditions;
 
