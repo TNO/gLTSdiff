@@ -40,7 +40,6 @@ public class DotRenderer {
      * @param dotFilePath The path to the DOT file to render.
      * @return The path to the rendered SVG file.
      * @throws IOException In case of an I/O error.
-     * @throws IllegalStateException If the DOT executable did not successfully terminate.
      */
     public static Path renderDot(Path dotFilePath) throws IOException {
         String svgFileName = dotFilePath.getFileName().toString();
@@ -64,7 +63,6 @@ public class DotRenderer {
      * @param dotFilePath The path to the DOT file to render.
      * @param svgFilePath The path to the SVG file to produce.
      * @throws IOException In case of an I/O error.
-     * @throws IllegalStateException If the DOT executable did not successfully terminate.
      */
     public static void renderDot(Path dotFilePath, Path svgFilePath) throws IOException {
         // Get DOT executable path.
