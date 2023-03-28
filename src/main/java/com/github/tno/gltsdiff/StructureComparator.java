@@ -76,9 +76,9 @@ public class StructureComparator<S, T, U extends GLTS<S, T>> {
     }
 
     /**
-     * Compare and merge two or more GLTSs.
+     * Compare and merge some GLTSs.
      *
-     * @param gltss The GLTSs. At least two GLTSs must be given.
+     * @param gltss The GLTSs. At least one GLTS must be given.
      * @return The GLTS produced by comparing and merging the GLTSs.
      */
     @SuppressWarnings("unchecked")
@@ -87,9 +87,9 @@ public class StructureComparator<S, T, U extends GLTS<S, T>> {
     }
 
     /**
-     * Compare and merge two or more GLTSs.
+     * Compare and merge some GLTSs.
      *
-     * @param gltss The GLTSs. At least two GLTSs must be given.
+     * @param gltss The GLTSs. At least one GLTS must be given.
      * @return The GLTS produced by comparing and merging the GLTSs.
      */
     public U compare(Collection<U> gltss) {
@@ -97,15 +97,15 @@ public class StructureComparator<S, T, U extends GLTS<S, T>> {
     }
 
     /**
-     * Compare and merge two or more GLTSs.
+     * Compare and merge some GLTSs.
      *
-     * @param gltss The GLTSs. At least two GLTSs must be given.
+     * @param gltss The GLTSs. At least one GLTSs must be given.
      * @return The GLTS produced by comparing and merging the GLTSs.
      */
     public U compare(Stream<U> gltss) {
         // Compare and merge.
         Optional<U> optionalResult = gltss.reduce(this::compareInternal);
-        Preconditions.checkArgument(optionalResult.isPresent(), "Expected to compare at least two GLTSs to compare.");
+        Preconditions.checkArgument(optionalResult.isPresent(), "Expected to compare at least one GLTS to compare.");
         U result = optionalResult.get();
 
         // Rewrite, as post-processing.
