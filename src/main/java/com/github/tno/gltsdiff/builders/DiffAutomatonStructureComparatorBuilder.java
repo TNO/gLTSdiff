@@ -31,14 +31,6 @@ import com.github.tno.gltsdiff.writers.lts.automaton.diff.DiffAutomatonDotWriter
 public abstract class DiffAutomatonStructureComparatorBuilder<T>
         extends AutomatonStructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
 {
-    /** Instantiates a new difference automaton structure comparator builder. */
-    public DiffAutomatonStructureComparatorBuilder() {
-        super();
-        addEntanglementRewriter();
-        addSkipForkPatternRewriter();
-        addSkipJoinPatternRewriter();
-    }
-
     @Override
     public StructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
             setDefaultInstantiator()
@@ -51,6 +43,17 @@ public abstract class DiffAutomatonStructureComparatorBuilder<T>
             setDefaultStatePropertyCombiner()
     {
         return setStatePropertyCombiner(new DiffAutomatonStatePropertyCombiner());
+    }
+
+    @Override
+    public StructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
+            addDefaultRewriters()
+    {
+        addEntanglementRewriter();
+        super.addDefaultRewriters();
+        addSkipForkPatternRewriter();
+        addSkipJoinPatternRewriter();
+        return this;
     }
 
     /**

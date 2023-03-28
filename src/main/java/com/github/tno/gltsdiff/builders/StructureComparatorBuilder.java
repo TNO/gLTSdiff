@@ -119,7 +119,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
         setDefaultMerger();
         setEqualToCombinationInclusionOperator();
         setThrowingHider();
-        addLocalRedundancyRewriter();
+        addDefaultRewriters();
         setDefaultStateLabelHtmlPrinter();
         setDefaultTransitionLabelHtmlPrinter();
         setDefaultDotWriter();
@@ -447,6 +447,15 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
         }
         this.rewriterProviders.add(rewriterProvider);
         return this;
+    }
+
+    /**
+     * Add default rewriters.
+     *
+     * @return This helper, for chaining.
+     */
+    public StructureComparatorBuilder<S, T, U> addDefaultRewriters() {
+        return addLocalRedundancyRewriter();
     }
 
     /**
