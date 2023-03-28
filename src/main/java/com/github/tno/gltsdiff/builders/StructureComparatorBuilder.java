@@ -35,6 +35,7 @@ import com.github.tno.gltsdiff.operators.hiders.Hider;
 import com.github.tno.gltsdiff.operators.inclusions.EqualToCombinationInclusion;
 import com.github.tno.gltsdiff.operators.inclusions.Inclusion;
 import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
+import com.github.tno.gltsdiff.operators.printers.StringHtmlPrinter;
 import com.github.tno.gltsdiff.rewriters.FixedPointRewriter;
 import com.github.tno.gltsdiff.rewriters.LocalRedundancyRewriter;
 import com.github.tno.gltsdiff.rewriters.Rewriter;
@@ -98,10 +99,10 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
     /** Rewriter providers. */
     private List<QuadFunction<Combiner<S>, Combiner<T>, Inclusion<T>, Supplier<Hider<T>>, Rewriter<S, T, U>>> rewriterProviders;
 
-    /** State label printer. */
+    /** State label HTML printer. */
     private HtmlPrinter<State<S>> stateLabelPrinter;
 
-    /** Transition label printer. */
+    /** Transition label HTML printer. */
     private HtmlPrinter<Transition<S, T>> transitionLabelPrinter;
 
     /** Writer provider. */
@@ -118,6 +119,8 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
         setEqualToCombinationInclusionOperator();
         setThrowingHider();
         addLocalRedundancyRewriter();
+        setDefaultStateLabelHtmlPrinter();
+        setDefaultTransitionLabelHtmlPrinter();
         setDefaultDotWriter();
     }
 
@@ -445,6 +448,50 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      */
     public StructureComparatorBuilder<S, T, U> addLocalRedundancyRewriter() {
         return addRewriter((s, t, i, h) -> new LocalRedundancyRewriter<>(t));
+    }
+
+    /**
+     * Set the state label HTML printer.
+     *
+     * @param stateLabelPrinter The state label HTML printer.
+     * @return This helper, for chaining.
+     */
+    public StructureComparatorBuilder<S, T, U> setStateLabelHtmlPrinter(HtmlPrinter<State<S>> stateLabelPrinter) {
+        Preconditions.checkNotNull(stateLabelPrinter, "Expected a non-null state label HTML printer.");
+        this.stateLabelPrinter = stateLabelPrinter;
+        return this;
+    }
+
+    /**
+     * Set {@link DotWriter#stateLabel} as state label HTML printer.
+     *
+     * @return This helper, for chaining.
+     */
+    public StructureComparatorBuilder<S, T, U> setDefaultStateLabelHtmlPrinter() {
+        return setStateLabelHtmlPrinter(DotWriter::stateLabel);
+    }
+
+    /**
+     * Set the transition label HTML printer.
+     *
+     * @param transitionLabelPrinter The transition label HTML printer.
+     * @return This helper, for chaining.
+     */
+    public StructureComparatorBuilder<S, T, U>
+            setTransitionLabelHtmlPrinter(HtmlPrinter<Transition<S, T>> transitionLabelPrinter)
+    {
+        Preconditions.checkNotNull(transitionLabelPrinter, "Expected a non-null transition label HTML printer.");
+        this.transitionLabelPrinter = transitionLabelPrinter;
+        return this;
+    }
+
+    /**
+     * Set {@link StringHtmlPrinter} as transition label HTML printer.
+     *
+     * @return This helper, for chaining.
+     */
+    public StructureComparatorBuilder<S, T, U> setDefaultTransitionLabelHtmlPrinter() {
+        return setTransitionLabelHtmlPrinter(new StringHtmlPrinter<>());
     }
 
     /**
