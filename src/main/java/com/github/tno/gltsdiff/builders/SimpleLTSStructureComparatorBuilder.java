@@ -25,10 +25,9 @@ import com.github.tno.gltsdiff.operators.combiners.lts.LTSStatePropertyCombiner;
 public class SimpleLTSStructureComparatorBuilder<T, U extends LTS<LTSStateProperty, T>>
         extends LTSStructureComparatorBuilder<LTSStateProperty, T, SimpleLTS<T>>
 {
-    /** Instantiates a new simple LTS structure comparator builder. */
-    public SimpleLTSStructureComparatorBuilder() {
-        super();
-        setInstantiator(() -> new SimpleLTS<>());
+    @Override
+    public StructureComparatorBuilder<LTSStateProperty, T, SimpleLTS<T>> setDefaultInstantiator() {
+        return setInstantiator(() -> new SimpleLTS<>());
     }
 
     @Override

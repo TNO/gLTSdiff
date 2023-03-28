@@ -34,10 +34,16 @@ public abstract class DiffAutomatonStructureComparatorBuilder<T>
     /** Instantiates a new difference automaton structure comparator builder. */
     public DiffAutomatonStructureComparatorBuilder() {
         super();
-        setInstantiator(() -> new DiffAutomaton<>());
         addEntanglementRewriter();
         addSkipForkPatternRewriter();
         addSkipJoinPatternRewriter();
+    }
+
+    @Override
+    public StructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
+            setDefaultInstantiator()
+    {
+        return setInstantiator(() -> new DiffAutomaton<>());
     }
 
     @Override

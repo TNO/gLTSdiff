@@ -111,7 +111,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
 
     /** Instantiates a new GLTS structure comparator builder. */
     public StructureComparatorBuilder() {
-        // No instantiator is configured by default. For the rest, some defaults are given.
+        setDefaultInstantiator();
         setDefaultStatePropertyCombiner();
         setDefaultTransitionPropertyCombiner();
         setDynamicScorer();
@@ -136,6 +136,13 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
         this.instantiator = instantiator;
         return this;
     }
+
+    /**
+     * Set default instantiator.
+     *
+     * @return This helper, for chaining.
+     */
+    public abstract StructureComparatorBuilder<S, T, U> setDefaultInstantiator();
 
     /**
      * Set the state property combiner.

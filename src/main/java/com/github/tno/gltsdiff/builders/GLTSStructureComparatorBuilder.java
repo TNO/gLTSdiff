@@ -20,9 +20,8 @@ import com.github.tno.gltsdiff.glts.GLTS;
  * @param <T> The type of transition properties.
  */
 public class GLTSStructureComparatorBuilder<S, T> extends StructureComparatorBuilder<S, T, GLTS<S, T>> {
-    /** Instantiates a new GLTS structure comparator builder. */
-    public GLTSStructureComparatorBuilder() {
-        super();
-        setInstantiator(() -> new GLTS<>());
+    @Override
+    public StructureComparatorBuilder<S, T, GLTS<S, T>> setDefaultInstantiator() {
+        return setInstantiator(() -> new GLTS<>());
     }
 }

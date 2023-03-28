@@ -25,10 +25,9 @@ import com.github.tno.gltsdiff.operators.combiners.lts.automaton.AutomatonStateP
 public class SimpleAutomatonStructureComparatorBuilder<T, U extends Automaton<AutomatonStateProperty, T>>
         extends AutomatonStructureComparatorBuilder<AutomatonStateProperty, T, SimpleAutomaton<T>>
 {
-    /** Instantiates a new simple automaton structure comparator builder. */
-    public SimpleAutomatonStructureComparatorBuilder() {
-        super();
-        setInstantiator(() -> new SimpleAutomaton<>());
+    @Override
+    public StructureComparatorBuilder<AutomatonStateProperty, T, SimpleAutomaton<T>> setDefaultInstantiator() {
+        return setInstantiator(() -> new SimpleAutomaton<>());
     }
 
     @Override
