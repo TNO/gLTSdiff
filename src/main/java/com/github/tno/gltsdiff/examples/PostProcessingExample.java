@@ -17,30 +17,19 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import com.github.tno.gltsdiff.StructureComparator;
+import com.github.tno.gltsdiff.builders.DiffAutomatonStructureComparatorBuilder;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffKind;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffProperty;
-import com.github.tno.gltsdiff.matchers.lts.BruteForceLTSMatcher;
-import com.github.tno.gltsdiff.mergers.DefaultMerger;
-import com.github.tno.gltsdiff.operators.combiners.Combiner;
-import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;
-import com.github.tno.gltsdiff.operators.combiners.lts.automaton.diff.DiffAutomatonStatePropertyCombiner;
-import com.github.tno.gltsdiff.operators.combiners.lts.automaton.diff.DiffPropertyCombiner;
 import com.github.tno.gltsdiff.operators.hiders.DiffPropertyHider;
-import com.github.tno.gltsdiff.operators.hiders.Hider;
 import com.github.tno.gltsdiff.operators.hiders.SubstitutionHider;
-import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
-import com.github.tno.gltsdiff.operators.printers.StringHtmlPrinter;
-import com.github.tno.gltsdiff.operators.printers.lts.automaton.diff.DiffPropertyHtmlPrinter;
-import com.github.tno.gltsdiff.rewriters.lts.automaton.diff.DiffAutomatonPostProcessing;
 import com.github.tno.gltsdiff.writers.DotRenderer;
-import com.github.tno.gltsdiff.writers.lts.automaton.diff.DiffAutomatonDotWriter;
 
 /**
  * Example that compares two difference automata and performs post-processing to improve the comparison result.
@@ -89,58 +78,50 @@ public class PostProcessingExample {
         second.addTransition(s3, new DiffProperty<>("c", DiffKind.ADDED), s4);
         second.addTransition(s4, new DiffProperty<>("d", DiffKind.ADDED), s1);
 
-        // Get all inputs.
-        List<DiffAutomaton<String>> inputs = List.of(first, second);
-
-        // Prepare DOT (HTML) printers for printing difference automata.
-        HtmlPrinter<DiffProperty<String>> transitionPropertyPrinter = new DiffPropertyHtmlPrinter<>(
-                new StringHtmlPrinter<>());
+        // Configure comparison, merging and writing, without rewriters for post-processing.
+        DiffAutomatonStructureComparatorBuilder<String> builder = new DiffAutomatonStructureComparatorBuilder<>();
+        builder.setHider(new DiffPropertyHider<>(new SubstitutionHider<>("[skip]")));
+        builder.setRewriters(Collections.emptyList());
+        var comparator = builder.createComparator();
+        var writer = builder.createWriter();
 
         // Write the inputs to files in DOT format, and render them to SVG.
+        List<DiffAutomaton<String>> inputs = List.of(first, second);
         for (int i = 0; i < inputs.size(); i++) {
             DiffAutomaton<String> input = inputs.get(i);
             Path dotPath = Paths.get("examples/PostProcessing/input" + (i + 1) + ".dot");
             Files.createDirectories(dotPath.getParent());
             try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(dotPath.toFile()))) {
-                new DiffAutomatonDotWriter<>(transitionPropertyPrinter).write(input, stream);
+                writer.write(input, stream);
             }
             DotRenderer.renderDot(dotPath);
         }
-
-        // Instantiate combiners for the states and transitions of the input automata.
-        Combiner<DiffAutomatonStateProperty> statePropertyCombiner = new DiffAutomatonStatePropertyCombiner();
-        Combiner<DiffProperty<String>> transitionPropertyCombiner = new DiffPropertyCombiner<>(
-                new EqualityCombiner<>());
-
-        // Define a helper function to (more) easily compare the three automata.
-        StructureComparator<DiffAutomatonStateProperty, DiffProperty<String>, DiffAutomaton<String>> comparator = new StructureComparator<>(
-                new BruteForceLTSMatcher<>(statePropertyCombiner, transitionPropertyCombiner),
-                new DefaultMerger<>(statePropertyCombiner, transitionPropertyCombiner, DiffAutomaton::new));
 
         // Apply structural comparison to the two input automata.
         DiffAutomaton<String> result = comparator.compare(first, second);
 
         // Write the comparison result to a file in DOT format, and render it to SVG.
-        Path dotPath1 = Paths.get("examples/PostProcessing/result1.dot");
-        try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(dotPath1.toFile()))) {
-            new DiffAutomatonDotWriter<>(transitionPropertyPrinter).write(result, stream);
+        Path resultDotPath1 = Paths.get("examples/PostProcessing/result1.dot");
+        try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(resultDotPath1.toFile()))) {
+            writer.write(result, stream);
         }
-        Path svgPath1 = DotRenderer.renderDot(dotPath1);
-        System.out.println("The comparison result is in: " + svgPath1);
+        Path resultSvgPath1 = DotRenderer.renderDot(resultDotPath1);
+        System.out.println("The comparison result is in: " + resultSvgPath1);
 
-        // Configure a hider for transition properties.
-        Hider<DiffProperty<String>> transitionPropertyHider = new DiffPropertyHider<>(
-                new SubstitutionHider<>("[skip]"));
+        // Reconfigure comparison, merging and writing, with rewriters for post-processing.
+        builder.addDefaultRewriters();
+        comparator = builder.createComparator();
+        writer = builder.createWriter();
 
-        // Apply post-processing.
-        DiffAutomatonPostProcessing.rewrite(result, transitionPropertyCombiner, transitionPropertyHider);
+        // Reapply structural comparison to the two input automata.
+        result = comparator.compare(first, second);
 
         // Write the post-processing result to a file in DOT format, and render it to SVG.
-        Path dotPath2 = Paths.get("examples/PostProcessing/result2.dot");
-        try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(dotPath2.toFile()))) {
-            new DiffAutomatonDotWriter<>(transitionPropertyPrinter).write(result, stream);
+        Path resultDotPath2 = Paths.get("examples/PostProcessing/result2.dot");
+        try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(resultDotPath2.toFile()))) {
+            writer.write(result, stream);
         }
-        Path svgPath2 = DotRenderer.renderDot(dotPath2);
-        System.out.println("The post-processed result is in: " + svgPath2);
+        Path resultSvgPath2 = DotRenderer.renderDot(resultDotPath2);
+        System.out.println("The post-processed result is in: " + resultSvgPath2);
     }
 }
