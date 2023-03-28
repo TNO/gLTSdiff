@@ -23,7 +23,7 @@ import com.github.tno.gltsdiff.operators.combiners.lts.LTSStatePropertyCombiner;
  * @param <U> The type of LTSs to compare and combine.
  */
 public class SimpleLTSStructureComparatorBuilder<T, U extends LTS<LTSStateProperty, T>>
-        extends StructureComparatorBuilder<LTSStateProperty, T, SimpleLTS<T>>
+        extends LTSStructureComparatorBuilder<LTSStateProperty, T, SimpleLTS<T>>
 {
     /** Instantiates a new simple LTS structure comparator builder. */
     public SimpleLTSStructureComparatorBuilder() {

@@ -23,7 +23,7 @@ import com.github.tno.gltsdiff.writers.lts.automaton.AutomatonDotWriter;
  * @param <U> The type of automata to compare and combine.
  */
 public abstract class AutomatonStructureComparatorBuilder<S extends AutomatonStateProperty, T,
-        U extends Automaton<S, T>> extends StructureComparatorBuilder<S, T, U>
+        U extends Automaton<S, T>> extends LTSStructureComparatorBuilder<S, T, U>
 {
     @Override
     public StructureComparatorBuilder<S, T, U> setDefaultDotWriter() {

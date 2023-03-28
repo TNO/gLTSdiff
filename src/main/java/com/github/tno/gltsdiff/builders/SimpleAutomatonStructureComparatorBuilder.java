@@ -23,7 +23,7 @@ import com.github.tno.gltsdiff.operators.combiners.lts.automaton.AutomatonStateP
  * @param <U> The type of automata to compare and combine.
  */
 public class SimpleAutomatonStructureComparatorBuilder<T, U extends Automaton<AutomatonStateProperty, T>>
-        extends StructureComparatorBuilder<AutomatonStateProperty, T, SimpleAutomaton<T>>
+        extends AutomatonStructureComparatorBuilder<AutomatonStateProperty, T, SimpleAutomaton<T>>
 {
     /** Instantiates a new simple automaton structure comparator builder. */
     public SimpleAutomatonStructureComparatorBuilder() {
