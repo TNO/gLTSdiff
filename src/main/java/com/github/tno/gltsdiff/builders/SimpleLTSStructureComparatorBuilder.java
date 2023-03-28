@@ -10,7 +10,6 @@
 
 package com.github.tno.gltsdiff.builders;
 
-import com.github.tno.gltsdiff.glts.lts.LTS;
 import com.github.tno.gltsdiff.glts.lts.LTSStateProperty;
 import com.github.tno.gltsdiff.glts.lts.SimpleLTS;
 import com.github.tno.gltsdiff.operators.combiners.lts.LTSStatePropertyCombiner;
@@ -20,9 +19,8 @@ import com.github.tno.gltsdiff.operators.combiners.lts.LTSStatePropertyCombiner;
  * comparing, merging and writing {@link SimpleLTS simple LTSs}.
  *
  * @param <T> The type of transition properties.
- * @param <U> The type of LTSs to compare and combine.
  */
-public class SimpleLTSStructureComparatorBuilder<T, U extends LTS<LTSStateProperty, T>>
+public class SimpleLTSStructureComparatorBuilder<T>
         extends LTSStructureComparatorBuilder<LTSStateProperty, T, SimpleLTS<T>>
 {
     @Override

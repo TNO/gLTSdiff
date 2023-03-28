@@ -10,7 +10,6 @@
 
 package com.github.tno.gltsdiff.builders;
 
-import com.github.tno.gltsdiff.glts.lts.automaton.Automaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.lts.automaton.SimpleAutomaton;
 import com.github.tno.gltsdiff.operators.combiners.lts.automaton.AutomatonStatePropertyCombiner;
@@ -20,9 +19,8 @@ import com.github.tno.gltsdiff.operators.combiners.lts.automaton.AutomatonStateP
  * comparing, merging and writing {@link SimpleAutomaton simple automata}.
  *
  * @param <T> The type of transition properties.
- * @param <U> The type of automata to compare and combine.
  */
-public class SimpleAutomatonStructureComparatorBuilder<T, U extends Automaton<AutomatonStateProperty, T>>
+public class SimpleAutomatonStructureComparatorBuilder<T>
         extends AutomatonStructureComparatorBuilder<AutomatonStateProperty, T, SimpleAutomaton<T>>
 {
     @Override
