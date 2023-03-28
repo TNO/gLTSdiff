@@ -22,6 +22,7 @@ import com.github.tno.gltsdiff.glts.State;
  * @param <T> The type of transition properties.
  * @param <U> The type of GLTSs.
  */
+@FunctionalInterface
 public interface Matcher<S, T, U extends GLTS<S, T>> {
     /**
      * Computes a matching from LHS states to RHS states.

@@ -19,6 +19,7 @@ import com.github.tno.gltsdiff.glts.GLTS;
  * @param <T> The type of transition properties.
  * @param <U> The type of GLTSs to rewrite.
  */
+@FunctionalInterface
 public interface Rewriter<S, T, U extends GLTS<S, T>> {
     /**
      * Rewrite the given GLTS.

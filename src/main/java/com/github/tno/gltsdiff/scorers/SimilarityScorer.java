@@ -22,6 +22,7 @@ import com.github.tno.gltsdiff.glts.GLTS;
  * @param <T> The type of transition properties.
  * @param <U> The type of GLTSs.
  */
+@FunctionalInterface
 public interface SimilarityScorer<S, T, U extends GLTS<S, T>> {
     /**
      * Computes a matrix of (LHS, RHS)-state similarity scores. The rows correspond to LHS states, columns to RHS
