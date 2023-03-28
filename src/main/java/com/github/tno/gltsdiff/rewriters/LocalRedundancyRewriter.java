@@ -21,7 +21,7 @@ import com.github.tno.gltsdiff.operators.combiners.TransitionCombiner;
 import com.github.tno.gltsdiff.utils.EquivalenceClasses;
 
 /**
- * Eliminates patterns of local redundancy in GLTSs.
+ * A rewriter that eliminates patterns of local redundancy in GLTSs.
  *
  * <p>
  * A <i>pattern of local redundancy</i> is defined to be a set of at least two transitions with combinable properties,

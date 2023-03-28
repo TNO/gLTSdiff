@@ -27,7 +27,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 
 /**
- * A rewriter for rewriting skip fork patterns in {@link DiffAutomaton difference automata}.
+ * A rewriter that rewrites skip fork patterns in {@link DiffAutomaton difference automata}.
  *
  * @param <T> The type of transition properties.
  */
