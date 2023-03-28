@@ -105,7 +105,7 @@ public class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
     /** Writer provider. */
     private BiFunction<HtmlPrinter<State<S>>, HtmlPrinter<Transition<S, T>>, DotWriter<S, T, U>> writerProvider;
 
-    /** Constructor for the {@link StructureComparatorBuilder} class. */
+    /** Instantiates a new GLTS structure comparator builder. */
     public StructureComparatorBuilder() {
         // No instantiator is configured by default. For the rest, some defaults are given.
         setStatePropertyCombiner(new EqualityCombiner<>());
