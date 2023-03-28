@@ -36,6 +36,7 @@ import com.github.tno.gltsdiff.operators.inclusions.EqualToCombinationInclusion;
 import com.github.tno.gltsdiff.operators.inclusions.Inclusion;
 import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
 import com.github.tno.gltsdiff.operators.printers.StringHtmlPrinter;
+import com.github.tno.gltsdiff.operators.printers.TransitionHtmlPrinter;
 import com.github.tno.gltsdiff.rewriters.FixedPointRewriter;
 import com.github.tno.gltsdiff.rewriters.LocalRedundancyRewriter;
 import com.github.tno.gltsdiff.rewriters.Rewriter;
@@ -491,7 +492,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      * @return This helper, for chaining.
      */
     public StructureComparatorBuilder<S, T, U> setDefaultTransitionLabelHtmlPrinter() {
-        return setTransitionLabelHtmlPrinter(new StringHtmlPrinter<>());
+        return setTransitionLabelHtmlPrinter(new TransitionHtmlPrinter<>(new StringHtmlPrinter<>()));
     }
 
     /**
