@@ -448,7 +448,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      * @return This helper, for chaining.
      */
     public StructureComparatorBuilder<S, T, U> addLocalRedundancyRewriter() {
-        return addRewriter((s, t, i, h) -> new LocalRedundancyRewriter<>(t));
+        return addRewriter((s, t, i, hp) -> new LocalRedundancyRewriter<>(t));
     }
 
     /**
