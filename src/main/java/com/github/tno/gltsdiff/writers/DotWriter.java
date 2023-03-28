@@ -29,6 +29,10 @@ import com.google.common.base.Preconditions;
 /**
  * Writer for writing {@link GLTS GLTSs} in DOT format.
  *
+ * <p>
+ * The resulting DOT file can be rendered to an image using {@link DotRenderer}.
+ * </p>
+ *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
  * @param <U> The type of GLTSs to be written.
@@ -71,6 +75,10 @@ public class DotWriter<S, T, U extends GLTS<S, T>> {
 
     /**
      * Writes a GLTS in DOT format to the provided output stream.
+     *
+     * <p>
+     * The resulting DOT file can be rendered to an image using {@link DotRenderer}.
+     * </p>
      *
      * @param glts The GLTS.
      * @param stream Stream to output DOT data to.
