@@ -12,13 +12,14 @@ package com.github.tno.gltsdiff.rewriters.lts.automaton.diff;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiPredicate;
 
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffProperty;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.operators.hiders.Hider;
+import com.github.tno.gltsdiff.operators.inclusions.EqualToCombinationInclusion;
+import com.github.tno.gltsdiff.operators.inclusions.Inclusion;
 import com.github.tno.gltsdiff.rewriters.CompositeRewriter;
 import com.github.tno.gltsdiff.rewriters.LocalRedundancyRewriter;
 import com.github.tno.gltsdiff.rewriters.Rewriter;
@@ -43,7 +44,7 @@ public class DiffAutomatonPostProcessing {
             Hider<DiffProperty<T>> hider)
     {
         // Defines a standard transition property inclusion relation.
-        BiPredicate<DiffProperty<T>, DiffProperty<T>> isIncludedIn = (l, r) -> r.equals(combiner.combine(l, r));
+        Inclusion<DiffProperty<T>> isIncludedIn = new EqualToCombinationInclusion<>(combiner);
 
         // Instantiate all rewriters to be used for post-processing.
         List<Rewriter<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>> rewriters = new ArrayList<>();
