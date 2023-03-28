@@ -401,6 +401,16 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
     }
 
     /**
+     * Set the transition property hider.
+     *
+     * @param hider The hider.
+     * @return This helper, for chaining.
+     */
+    public StructureComparatorBuilder<S, T, U> setHider(Hider<T> hider) {
+        return setHider(() -> hider);
+    }
+
+    /**
      * Set an exception-throwing transition property hider as hider.
      *
      * @return This helper, for chaining.
