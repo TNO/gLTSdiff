@@ -8,7 +8,7 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff;
+package com.github.tno.gltsdiff.builders;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,6 +18,7 @@ import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import com.github.tno.gltsdiff.StructureComparator;
 import com.github.tno.gltsdiff.glts.GLTS;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.Transition;
@@ -48,7 +49,8 @@ import com.github.tno.gltsdiff.writers.DotWriter;
 import com.google.common.base.Preconditions;
 
 /**
- * Builder to more easily configure the various settings for comparing, merging and writing GLTSs.
+ * Structure comparator builder to more easily configure the various settings for comparing, merging and writing
+ * {@link GLTS GLTSs} and more specialized representations.
  *
  * <p>
  * This class provides:
@@ -68,7 +70,7 @@ import com.google.common.base.Preconditions;
  * @param <T> The type of transition properties.
  * @param <U> The type of GLTSs to compare and combine.
  */
-public class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
+public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
     /** GLTS instantiator. */
     private Supplier<U> instantiator;
 
@@ -108,8 +110,8 @@ public class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
     /** Instantiates a new GLTS structure comparator builder. */
     public StructureComparatorBuilder() {
         // No instantiator is configured by default. For the rest, some defaults are given.
-        setStatePropertyCombiner(new EqualityCombiner<>());
-        setTransitionPropertyCombiner(new EqualityCombiner<>());
+        setDefaultStatePropertyCombiner();
+        setDefaultTransitionPropertyCombiner();
         setDynamicScorer();
         setDynamicMatcher();
         setDefaultMerger();
@@ -144,6 +146,15 @@ public class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
     }
 
     /**
+     * Set {@link EqualityCombiner} as state property combiner.
+     *
+     * @return This helper, for chaining.
+     */
+    public StructureComparatorBuilder<S, T, U> setDefaultStatePropertyCombiner() {
+        return setStatePropertyCombiner(new EqualityCombiner<>());
+    }
+
+    /**
      * Set the transition property combiner.
      *
      * @param transitionPropertyCombiner The transition property combiner.
@@ -153,6 +164,15 @@ public class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
         Preconditions.checkNotNull(transitionPropertyCombiner, "Expected a non-null transition property combiner.");
         this.transitionPropertyCombiner = transitionPropertyCombiner;
         return this;
+    }
+
+    /**
+     * Set {@link EqualityCombiner} as transition property combiner.
+     *
+     * @return This helper, for chaining.
+     */
+    public StructureComparatorBuilder<S, T, U> setDefaultTransitionPropertyCombiner() {
+        return setTransitionPropertyCombiner(new EqualityCombiner<>());
     }
 
     /**
