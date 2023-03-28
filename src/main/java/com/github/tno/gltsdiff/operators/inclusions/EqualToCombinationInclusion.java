@@ -44,9 +44,16 @@ public class EqualToCombinationInclusion<T> implements Inclusion<T> {
 
     @Override
     public boolean isIncludedIn(T property1, T property2) {
+        // Check that properties are non-null.
+        Preconditions.checkNotNull(property1, "Expected the first property to be non-null.");
+        Preconditions.checkNotNull(property2, "Expected the second property to be non-null.");
+
+        // Combine the properties.
         Preconditions.checkArgument(combiner.areCombinable(property1, property2),
                 "Expected properties to be combinable.");
         T combination = combiner.combine(property1, property2);
+
+        // Check whether the properties are equal to their combination.
         boolean equal1 = Objects.equals(property1, combination);
         boolean equal2 = Objects.equals(property2, combination);
         Preconditions.checkArgument(equal1 == equal2,
