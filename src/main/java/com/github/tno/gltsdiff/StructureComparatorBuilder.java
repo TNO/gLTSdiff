@@ -18,8 +18,6 @@ import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.function.TriFunction;
-
 import com.github.tno.gltsdiff.glts.GLTS;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.Transition;
@@ -45,6 +43,7 @@ import com.github.tno.gltsdiff.scorers.SimilarityScorer;
 import com.github.tno.gltsdiff.scorers.WalkinshawGlobalScorer;
 import com.github.tno.gltsdiff.scorers.WalkinshawLocalScorer;
 import com.github.tno.gltsdiff.utils.QuadFunction;
+import com.github.tno.gltsdiff.utils.TriFunction;
 import com.github.tno.gltsdiff.writers.DotWriter;
 import com.google.common.base.Preconditions;
 
