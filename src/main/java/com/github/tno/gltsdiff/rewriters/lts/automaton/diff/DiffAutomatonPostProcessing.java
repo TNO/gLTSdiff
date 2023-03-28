@@ -19,6 +19,7 @@ import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomatonStatePropert
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffProperty;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.operators.hiders.Hider;
+import com.github.tno.gltsdiff.rewriters.CompositeRewriter;
 import com.github.tno.gltsdiff.rewriters.LocalRedundancyRewriter;
 import com.github.tno.gltsdiff.rewriters.Rewriter;
 
@@ -52,11 +53,9 @@ public class DiffAutomatonPostProcessing {
         rewriters.add(new SkipJoinPatternRewriter<>(combiner, hider, isIncludedIn));
 
         // Repeatedly rewrite the difference automaton until rewriting no longer has effect.
-        boolean changed = true;
-        do {
-            changed = rewriters.stream().map(rewriter -> rewriter.rewrite(diff)).anyMatch(b -> b);
-        } while (changed);
-
+        CompositeRewriter<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>> rewriter = new CompositeRewriter<>(
+                rewriters);
+        rewriter.rewrite(diff);
         return diff;
     }
 }
