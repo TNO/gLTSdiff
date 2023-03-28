@@ -5,9 +5,9 @@ digraph diffautomaton {
 	4 [label=<s4> shape="circle" fillcolor="#00cc00" fontcolor="#ffffff" style="filled"];
 	__init1 [label=<> shape="none"];
 	__init1 -> 1;
-	1 -> 2 [label=<<font color="#000000">a</font>> id="1-0-2"];
-	2 -> 1 [label=<<font color="#ff4040">d</font>> color="#ff4040" id="2-0-1"];
-	2 -> 3 [label=<<font color="#00cc00">b</font>> color="#00cc00" id="2-1-3"];
-	3 -> 4 [label=<<font color="#00cc00">c</font>> color="#00cc00" id="3-0-4"];
-	4 -> 1 [label=<<font color="#00cc00">d</font>> color="#00cc00" id="4-0-1"];
+	1 -> 2 [label=<<font color="#ff4040">a</font>> color="#ff4040" id="1-0-2"];
+	1 -> 3 [label=<<font color="#00cc00">a</font>> color="#00cc00" id="1-1-3"];
+	2 -> 1 [label=<<font color="#000000">d</font>> id="2-0-1"];
+	3 -> 4 [label=<<font color="#00cc00">b</font>> color="#00cc00" id="3-0-4"];
+	4 -> 2 [label=<<font color="#00cc00">c</font>> color="#00cc00" id="4-0-2"];
 }
