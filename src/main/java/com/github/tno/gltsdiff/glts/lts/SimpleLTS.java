@@ -18,7 +18,7 @@ import com.google.common.base.Preconditions;
  *
  * @param <T> The type of transition properties.
  */
-public class SimpleLTS<T> extends LTS<LTSStateProperty, T> implements Cloneable {
+public class SimpleLTS<T> extends LTS<LTSStateProperty, T> {
     @Override
     public boolean isInitial(LTSStateProperty property) {
         Preconditions.checkNotNull(property, "Expected a non-null state property.");

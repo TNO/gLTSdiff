@@ -39,7 +39,7 @@ import com.google.common.base.Preconditions;
  *
  * @param <T> The type of transition properties.
  */
-public class DiffAutomaton<T> extends Automaton<DiffAutomatonStateProperty, DiffProperty<T>> implements Cloneable {
+public class DiffAutomaton<T> extends Automaton<DiffAutomatonStateProperty, DiffProperty<T>> {
     @Override
     public boolean isInitial(DiffAutomatonStateProperty property) {
         Preconditions.checkNotNull(property, "Expected a non-null state property.");
