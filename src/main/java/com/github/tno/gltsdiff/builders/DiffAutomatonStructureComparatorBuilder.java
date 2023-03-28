@@ -28,7 +28,7 @@ import com.github.tno.gltsdiff.writers.lts.automaton.diff.DiffAutomatonDotWriter
  *
  * @param <T> The type of transition properties.
  */
-public abstract class DiffAutomatonStructureComparatorBuilder<T>
+public class DiffAutomatonStructureComparatorBuilder<T>
         extends AutomatonStructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
 {
     @Override
