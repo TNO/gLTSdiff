@@ -14,6 +14,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffKind;
+import com.github.tno.gltsdiff.operators.combiners.Combiner;
 
 /**
  * An operator for determining property inclusion.
@@ -34,7 +35,7 @@ import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffKind;
  */
 public interface Inclusion<T> {
     /**
-     * Binary operator for checking inclusion between two specified property.
+     * Binary operator for checking inclusion between two combinable property.
      *
      * <p>
      * This operator must be:
@@ -53,7 +54,8 @@ public interface Inclusion<T> {
      * @param property1 The first property, to check whether it is included in the second property. Must not be
      *     {@code null}.
      * @param property2 The second property, to check whether it includes the first property. Must not be {@code null}.
+     * @param combiner The property combiner.
      * @return {@code true} if the first property is included in the second property, {@code false} otherwise.
      */
-    public boolean isIncludedIn(T property1, T property2);
+    public boolean isIncludedIn(T property1, T property2, Combiner<T> combiner);
 }

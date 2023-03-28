@@ -177,7 +177,7 @@ public class SkipForkPatternRewriter<T>
         // of 'right', modulo non-hidable properties. Otherwise upgrading 'right' may be incorrect.
         if (!diff.getOutgoingTransitionProperties(rightTarget).stream()
                 .allMatch(property -> inclusion.isIncludedIn(transitionPropertyHider.hide(property),
-                        transitionPropertyHider.hide(right.getProperty()))))
+                        transitionPropertyHider.hide(right.getProperty()), transitionPropertyCombiner)))
         {
             return false;
         }

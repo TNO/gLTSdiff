@@ -44,7 +44,7 @@ public class DiffAutomatonPostProcessing {
             Hider<DiffProperty<T>> hider)
     {
         // Defines a standard transition property inclusion relation.
-        Inclusion<DiffProperty<T>> isIncludedIn = new EqualToCombinationInclusion<>(combiner);
+        Inclusion<DiffProperty<T>> isIncludedIn = new EqualToCombinationInclusion<>();
 
         // Instantiate all rewriters to be used for post-processing.
         List<Rewriter<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>> rewriters = new ArrayList<>();
