@@ -738,8 +738,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
         List<Rewriter<S, T, U>> rewriters = getRewriterProviders().stream().map(p -> p.apply(getStatePropertyCombiner(),
                 getTransitionPropertyCombiner(), getInclusion(), getHiderProvider())).collect(Collectors.toList());
 
-        // Return a single rewriter that applies the rewriters in sequence, and repeatedly applies them until they no
-        // longer change the GLTS.
+        // Repeatedly applies the rewriters in sequence, until they no longer change the GLTS.
         return new FixedPointRewriter<>(new SequenceRewriter<>(rewriters));
     }
 
