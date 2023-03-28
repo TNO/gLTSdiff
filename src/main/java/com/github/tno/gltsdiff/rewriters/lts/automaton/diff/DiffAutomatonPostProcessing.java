@@ -20,9 +20,9 @@ import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.operators.hiders.Hider;
 import com.github.tno.gltsdiff.operators.inclusions.EqualToCombinationInclusion;
 import com.github.tno.gltsdiff.operators.inclusions.Inclusion;
-import com.github.tno.gltsdiff.rewriters.CompositeRewriter;
 import com.github.tno.gltsdiff.rewriters.LocalRedundancyRewriter;
 import com.github.tno.gltsdiff.rewriters.Rewriter;
+import com.github.tno.gltsdiff.rewriters.SequenceRewriter;
 
 /** A default post processor for difference automata. */
 public class DiffAutomatonPostProcessing {
@@ -54,7 +54,7 @@ public class DiffAutomatonPostProcessing {
         rewriters.add(new SkipJoinPatternRewriter<>(combiner, hider, isIncludedIn));
 
         // Repeatedly rewrite the difference automaton until rewriting no longer has effect.
-        CompositeRewriter<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>> rewriter = new CompositeRewriter<>(
+        SequenceRewriter<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>> rewriter = new SequenceRewriter<>(
                 rewriters);
         rewriter.rewrite(diff);
         return diff;

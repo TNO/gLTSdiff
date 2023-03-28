@@ -17,22 +17,29 @@ import java.util.List;
 import com.github.tno.gltsdiff.glts.GLTS;
 
 /**
- * A composite rewriter that applies multiple rewriters repeatedly, until they no longer change the GLTS.
+ * A rewriter that applies multiple rewriters in sequence, and repeats applying until they no longer change the GLTS.
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
  * @param <U> The type of GLTSs to rewrite.
  */
-public class CompositeRewriter<S, T, U extends GLTS<S, T>> implements Rewriter<S, T, U> {
+public class SequenceRewriter<S, T, U extends GLTS<S, T>> implements Rewriter<S, T, U> {
     /** The rewriters to apply. */
     private final List<Rewriter<S, T, U>> rewriters;
 
     /**
-     * Constructor for the {@link CompositeRewriter} class.
+     * Constructor for the {@link SequenceRewriter} class.
+     *
+     * <p>
+     * Using a sequence rewriter is practially only useful if at least two rewriters are provided. Provide an empty
+     * collection of rewriters is allowed, but using {@link NothingRewriter} would be more efficient. Providing a
+     * singleton collection is also allowed, but using the single rewriter directly rather than wrapping it in a
+     * sequence rewriter would be more efficient.
+     * </p>
      *
      * @param rewriters The rewriters to apply.
      */
-    public CompositeRewriter(Collection<Rewriter<S, T, U>> rewriters) {
+    public SequenceRewriter(Collection<Rewriter<S, T, U>> rewriters) {
         this.rewriters = new ArrayList<>(rewriters);
     }
 
