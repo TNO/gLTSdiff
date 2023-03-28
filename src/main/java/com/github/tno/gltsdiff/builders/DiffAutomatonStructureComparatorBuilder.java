@@ -13,7 +13,9 @@ package com.github.tno.gltsdiff.builders;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffProperty;
+import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;
 import com.github.tno.gltsdiff.operators.combiners.lts.automaton.diff.DiffAutomatonStatePropertyCombiner;
+import com.github.tno.gltsdiff.operators.combiners.lts.automaton.diff.DiffPropertyCombiner;
 import com.github.tno.gltsdiff.operators.printers.StringHtmlPrinter;
 import com.github.tno.gltsdiff.operators.printers.TransitionHtmlPrinter;
 import com.github.tno.gltsdiff.operators.printers.lts.automaton.diff.DiffPropertyHtmlPrinter;
@@ -43,6 +45,13 @@ public class DiffAutomatonStructureComparatorBuilder<T>
             setDefaultStatePropertyCombiner()
     {
         return setStatePropertyCombiner(new DiffAutomatonStatePropertyCombiner());
+    }
+
+    @Override
+    public StructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
+            setDefaultTransitionPropertyCombiner()
+    {
+        return setTransitionPropertyCombiner(new DiffPropertyCombiner<>(new EqualityCombiner<>()));
     }
 
     @Override
