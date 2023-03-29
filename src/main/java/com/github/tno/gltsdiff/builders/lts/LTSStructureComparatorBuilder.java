@@ -27,7 +27,7 @@ import com.github.tno.gltsdiff.writers.lts.LTSDotWriter;
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
- * @param <U> The type of LTSs to compare, combine and rewrite.
+ * @param <U> The type of LTSs to compare, combine and (re)write.
  */
 public abstract class LTSStructureComparatorBuilder<S extends LTSStateProperty, T, U extends LTS<S, T>>
         extends StructureComparatorBuilder<S, T, U>

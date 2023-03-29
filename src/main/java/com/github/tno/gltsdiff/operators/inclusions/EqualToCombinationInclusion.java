@@ -33,7 +33,7 @@ import com.github.tno.gltsdiff.operators.combiners.Combiner;
  * <li>When comparing {@link Set}s of integer numbers, a set A = {1, 2, 4} is included in set B = {1, 2, 3, 4, 5}, as
  * all the integer numbers that are in the first set are also in the second set. A {@link Combiner} to compute their
  * combination would compute the union of the sets. As set A is included in set B, their union A ∪ B = B. In general, if
- * the second set is equal to the combination of both set, the first set is included in the second set. If the second
+ * the second set is equal to the combination of both sets, the first set is included in the second set. If the second
  * set is not equal to the combination of both sets, the first set is not included in the second set.</li>
  * <li>When comparing {@link DiffKind difference kinds}, if something is both added (in one input model) and removed (in
  * the other input model), then it is really unchanged. The unchanged difference kind is thus a combination of being

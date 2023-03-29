@@ -22,7 +22,7 @@ import com.github.tno.gltsdiff.writers.lts.automaton.AutomatonDotWriter;
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
- * @param <U> The type of automata to compare, combine and rewrite.
+ * @param <U> The type of automata to compare, combine and (re)write.
  */
 public abstract class AutomatonStructureComparatorBuilder<S extends AutomatonStateProperty, T,
         U extends Automaton<S, T>> extends LTSStructureComparatorBuilder<S, T, U>
