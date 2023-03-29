@@ -17,14 +17,17 @@ SPDX-License-Identifier: MIT
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>com.github.tno.gltsdiff</name>
+    <name>gLTSdiff</name>
     <url>https://github.com/TNO/gLTSdiff</url>
     <description>gLTSdiff: Generalized LTS differencing</description>
 
     <properties>
         <apache.commons.lang3.version>3.1</apache.commons.lang3.version>
+        <apache.commons.lang3.version.minimum>3.1</apache.commons.lang3.version.minimum>
         <apache.commons.math3.version>3.6.1</apache.commons.math3.version>
+        <apache.commons.math3.version.minimum>3.5</apache.commons.math3.version.minimum>
         <google.guava.version>30.1-jre</google.guava.version>
+        <google.guava.version.minimum>27.1</google.guava.version.minimum>
         <java.version>11</java.version>
         <junit.version>5.9.2</junit.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -72,6 +75,10 @@ SPDX-License-Identifier: MIT
         </license>
     </licenses>
 
+    <organization>
+        <name>TNO</name>
+    </organization>
+
     <developers>
         <developer>
             <id>dhendriks</id>
@@ -112,12 +119,45 @@ SPDX-License-Identifier: MIT
             </plugin>
 
             <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>5.1.8</version>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <instructions>
+                        <Automatic-Module-Name>${project.artifactId}</Automatic-Module-Name>
+                        <Bundle-ActivationPolicy>lazy</Bundle-ActivationPolicy>
+                        <Bundle-RequiredExecutionEnvironment>JavaSE-${java.version}</Bundle-RequiredExecutionEnvironment>
+                        <Import-Package>
+                            com.google.common.*;version=${google.guava.version.minimum},
+                            org.apache.commons.lang3.*;version=${apache.commons.lang3.version.minimum},
+                            org.apache.commons.math3.*;version=${apache.commons.math3.version.minimum},
+                            *
+                        </Import-Package>
+                        <!-- PDE does not support Require-Capability, only Bundle-RequiredExecutionEnvironment. -->
+                        <!-- Bundle-RequiredExecutionEnvironment may not be mixed with Require-Capability. -->
+                        <_noee>true</_noee>
+                    </instructions>
+                    <niceManifest>true</niceManifest>
+                </configuration>
+            </plugin>
+
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.3.0</version>
                 <configuration>
                     <archive>
-                        <manifestFile>META-INF/MANIFEST.MF</manifestFile>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
                     </archive>
                 </configuration>
             </plugin>
