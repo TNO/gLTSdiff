@@ -119,7 +119,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
         setDynamicMatcher();
         setDefaultMerger();
         setEqualToCombinationInclusionOperator();
-        setThrowingHider();
+        setThrowingTransitionPropertyHider();
         addDefaultRewriters();
         setDefaultStateLabelHtmlPrinter();
         setDefaultTransitionLabelHtmlPrinter();
@@ -395,7 +395,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      * @param hiderProvider The hider provider that creates a hider.
      * @return This helper, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> setHider(Supplier<Hider<T>> hiderProvider) {
+    public StructureComparatorBuilder<S, T, U> setTransitionPropertyHider(Supplier<Hider<T>> hiderProvider) {
         Preconditions.checkNotNull(hiderProvider, "Expected a non-null transition property hider provider.");
         this.hiderProvider = hiderProvider;
         return this;
@@ -407,8 +407,8 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      * @param hider The hider.
      * @return This helper, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> setHider(Hider<T> hider) {
-        return setHider(() -> hider);
+    public StructureComparatorBuilder<S, T, U> setTransitionPropertyHider(Hider<T> hider) {
+        return setTransitionPropertyHider(() -> hider);
     }
 
     /**
@@ -416,8 +416,8 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      *
      * @return This helper, for chaining.
      */
-    protected StructureComparatorBuilder<S, T, U> setThrowingHider() {
-        return setHider(() -> {
+    protected StructureComparatorBuilder<S, T, U> setThrowingTransitionPropertyHider() {
+        return setTransitionPropertyHider(() -> {
             throw new IllegalStateException("The transition property hider is not yet configured. "
                     + "Configure it before invoking any of the builder's creation methods.");
         });
@@ -655,7 +655,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      *
      * @return The transition property inclusion operator.
      */
-    protected Supplier<Hider<T>> getHiderProvider() {
+    protected Supplier<Hider<T>> getTransitionPropertyHiderProvider() {
         if (hiderProvider == null) {
             throw new IllegalStateException("The transition property hider is not yet configured. "
                     + "Configure it before invoking any of the builder's creation methods.");
@@ -749,7 +749,8 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
     private Rewriter<S, T, U> createRewriter() {
         // Create rewriters.
         List<Rewriter<S, T, U>> rewriters = getRewriterProviders().stream().map(p -> p.apply(getStatePropertyCombiner(),
-                getTransitionPropertyCombiner(), getInclusion(), getHiderProvider())).collect(Collectors.toList());
+                getTransitionPropertyCombiner(), getInclusion(), getTransitionPropertyHiderProvider()))
+                .collect(Collectors.toList());
 
         // Repeatedly applies the rewriters in sequence, until they no longer change the GLTS.
         return new FixedPointRewriter<>(new SequenceRewriter<>(rewriters));

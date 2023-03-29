@@ -26,7 +26,6 @@ import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffKind;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffProperty;
-import com.github.tno.gltsdiff.operators.hiders.DiffPropertyHider;
 import com.github.tno.gltsdiff.operators.hiders.SubstitutionHider;
 import com.github.tno.gltsdiff.writers.DotRenderer;
 
@@ -82,7 +81,7 @@ public class SimpleDiffExample {
 
         // Configure comparison, merging and writing.
         DiffAutomatonStructureComparatorBuilder<String> builder = new DiffAutomatonStructureComparatorBuilder<>();
-        builder.setHider(new DiffPropertyHider<>(new SubstitutionHider<>("[skip]")));
+        builder.setTransitionSubPropertyHider(new SubstitutionHider<>("[skip]"));
         var comparator = builder.createComparator();
         var writer = builder.createWriter();
 

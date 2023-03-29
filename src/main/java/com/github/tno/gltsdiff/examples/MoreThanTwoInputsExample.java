@@ -32,7 +32,6 @@ import com.github.tno.gltsdiff.operators.combiners.SetCombiner;
 import com.github.tno.gltsdiff.operators.printers.PairHtmlPrinter;
 import com.github.tno.gltsdiff.operators.printers.SetHtmlPrinter;
 import com.github.tno.gltsdiff.operators.printers.StringHtmlPrinter;
-import com.github.tno.gltsdiff.operators.printers.TransitionHtmlPrinter;
 import com.github.tno.gltsdiff.writers.DotRenderer;
 import com.google.common.collect.ImmutableSet;
 
@@ -96,9 +95,8 @@ public class MoreThanTwoInputsExample {
         SimpleAutomatonStructureComparatorBuilder<Pair<String, Set<Integer>>> builder = new SimpleAutomatonStructureComparatorBuilder<>();
         builder.setTransitionPropertyCombiner(
                 new PairCombiner<>(new EqualityCombiner<>(), new SetCombiner<>(new EqualityCombiner<>())));
-        builder.setTransitionLabelHtmlPrinter(
-                new TransitionHtmlPrinter<>(new PairHtmlPrinter<>("", new StringHtmlPrinter<>(), "<br/>",
-                        new SetHtmlPrinter<>(new StringHtmlPrinter<>(), "{", ",", "}"), "")));
+        builder.setTransitionPropertyHtmlPrinter(new PairHtmlPrinter<>("", new StringHtmlPrinter<>(), "<br/>",
+                new SetHtmlPrinter<>(new StringHtmlPrinter<>(), "{", ",", "}"), ""));
         var comparator = builder.createComparator();
         var writer = builder.createWriter();
 
