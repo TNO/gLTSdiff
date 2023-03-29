@@ -10,11 +10,15 @@
 
 package com.github.tno.gltsdiff.writers;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -72,6 +76,24 @@ public class DotWriter<S, T, U extends GLTS<S, T>> {
     public DotWriter(HtmlPrinter<State<S>> stateLabelPrinter, HtmlPrinter<Transition<S, T>> transitionLabelPrinter) {
         this.stateLabelPrinter = stateLabelPrinter;
         this.transitionLabelPrinter = transitionLabelPrinter;
+    }
+
+    /**
+     * Writes a GLTS in DOT format to a file.
+     *
+     * <p>
+     * The resulting DOT file can be rendered to an image using {@link DotRenderer}.
+     * </p>
+     *
+     * @param glts The GLTS.
+     * @param dotPath The path to the DOT file.
+     * @throws IOException In case of an I/O error.
+     */
+    public void write(U glts, Path dotPath) throws IOException {
+        Files.createDirectories(dotPath.getParent());
+        try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(dotPath.toFile()))) {
+            write(glts, stream);
+        }
     }
 
     /**
