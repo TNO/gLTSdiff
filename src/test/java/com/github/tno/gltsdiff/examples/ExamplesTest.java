@@ -34,19 +34,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 /** Regression tests for the examples. */
 public class ExamplesTest {
     /**
-     * Clean up 'examples_expected' directory after the tests.
-     *
-     * @throws IOException In case of an I/O error.
-     */
-    @AfterAll
-    public static void afterAll() throws IOException {
-        Path examplesExpectedPath = Paths.get("examples_expected");
-        if (Files.isDirectory(examplesExpectedPath) && Files.list(examplesExpectedPath).count() == 0) {
-            Files.delete(examplesExpectedPath);
-        }
-    }
-
-    /**
      * Test an example.
      *
      * @param exampleName The name of the example.
@@ -153,6 +140,19 @@ public class ExamplesTest {
             String content1 = Files.readString(file1, StandardCharsets.UTF_8);
             String content2 = Files.readString(file2, StandardCharsets.UTF_8);
             assertEquals(content1, content2, "Files do not have the same content: " + file1 + " and " + file2);
+        }
+    }
+
+    /**
+     * Clean up 'examples_expected' directory after the tests.
+     *
+     * @throws IOException In case of an I/O error.
+     */
+    @AfterAll
+    public static void afterAll() throws IOException {
+        Path examplesExpectedPath = Paths.get("examples_expected");
+        if (Files.isDirectory(examplesExpectedPath) && Files.list(examplesExpectedPath).count() == 0) {
+            Files.delete(examplesExpectedPath);
         }
     }
 }
