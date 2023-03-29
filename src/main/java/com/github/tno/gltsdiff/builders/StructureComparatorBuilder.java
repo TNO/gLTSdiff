@@ -71,7 +71,7 @@ import com.google.common.base.Preconditions;
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
- * @param <U> The type of GLTSs to compare and combine.
+ * @param <U> The type of GLTSs to compare, merge and (re)write.
  */
 public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
     /** GLTS instantiator. */
@@ -426,7 +426,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
     /**
      * Set the rewriters.
      *
-     * @param rewriterProviders The rewriter providers that creates rewriters, given a state property combiner, a
+     * @param rewriterProviders The rewriter providers that create rewriters, given a state property combiner, a
      *     transition property combiner, a transition property inclusion operator and a transition property hider
      *     provider.
      * @return This builder, for chaining.
@@ -442,7 +442,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
     }
 
     /**
-     * Add a rewriters.
+     * Add a rewriter.
      *
      * @param rewriterProvider The rewriter provider that creates a rewriter, given a state property combiner, a
      *     transition property combiner, a transition property inclusion operator and a transition property hider
