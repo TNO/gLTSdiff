@@ -11,27 +11,27 @@
 package com.github.tno.gltsdiff.operators.printers;
 
 /**
- * An HTML printer for {@code U}-typed properties based on a printer for {@code T}-typed properties, with {@code U} a
- * subtype of {@code T}.
+ * An HTML printer for {@code U}-typed values based on a printer for {@code T}-typed values, with {@code U} a subtype of
+ * {@code T}.
  *
- * @param <T> The type of properties.
- * @param <U> The subtype of properties.
+ * @param <T> The type of values.
+ * @param <U> The subtype of values.
  */
 public class SubtypeHtmlPrinter<T, U extends T> implements HtmlPrinter<U> {
-    /** The printer for properties. */
+    /** The printer for values. */
     private final HtmlPrinter<T> printer;
 
     /**
-     * Instantiates a new subtype property printer.
+     * Instantiates a new subtype printer.
      *
-     * @param printer The printer for properties.
+     * @param printer The printer for values.
      */
     public SubtypeHtmlPrinter(HtmlPrinter<T> printer) {
         this.printer = printer;
     }
 
     @Override
-    public String print(U property) {
-        return printer.print(property);
+    public String print(U value) {
+        return printer.print(value);
     }
 }

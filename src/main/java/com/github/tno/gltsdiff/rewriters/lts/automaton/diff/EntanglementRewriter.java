@@ -28,7 +28,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 
 /**
- * A rewriter for rewriting tangles in {@link DiffAutomaton difference automata}.
+ * A rewriter that rewrites tangles in {@link DiffAutomaton difference automata}.
  *
  * <p>
  * A <i>tangle</i> is defined to be an {@link DiffKind#UNCHANGED unchanged} state that has no unchanged incoming or

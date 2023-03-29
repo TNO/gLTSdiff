@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
 /**
- * Common functionality for rewriting (abstract) skip patterns.
+ * Base class for rewriters that rewrite skip patterns.
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.

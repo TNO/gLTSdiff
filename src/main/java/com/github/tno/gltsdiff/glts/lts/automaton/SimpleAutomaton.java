@@ -18,7 +18,7 @@ import com.google.common.base.Preconditions;
  *
  * @param <T> The type of transition properties.
  */
-public class SimpleAutomaton<T> extends Automaton<AutomatonStateProperty, T> implements Cloneable {
+public class SimpleAutomaton<T> extends Automaton<AutomatonStateProperty, T> {
     @Override
     public boolean isInitial(AutomatonStateProperty property) {
         Preconditions.checkNotNull(property, "Expected a non-null state property.");

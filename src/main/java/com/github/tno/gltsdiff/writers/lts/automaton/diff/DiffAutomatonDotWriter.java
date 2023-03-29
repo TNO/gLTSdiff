@@ -44,8 +44,10 @@ public class DiffAutomatonDotWriter<T, U extends DiffAutomaton<T>>
      *
      * @param transitionLabelPrinter A printer for printing transition labels.
      */
-    public DiffAutomatonDotWriter(HtmlPrinter<DiffProperty<T>> transitionLabelPrinter) {
-        super(transition -> transitionLabelPrinter.print(transition.getProperty()));
+    public DiffAutomatonDotWriter(
+            HtmlPrinter<Transition<DiffAutomatonStateProperty, DiffProperty<T>>> transitionLabelPrinter)
+    {
+        super(transitionLabelPrinter);
     }
 
     /**
@@ -55,9 +57,9 @@ public class DiffAutomatonDotWriter<T, U extends DiffAutomaton<T>>
      * @param transitionLabelPrinter A printer for printing transition labels.
      */
     public DiffAutomatonDotWriter(HtmlPrinter<State<DiffAutomatonStateProperty>> stateLabelPrinter,
-            HtmlPrinter<DiffProperty<T>> transitionLabelPrinter)
+            HtmlPrinter<Transition<DiffAutomatonStateProperty, DiffProperty<T>>> transitionLabelPrinter)
     {
-        super(stateLabelPrinter, transition -> transitionLabelPrinter.print(transition.getProperty()));
+        super(stateLabelPrinter, transitionLabelPrinter);
     }
 
     @Override

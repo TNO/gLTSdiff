@@ -10,11 +10,7 @@
 
 package com.github.tno.gltsdiff.examples;
 
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -22,23 +18,17 @@ import java.util.Set;
 
 import org.apache.commons.math3.util.Pair;
 
-import com.github.tno.gltsdiff.StructureComparator;
+import com.github.tno.gltsdiff.builders.lts.automaton.SimpleAutomatonStructureComparatorBuilder;
 import com.github.tno.gltsdiff.glts.State;
-import com.github.tno.gltsdiff.glts.Transition;
 import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.lts.automaton.SimpleAutomaton;
-import com.github.tno.gltsdiff.matchers.lts.BruteForceLTSMatcher;
-import com.github.tno.gltsdiff.mergers.DefaultMerger;
-import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;
 import com.github.tno.gltsdiff.operators.combiners.PairCombiner;
 import com.github.tno.gltsdiff.operators.combiners.SetCombiner;
-import com.github.tno.gltsdiff.operators.combiners.lts.automaton.AutomatonStatePropertyCombiner;
-import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
+import com.github.tno.gltsdiff.operators.printers.PairHtmlPrinter;
 import com.github.tno.gltsdiff.operators.printers.SetHtmlPrinter;
 import com.github.tno.gltsdiff.operators.printers.StringHtmlPrinter;
 import com.github.tno.gltsdiff.writers.DotRenderer;
-import com.github.tno.gltsdiff.writers.lts.automaton.AutomatonDotWriter;
 import com.google.common.collect.ImmutableSet;
 
 /**
@@ -97,43 +87,30 @@ public class MoreThanTwoInputsExample {
         // Get all inputs.
         List<SimpleAutomaton<Pair<String, Set<Integer>>>> inputs = List.of(first, second, third);
 
-        // Prepare DOT (HTML) printers for printing version-annotated GLTSs.
-        HtmlPrinter<Set<Integer>> versionSetPrinter = new SetHtmlPrinter<>(new StringHtmlPrinter<>(), "", ",", "");
-        HtmlPrinter<Pair<String, Set<Integer>>> transitionPropertyPrinter = pair -> pair.getFirst() + "<br/>" + "{"
-                + versionSetPrinter.print(pair.getSecond()) + "}";
-        HtmlPrinter<Transition<AutomatonStateProperty, Pair<String, Set<Integer>>>> printer = transition -> transitionPropertyPrinter
-                .print(transition.getProperty());
+        // Configure comparison, merging and writing.
+        SimpleAutomatonStructureComparatorBuilder<Pair<String, Set<Integer>>> builder = new SimpleAutomatonStructureComparatorBuilder<>();
+        builder.setTransitionPropertyCombiner(
+                new PairCombiner<>(new EqualityCombiner<>(), new SetCombiner<>(new EqualityCombiner<>())));
+        builder.setTransitionPropertyHtmlPrinter(new PairHtmlPrinter<>("", new StringHtmlPrinter<>(), "<br/>",
+                new SetHtmlPrinter<>(new StringHtmlPrinter<>(), "{", ",", "}"), ""));
+        var comparator = builder.createComparator();
+        var writer = builder.createWriter();
 
         // Write the inputs to files in DOT format, and render them to SVG.
         for (int i = 0; i < inputs.size(); i++) {
             SimpleAutomaton<Pair<String, Set<Integer>>> input = inputs.get(i);
             Path dotPath = Paths.get("examples/MoreThanTwoInputs/input" + (i + 1) + ".dot");
-            Files.createDirectories(dotPath.getParent());
-            try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(dotPath.toFile()))) {
-                new AutomatonDotWriter<>(printer).write(input, stream);
-            }
+            writer.write(input, dotPath);
             DotRenderer.renderDot(dotPath);
         }
 
-        // Instantiate combiners for the states and transitions of the three input automata.
-        Combiner<AutomatonStateProperty> statePropertyCombiner = new AutomatonStatePropertyCombiner();
-        Combiner<Pair<String, Set<Integer>>> transitionPropertyCombiner = new PairCombiner<>(new EqualityCombiner<>(),
-                new SetCombiner<>(new EqualityCombiner<>()));
-
-        // Define a helper function to (more) easily compare the three automata.
-        StructureComparator<AutomatonStateProperty, Pair<String, Set<Integer>>, SimpleAutomaton<Pair<String, Set<Integer>>>> comparator = new StructureComparator<>(
-                new BruteForceLTSMatcher<>(statePropertyCombiner, transitionPropertyCombiner),
-                new DefaultMerger<>(statePropertyCombiner, transitionPropertyCombiner, SimpleAutomaton::new));
-
         // Apply structural comparison to the three input automata.
-        SimpleAutomaton<Pair<String, Set<Integer>>> result = inputs.stream().reduce(comparator::compare).get();
+        SimpleAutomaton<Pair<String, Set<Integer>>> result = comparator.compare(inputs);
 
         // Write the result to a file in DOT format, and render it to SVG.
-        Path dotPath = Paths.get("examples/MoreThanTwoInputs/result.dot");
-        try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(dotPath.toFile()))) {
-            new AutomatonDotWriter<>(printer).write(result, stream);
-        }
-        Path svgPath = DotRenderer.renderDot(dotPath);
-        System.out.println("The result is in: " + svgPath);
+        Path resultDotPath = Paths.get("examples/MoreThanTwoInputs/result.dot");
+        writer.write(result, resultDotPath);
+        Path resultSvgPath = DotRenderer.renderDot(resultDotPath);
+        System.out.println("The result is in: " + resultSvgPath);
     }
 }
