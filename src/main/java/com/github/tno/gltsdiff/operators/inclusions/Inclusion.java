@@ -43,13 +43,13 @@ public interface Inclusion<T> {
      * </p>
      * <ul>
      * <li><u>reflexive</u>: Every property is included in itself, meaning {@link #isIncludedIn
-     * isIncludedIn}{@code (x, x)} always returns {@code true}.</li>
-     * <li><u>asymmetric</u>: If {@link #isIncludedIn isIncludedIn}{@code (x, y)} returns {@code true} and
-     * {@link Objects#equals}{@code (x, y)}, then {@link #isIncludedIn isIncludedIn}{@code (y, x)} returns
-     * {@code false}.</li>
+     * isIncludedIn}{@code (x, x)} must always return {@code true}.</li>
+     * <li><u>antisymmetric</u>: If {@link #isIncludedIn isIncludedIn}{@code (x, y)} returns {@code true} and
+     * {@link Objects#equals}{@code (x, y)} returns {@code false}, then {@link #isIncludedIn isIncludedIn}{@code (y, x)}
+     * must return {@code false}.</li>
      * <li><u>transitive</u>: If {@link #isIncludedIn isIncludedIn}{@code (x, y)} returns {@code true} and
      * {@link #isIncludedIn isIncludedIn}{@code (y, z)} returns {@code true}, then also {@link #isIncludedIn
-     * isIncludedIn}{@code (x, z)} returns {@code true}.</li>
+     * isIncludedIn}{@code (x, z)} must return {@code true}.</li>
      * </ul>
      *
      * @param property1 The first property, to check whether it is included in the second property. Must not be
