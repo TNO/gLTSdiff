@@ -22,7 +22,7 @@ import java.util.Set;
 
 import org.apache.commons.math3.util.Pair;
 
-import com.github.tno.gltsdiff.builders.SimpleAutomatonStructureComparatorBuilder;
+import com.github.tno.gltsdiff.builders.lts.automaton.SimpleAutomatonStructureComparatorBuilder;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.lts.automaton.SimpleAutomaton;

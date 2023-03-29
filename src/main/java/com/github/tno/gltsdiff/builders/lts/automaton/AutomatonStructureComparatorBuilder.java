@@ -8,8 +8,10 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.builders;
+package com.github.tno.gltsdiff.builders.lts.automaton;
 
+import com.github.tno.gltsdiff.builders.StructureComparatorBuilder;
+import com.github.tno.gltsdiff.builders.lts.LTSStructureComparatorBuilder;
 import com.github.tno.gltsdiff.glts.lts.automaton.Automaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
 import com.github.tno.gltsdiff.writers.lts.automaton.AutomatonDotWriter;
