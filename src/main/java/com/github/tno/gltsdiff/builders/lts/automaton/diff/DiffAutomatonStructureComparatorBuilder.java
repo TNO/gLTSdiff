@@ -56,7 +56,7 @@ public class DiffAutomatonStructureComparatorBuilder<T>
      * Set the transition property combiner, based on a combiner for the sub-properties of {@link DiffProperty}.
      *
      * @param subPropertyCombiner The {@link DiffProperty} sub-property combiner.
-     * @return This helper, for chaining.
+     * @return This builder, for chaining.
      */
     public StructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
             setTransitionSubPropertyCombiner(Combiner<T> subPropertyCombiner)
@@ -75,7 +75,7 @@ public class DiffAutomatonStructureComparatorBuilder<T>
      * Set the transition property hider, based on a hider for the sub-properties of {@link DiffProperty}.
      *
      * @param subPropertyHider The {@link DiffProperty} sub-property hider.
-     * @return This helper, for chaining.
+     * @return This builder, for chaining.
      */
     public StructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
             setTransitionSubPropertyHider(Hider<T> subPropertyHider)
@@ -97,7 +97,7 @@ public class DiffAutomatonStructureComparatorBuilder<T>
     /**
      * Add the {@link EntanglementRewriter} as rewriter.
      *
-     * @return This helper, for chaining.
+     * @return This builder, for chaining.
      */
     public StructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
             addEntanglementRewriter()
@@ -108,7 +108,7 @@ public class DiffAutomatonStructureComparatorBuilder<T>
     /**
      * Add the {@link SkipForkPatternRewriter} as rewriter.
      *
-     * @return This helper, for chaining.
+     * @return This builder, for chaining.
      */
     public StructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
             addSkipForkPatternRewriter()
@@ -119,7 +119,7 @@ public class DiffAutomatonStructureComparatorBuilder<T>
     /**
      * Add the {@link SkipJoinPatternRewriter} as rewriter.
      *
-     * @return This helper, for chaining.
+     * @return This builder, for chaining.
      */
     public StructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
             addSkipJoinPatternRewriter()
@@ -131,7 +131,7 @@ public class DiffAutomatonStructureComparatorBuilder<T>
      * Set the transition label HTML printer, based on a printer for the sub-properties of {@link DiffProperty}.
      *
      * @param subPropertyPrinter The {@link DiffProperty} sub-property HTML printer.
-     * @return This helper, for chaining.
+     * @return This builder, for chaining.
      */
     public StructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
             setTransitionSubPropertyHtmlPrinter(HtmlPrinter<T> subPropertyPrinter)
