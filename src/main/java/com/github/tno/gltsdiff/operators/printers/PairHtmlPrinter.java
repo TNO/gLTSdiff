@@ -12,8 +12,10 @@ package com.github.tno.gltsdiff.operators.printers;
 
 import org.apache.commons.math3.util.Pair;
 
+import com.google.common.base.Preconditions;
+
 /**
- * An HTML printer for {@link Pair} properties.
+ * An HTML printer for {@link Pair pairs}.
  *
  * @param <T> The type of the first elements of the pairs.
  * @param <U> The type of the second elements of the pairs.
@@ -35,8 +37,8 @@ public class PairHtmlPrinter<T, U> implements HtmlPrinter<Pair<T, U>> {
     private final String suffix;
 
     /**
-     * Instantiates a new pair property printer, that uses "(" as prefix HTML text, "," as separator HTML text, and ")"
-     * as suffix HTML text.
+     * Instantiates a new pair printer, that uses "(" as prefix HTML text, "," as separator HTML text, and ")" as suffix
+     * HTML text.
      *
      * @param firstPrinter The printer for first elements of the pairs.
      * @param secondPrinter The printer for second elements of the pairs.
@@ -46,7 +48,7 @@ public class PairHtmlPrinter<T, U> implements HtmlPrinter<Pair<T, U>> {
     }
 
     /**
-     * Instantiates a new pair property printer.
+     * Instantiates a new pair printer.
      *
      * @param prefix The prefix HTML text.
      * @param firstPrinter The printer for first elements of the pairs.
@@ -66,6 +68,7 @@ public class PairHtmlPrinter<T, U> implements HtmlPrinter<Pair<T, U>> {
 
     @Override
     public String print(Pair<T, U> pair) {
+        Preconditions.checkNotNull(pair, "Expected a non-null pair.");
         return prefix + firstPrinter.print(pair.getFirst()).trim() + separator
                 + secondPrinter.print(pair.getSecond()).trim() + suffix;
     }

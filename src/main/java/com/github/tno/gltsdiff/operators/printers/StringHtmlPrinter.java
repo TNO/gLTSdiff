@@ -15,14 +15,14 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import com.google.common.base.Preconditions;
 
 /**
- * An HTML printer that prints properties as strings, thereby applying HTML escaping.
+ * An HTML printer that prints values by converting them {@link Object#toString to strings} and applying HTML escaping.
  *
- * @param <T> The type of properties.
+ * @param <T> The type of values.
  */
 public class StringHtmlPrinter<T> implements HtmlPrinter<T> {
     @Override
-    public String print(T property) {
-        Preconditions.checkNotNull(property, "Expected a non-null property.");
-        return StringEscapeUtils.escapeHtml4(property.toString().trim());
+    public String print(T value) {
+        Preconditions.checkNotNull(value, "Expected a non-null value.");
+        return StringEscapeUtils.escapeHtml4(value.toString().trim());
     }
 }

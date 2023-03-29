@@ -16,13 +16,13 @@ import java.util.stream.Collectors;
 import com.google.common.base.Preconditions;
 
 /**
- * An HTML printer for sets of properties, by means of joining printed elements.
+ * An HTML printer for {@link Set sets} that joins together printed elements.
  *
- * @param <T> The type of properties.
+ * @param <T> The type of elements of the sets.
  */
 public class SetHtmlPrinter<T> implements HtmlPrinter<Set<T>> {
-    /** The printer for properties. */
-    private final HtmlPrinter<T> propertyPrinter;
+    /** The printer for set elements. */
+    private final HtmlPrinter<T> elementPrinter;
 
     /** The prefix, as HTML. */
     private final String prefix;
@@ -34,25 +34,25 @@ public class SetHtmlPrinter<T> implements HtmlPrinter<Set<T>> {
     private final String suffix;
 
     /**
-     * Instantiates a new property set printer, that uses "&#123;" and "&#125;" as prefix and suffix, respectively,
-     * delimiting elements of the set by ", ".
+     * Instantiates a new set printer, that uses "&#123;" and "&#125;" as prefix and suffix, respectively, delimiting
+     * elements of the set by ", ".
      *
-     * @param propertyPrinter The printer for properties.
+     * @param elementPrinter The printer for set elements.
      */
-    public SetHtmlPrinter(HtmlPrinter<T> propertyPrinter) {
-        this(propertyPrinter, "{", ", ", "}");
+    public SetHtmlPrinter(HtmlPrinter<T> elementPrinter) {
+        this(elementPrinter, "{", ", ", "}");
     }
 
     /**
-     * Instantiates a new property set printer.
+     * Instantiates a new set printer.
      *
-     * @param propertyPrinter The printer for properties.
+     * @param elementPrinter The printer for set elements.
      * @param prefix The prefix, as HTML.
      * @param delimiter The delimiter, as HTML.
      * @param suffix The suffix, as HTML.
      */
-    public SetHtmlPrinter(HtmlPrinter<T> propertyPrinter, String prefix, String delimiter, String suffix) {
-        this.propertyPrinter = propertyPrinter;
+    public SetHtmlPrinter(HtmlPrinter<T> elementPrinter, String prefix, String delimiter, String suffix) {
+        this.elementPrinter = elementPrinter;
         this.prefix = prefix;
         this.delimiter = delimiter;
         this.suffix = suffix;
@@ -60,7 +60,7 @@ public class SetHtmlPrinter<T> implements HtmlPrinter<Set<T>> {
 
     @Override
     public String print(Set<T> set) {
-        Preconditions.checkNotNull(set, "Expected a non-null set of properties.");
-        return set.stream().map(propertyPrinter::print).collect(Collectors.joining(delimiter, prefix, suffix)).trim();
+        Preconditions.checkNotNull(set, "Expected a non-null set.");
+        return set.stream().map(elementPrinter::print).collect(Collectors.joining(delimiter, prefix, suffix)).trim();
     }
 }

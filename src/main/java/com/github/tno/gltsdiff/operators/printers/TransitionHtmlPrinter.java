@@ -20,13 +20,13 @@ import com.google.common.base.Preconditions;
  * @param <T> The type of transition properties.
  */
 public class TransitionHtmlPrinter<S, T> implements HtmlPrinter<Transition<S, T>> {
-    /** The printer for properties. */
+    /** The printer for transition properties. */
     private final HtmlPrinter<T> propertyPrinter;
 
     /**
-     * Instantiates a new transition property printer.
+     * Instantiates a new transition printer.
      *
-     * @param propertyPrinter The printer for properties.
+     * @param propertyPrinter The printer for transition properties.
      */
     public TransitionHtmlPrinter(HtmlPrinter<T> propertyPrinter) {
         this.propertyPrinter = propertyPrinter;

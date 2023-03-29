@@ -35,6 +35,7 @@ import com.github.tno.gltsdiff.operators.hiders.Hider;
 import com.github.tno.gltsdiff.operators.inclusions.EqualToCombinationInclusion;
 import com.github.tno.gltsdiff.operators.inclusions.Inclusion;
 import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
+import com.github.tno.gltsdiff.operators.printers.StateHtmlPrinter;
 import com.github.tno.gltsdiff.operators.printers.StringHtmlPrinter;
 import com.github.tno.gltsdiff.operators.printers.TransitionHtmlPrinter;
 import com.github.tno.gltsdiff.rewriters.FixedPointRewriter;
@@ -490,12 +491,12 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
     }
 
     /**
-     * Set {@link DotWriter#stateLabel} as state label HTML printer.
+     * Set {@link StateHtmlPrinter} as state label HTML printer.
      *
      * @return This helper, for chaining.
      */
     public StructureComparatorBuilder<S, T, U> setDefaultStateLabelHtmlPrinter() {
-        return setStateLabelHtmlPrinter(DotWriter::stateLabel);
+        return setStateLabelHtmlPrinter(new StateHtmlPrinter<>());
     }
 
     /**
@@ -513,12 +514,24 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
     }
 
     /**
+     * Set the transition label HTML printer, based on a printer for transition properties.
+     *
+     * @param transitionPropertyPrinter The transition property HTML printer.
+     * @return This helper, for chaining.
+     */
+    public StructureComparatorBuilder<S, T, U>
+            setTransitionPropertyHtmlPrinter(HtmlPrinter<T> transitionPropertyPrinter)
+    {
+        return setTransitionLabelHtmlPrinter(new TransitionHtmlPrinter<>(transitionPropertyPrinter));
+    }
+
+    /**
      * Set {@link StringHtmlPrinter} as transition label HTML printer.
      *
      * @return This helper, for chaining.
      */
     public StructureComparatorBuilder<S, T, U> setDefaultTransitionLabelHtmlPrinter() {
-        return setTransitionLabelHtmlPrinter(new TransitionHtmlPrinter<>(new StringHtmlPrinter<>()));
+        return setTransitionPropertyHtmlPrinter(new StringHtmlPrinter<>());
     }
 
     /**

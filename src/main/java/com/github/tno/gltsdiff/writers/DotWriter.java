@@ -24,6 +24,7 @@ import com.github.tno.gltsdiff.glts.GLTS;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.Transition;
 import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
+import com.github.tno.gltsdiff.operators.printers.StateHtmlPrinter;
 import com.google.common.base.Preconditions;
 
 /**
@@ -47,26 +48,26 @@ public class DotWriter<S, T, U extends GLTS<S, T>> {
     /** The circle shape style to use. */
     protected static final String SHAPE_CIRCLE = "circle";
 
-    /** A printer for printing state labels. */
+    /** The printer for printing state labels. */
     protected final HtmlPrinter<State<S>> stateLabelPrinter;
 
-    /** A printer for printing transition labels. */
+    /** The printer for printing transition labels. */
     protected final HtmlPrinter<Transition<S, T>> transitionLabelPrinter;
 
     /**
-     * Instantiates a writer for GLTSs, which prints state identifiers as state labels.
+     * Instantiates a writer for GLTSs, which uses {@link StateHtmlPrinter} as state label printer.
      *
-     * @param transitionLabelPrinter A printer for printing transition labels.
+     * @param transitionLabelPrinter The printer for printing transition labels.
      */
     public DotWriter(HtmlPrinter<Transition<S, T>> transitionLabelPrinter) {
-        this(DotWriter::stateLabel, transitionLabelPrinter);
+        this(new StateHtmlPrinter<>(), transitionLabelPrinter);
     }
 
     /**
      * Instantiates a writer for GLTSs.
      *
-     * @param stateLabelPrinter A printer for printing state labels.
-     * @param transitionLabelPrinter A printer for printing transition labels.
+     * @param stateLabelPrinter The printer for printing state labels.
+     * @param transitionLabelPrinter The printer for printing transition labels.
      */
     public DotWriter(HtmlPrinter<State<S>> stateLabelPrinter, HtmlPrinter<Transition<S, T>> transitionLabelPrinter) {
         this.stateLabelPrinter = stateLabelPrinter;
@@ -172,18 +173,8 @@ public class DotWriter<S, T, U extends GLTS<S, T>> {
      * @param state The state for which to obtain the DOT graph identifier.
      * @return The DOT graph identifier that identifies {@code state} in the DOT graph.
      */
-    public static String stateId(State<?> state) {
+    protected String stateId(State<?> state) {
         return Integer.toString(state.getId() + 1);
-    }
-
-    /**
-     * Gives a standard DOT graph state label for the specified state.
-     *
-     * @param state The state for which to obtain the DOT graph state label.
-     * @return The DOT graph state label for the state.
-     */
-    public static String stateLabel(State<?> state) {
-        return "s" + stateId(state);
     }
 
     /**

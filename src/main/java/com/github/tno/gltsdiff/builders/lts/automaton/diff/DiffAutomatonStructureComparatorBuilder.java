@@ -19,7 +19,6 @@ import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;
 import com.github.tno.gltsdiff.operators.combiners.lts.automaton.diff.DiffAutomatonStatePropertyCombiner;
 import com.github.tno.gltsdiff.operators.combiners.lts.automaton.diff.DiffPropertyCombiner;
 import com.github.tno.gltsdiff.operators.printers.StringHtmlPrinter;
-import com.github.tno.gltsdiff.operators.printers.TransitionHtmlPrinter;
 import com.github.tno.gltsdiff.operators.printers.lts.automaton.diff.DiffPropertyHtmlPrinter;
 import com.github.tno.gltsdiff.rewriters.lts.automaton.diff.EntanglementRewriter;
 import com.github.tno.gltsdiff.rewriters.lts.automaton.diff.SkipForkPatternRewriter;
@@ -104,8 +103,7 @@ public class DiffAutomatonStructureComparatorBuilder<T>
     public StructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
             setDefaultTransitionLabelHtmlPrinter()
     {
-        return setTransitionLabelHtmlPrinter(
-                new TransitionHtmlPrinter<>(new DiffPropertyHtmlPrinter<>(new StringHtmlPrinter<>())));
+        return setTransitionPropertyHtmlPrinter(new DiffPropertyHtmlPrinter<>(new StringHtmlPrinter<>()));
     }
 
     @Override
