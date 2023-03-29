@@ -52,7 +52,7 @@ import com.github.tno.gltsdiff.writers.DotWriter;
 import com.google.common.base.Preconditions;
 
 /**
- * Structure comparator builder to more easily configure the various settings for comparing, merging and writing
+ * Structure comparator builder to more easily configure the various settings for comparing, merging and (re)writing
  * {@link GLTS GLTSs} and more specialized representations.
  *
  * <p>
@@ -64,7 +64,7 @@ import com.google.common.base.Preconditions;
  * </ul>
  *
  * <p>
- * This class is for comparison, merging and writing of GLTSs. Derived classes provide such functionality tailored to
+ * This class is for comparing, merging and (re)writing of GLTSs. Derived classes provide such functionality tailored to
  * more specific GLTS representations. They may for instance provide their own defaults, as well as additional
  * configuration.
  * </p>

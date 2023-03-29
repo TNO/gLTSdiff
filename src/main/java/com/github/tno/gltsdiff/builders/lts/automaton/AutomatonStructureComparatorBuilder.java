@@ -17,8 +17,8 @@ import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
 import com.github.tno.gltsdiff.writers.lts.automaton.AutomatonDotWriter;
 
 /**
- * Builder to more easily configure the various settings for comparing, merging and (re)writing {@link Automaton automata}
- * and more specialized representations.
+ * Builder to more easily configure the various settings for comparing, merging and (re)writing {@link Automaton
+ * automata} and more specialized representations.
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.

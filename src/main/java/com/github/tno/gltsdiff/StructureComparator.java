@@ -24,17 +24,23 @@ import com.github.tno.gltsdiff.rewriters.Rewriter;
 import com.google.common.base.Preconditions;
 
 /**
- * Structural comparator that allows comparing two or more GLTSs and merging them into a single GLTS that highlights
- * their differences.
+ * Structural comparator that allows comparing GLTSs, merging them into a single GLTS that highlights their differences,
+ * and rewriting the merged GLTS to eliminate some undesired patterns.
  *
  * <p>
- * When comparing two GLTSs, we refer to them as the left-hand-side (LHS) and the right-hand-side (RHS). They are compared
- * and merged into a single GLTS.
+ * When comparing two GLTSs, we refer to them as the left-hand-side (LHS) and the right-hand-side (RHS). They are
+ * compared and merged into a single GLTS, and subsequently (optionally) rewritten as post-processing.
  * </p>
  *
  * <p>
- * When comparing more than two GLTSs, first the first two GLTSs are compared and merged. Then the result is compared and
- * merged with the third GLTS. Subsequently, that result is compared and merged with the fourth GLTS, and so on.
+ * When comparing more than two GLTSs, first the first two GLTSs are compared and merged. Then the result is compared
+ * and merged with the third GLTS. Subsequently, that result is compared and merged with the fourth GLTS, and so on. The
+ * final merge result is (optionally) post-processed by rewriters.
+ * </p>
+ *
+ * <p>
+ * When using only a single input GLTS, no comparison and merging is performed. Only post-processing is (optionally)
+ * performed by rewriting the input GLTS.
  * </p>
  *
  * @param <S> The type of state properties.
@@ -65,7 +71,7 @@ public class StructureComparator<S, T, U extends GLTS<S, T>> {
     }
 
     /**
-     * Compare and merge two GLTSs.
+     * Compare, merge and rewrite two GLTSs.
      *
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
@@ -100,12 +106,12 @@ public class StructureComparator<S, T, U extends GLTS<S, T>> {
      * Compare, merge and rewrite some GLTSs.
      *
      * @param gltss The GLTSs. At least one GLTS must be given.
-     * @return The GLTS produced by comparing and merging the GLTSs.
+     * @return The GLTS produced by comparing, merging and rewriting the GLTSs.
      */
     public U compare(Stream<U> gltss) {
         // Compare and merge.
         Optional<U> optionalResult = gltss.reduce(this::compareInternal);
-        Preconditions.checkArgument(optionalResult.isPresent(), "Expected to compare at least one GLTS to compare.");
+        Preconditions.checkArgument(optionalResult.isPresent(), "Expected to compare at least one GLTS.");
         U result = optionalResult.get();
 
         // Rewrite, as post-processing.
@@ -116,11 +122,11 @@ public class StructureComparator<S, T, U extends GLTS<S, T>> {
     }
 
     /**
-     * Compare, merge and rewrite two GLTSs.
+     * Compare and merge two GLTSs.
      *
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
-     * @return The GLTS produced by comparing, merging and rewriting the LHS and RHS.
+     * @return The GLTS produced by comparing and merging the LHS and RHS.
      */
     private U compareInternal(U lhs, U rhs) {
         Map<State<S>, State<S>> matching = matcher.compute(lhs, rhs);

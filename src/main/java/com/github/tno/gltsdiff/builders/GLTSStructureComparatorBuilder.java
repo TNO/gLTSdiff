@@ -14,7 +14,7 @@ import com.github.tno.gltsdiff.glts.GLTS;
 
 /**
  * {@link StructureComparatorBuilder Structure comparator builder} to more easily configure the various settings for
- * comparing, merging and writing {@link GLTS GLTSs}.
+ * comparing, merging and (re)writing {@link GLTS GLTSs}.
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
