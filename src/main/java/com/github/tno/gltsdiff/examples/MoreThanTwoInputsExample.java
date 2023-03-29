@@ -10,11 +10,7 @@
 
 package com.github.tno.gltsdiff.examples;
 
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -104,10 +100,7 @@ public class MoreThanTwoInputsExample {
         for (int i = 0; i < inputs.size(); i++) {
             SimpleAutomaton<Pair<String, Set<Integer>>> input = inputs.get(i);
             Path dotPath = Paths.get("examples/MoreThanTwoInputs/input" + (i + 1) + ".dot");
-            Files.createDirectories(dotPath.getParent());
-            try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(dotPath.toFile()))) {
-                writer.write(input, stream);
-            }
+            writer.write(input, dotPath);
             DotRenderer.renderDot(dotPath);
         }
 
@@ -116,9 +109,7 @@ public class MoreThanTwoInputsExample {
 
         // Write the result to a file in DOT format, and render it to SVG.
         Path resultDotPath = Paths.get("examples/MoreThanTwoInputs/result.dot");
-        try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(resultDotPath.toFile()))) {
-            writer.write(result, stream);
-        }
+        writer.write(result, resultDotPath);
         Path resultSvgPath = DotRenderer.renderDot(resultDotPath);
         System.out.println("The result is in: " + resultSvgPath);
     }

@@ -10,11 +10,7 @@
 
 package com.github.tno.gltsdiff.examples;
 
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -89,10 +85,7 @@ public class PostProcessingExample {
         for (int i = 0; i < inputs.size(); i++) {
             DiffAutomaton<String> input = inputs.get(i);
             Path dotPath = Paths.get("examples/PostProcessing/input" + (i + 1) + ".dot");
-            Files.createDirectories(dotPath.getParent());
-            try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(dotPath.toFile()))) {
-                writer.write(input, stream);
-            }
+            writer.write(input, dotPath);
             DotRenderer.renderDot(dotPath);
         }
 
@@ -101,9 +94,7 @@ public class PostProcessingExample {
 
         // Write the comparison result to a file in DOT format, and render it to SVG.
         Path resultDotPath1 = Paths.get("examples/PostProcessing/result1.dot");
-        try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(resultDotPath1.toFile()))) {
-            writer.write(result, stream);
-        }
+        writer.write(result, resultDotPath1);
         Path resultSvgPath1 = DotRenderer.renderDot(resultDotPath1);
         System.out.println("The comparison result is in: " + resultSvgPath1);
 
@@ -117,9 +108,7 @@ public class PostProcessingExample {
 
         // Write the post-processing result to a file in DOT format, and render it to SVG.
         Path resultDotPath2 = Paths.get("examples/PostProcessing/result2.dot");
-        try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(resultDotPath2.toFile()))) {
-            writer.write(result, stream);
-        }
+        writer.write(result, resultDotPath2);
         Path resultSvgPath2 = DotRenderer.renderDot(resultDotPath2);
         System.out.println("The post-processed result is in: " + resultSvgPath2);
     }
