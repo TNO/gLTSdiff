@@ -36,7 +36,7 @@ import com.github.tno.gltsdiff.operators.combiners.Combiner;
 @FunctionalInterface
 public interface Inclusion<T> {
     /**
-     * Binary operator for checking inclusion between two combinable property.
+     * Binary operator for checking inclusion between two combinable properties.
      *
      * <p>
      * This operator must be:

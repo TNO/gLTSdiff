@@ -17,7 +17,7 @@ import com.google.common.base.Preconditions;
  * An HTML printer that prints states by prefixing their state IDs.
  *
  * <p>
- * While {@link State} {@link State#getId IDs} are 0-based, this printer uses 1-based IDs. This is leads to nicer
+ * While {@link State} {@link State#getId IDs} are 0-based, this printer uses 1-based IDs. This leads to nicer
  * output, as the first state then has ID 1, while the last state has the number of states as its ID.
  * </p>
  *

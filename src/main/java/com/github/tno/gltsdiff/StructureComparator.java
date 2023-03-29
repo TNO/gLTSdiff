@@ -28,12 +28,12 @@ import com.google.common.base.Preconditions;
  * their differences.
  *
  * <p>
- * When comparing GLTSs, we refer to them as the left-hand-side (LHS) and the right-hand-side (RHS). They are compared
+ * When comparing two GLTSs, we refer to them as the left-hand-side (LHS) and the right-hand-side (RHS). They are compared
  * and merged into a single GLTS.
  * </p>
  *
  * <p>
- * When comparing more than two GLTSs, first the first two GLTSs are compare and merged. Then the result is compared and
+ * When comparing more than two GLTSs, first the first two GLTSs are compared and merged. Then the result is compared and
  * merged with the third GLTS. Subsequently, that result is compared and merged with the fourth GLTS, and so on.
  * </p>
  *
@@ -45,7 +45,7 @@ public class StructureComparator<S, T, U extends GLTS<S, T>> {
     /** The matcher that determines which (LHS, RHS)-state pairs should be merged into a single state. */
     private final Matcher<S, T, U> matcher;
 
-    /** The merger that merges LHS and RHS into a single GLTS. */
+    /** The merger that merges the LHS and RHS into a single GLTS. */
     private final Merger<S, T, U> merger;
 
     /** The rewriter for rewriting the merged GLTS. */
@@ -55,7 +55,7 @@ public class StructureComparator<S, T, U extends GLTS<S, T>> {
      * Initializes a structural comparator.
      *
      * @param matcher The matcher that determines which (LHS, RHS)-state pairs should be merged into a single state.
-     * @param merger The merger that merges LHS and RHS into a single GLTS.
+     * @param merger The merger that merges the LHS and RHS into a single GLTS.
      * @param rewriter The rewriter for rewriting the merged GLTS.
      */
     public StructureComparator(Matcher<S, T, U> matcher, Merger<S, T, U> merger, Rewriter<S, T, U> rewriter) {
@@ -69,17 +69,17 @@ public class StructureComparator<S, T, U extends GLTS<S, T>> {
      *
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
-     * @return The GLTS produced by comparing and merging the LHS and RHS.
+     * @return The GLTS produced by comparing, merging and rewriting the LHS and RHS.
      */
     public U compare(U lhs, U rhs) {
         return compare(Stream.of(lhs, rhs));
     }
 
     /**
-     * Compare and merge some GLTSs.
+     * Compare, merge and rewrite some GLTSs.
      *
      * @param gltss The GLTSs. At least one GLTS must be given.
-     * @return The GLTS produced by comparing and merging the GLTSs.
+     * @return The GLTS produced by comparing, merging and rewriting the GLTSs.
      */
     @SuppressWarnings("unchecked")
     public U compare(U... gltss) {
@@ -87,19 +87,19 @@ public class StructureComparator<S, T, U extends GLTS<S, T>> {
     }
 
     /**
-     * Compare and merge some GLTSs.
+     * Compare, merge and rewrite some GLTSs.
      *
      * @param gltss The GLTSs. At least one GLTS must be given.
-     * @return The GLTS produced by comparing and merging the GLTSs.
+     * @return The GLTS produced by comparing, merging and rewriting the GLTSs.
      */
     public U compare(Collection<U> gltss) {
         return compare(gltss.stream());
     }
 
     /**
-     * Compare and merge some GLTSs.
+     * Compare, merge and rewrite some GLTSs.
      *
-     * @param gltss The GLTSs. At least one GLTSs must be given.
+     * @param gltss The GLTSs. At least one GLTS must be given.
      * @return The GLTS produced by comparing and merging the GLTSs.
      */
     public U compare(Stream<U> gltss) {
@@ -116,11 +116,11 @@ public class StructureComparator<S, T, U extends GLTS<S, T>> {
     }
 
     /**
-     * Compare and merge two GLTSs.
+     * Compare, merge and rewrite two GLTSs.
      *
      * @param lhs The left-hand-side (LHS) GLTS.
      * @param rhs The right-hand-side (RHS) GLTS.
-     * @return The GLTS produced by comparing and merging the LHS and RHS.
+     * @return The GLTS produced by comparing, merging and rewriting the LHS and RHS.
      */
     private U compareInternal(U lhs, U rhs) {
         Map<State<S>, State<S>> matching = matcher.compute(lhs, rhs);

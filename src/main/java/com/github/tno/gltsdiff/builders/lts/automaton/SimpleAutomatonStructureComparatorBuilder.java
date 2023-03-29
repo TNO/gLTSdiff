@@ -17,7 +17,7 @@ import com.github.tno.gltsdiff.operators.combiners.lts.automaton.AutomatonStateP
 
 /**
  * {@link StructureComparatorBuilder Structure comparator builder} to more easily configure the various settings for
- * comparing, merging and writing {@link SimpleAutomaton simple automata}.
+ * comparing, merging and (re)writing {@link SimpleAutomaton simple automata}.
  *
  * @param <T> The type of transition properties.
  */

@@ -34,7 +34,7 @@ public abstract class BaseInclusion<T> implements Inclusion<T> {
     }
 
     /**
-     * Binary operator for checking inclusion between two combinable property.
+     * Binary operator for checking inclusion between two combinable properties.
      *
      * <p>
      * This method must satisfy the same properties as {@link #isIncludedIn}.

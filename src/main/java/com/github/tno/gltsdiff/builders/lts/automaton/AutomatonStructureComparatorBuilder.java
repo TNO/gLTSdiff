@@ -17,12 +17,12 @@ import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
 import com.github.tno.gltsdiff.writers.lts.automaton.AutomatonDotWriter;
 
 /**
- * Builder to more easily configure the various settings for comparing, merging and writing {@link Automaton automata}
+ * Builder to more easily configure the various settings for comparing, merging and (re)writing {@link Automaton automata}
  * and more specialized representations.
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
- * @param <U> The type of automata to compare and combine.
+ * @param <U> The type of automata to compare, combine and rewrite.
  */
 public abstract class AutomatonStructureComparatorBuilder<S extends AutomatonStateProperty, T,
         U extends Automaton<S, T>> extends LTSStructureComparatorBuilder<S, T, U>

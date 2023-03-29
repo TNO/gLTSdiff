@@ -30,7 +30,7 @@ import com.github.tno.gltsdiff.rewriters.lts.automaton.diff.SkipJoinPatternRewri
 import com.github.tno.gltsdiff.writers.lts.automaton.diff.DiffAutomatonDotWriter;
 
 /**
- * Builder to more easily configure the various settings for comparing, merging and writing {@link DiffAutomaton
+ * Builder to more easily configure the various settings for comparing, merging and (re)writing {@link DiffAutomaton
  * difference automata}.
  *
  * @param <T> The type of transition properties.

@@ -17,7 +17,7 @@ import com.github.tno.gltsdiff.operators.combiners.lts.LTSStatePropertyCombiner;
 
 /**
  * {@link StructureComparatorBuilder Structure comparator builder} to more easily configure the various settings for
- * comparing, merging and writing {@link SimpleLTS simple LTSs}.
+ * comparing, merging and (re)writing {@link SimpleLTS simple LTSs}.
  *
  * @param <T> The type of transition properties.
  */

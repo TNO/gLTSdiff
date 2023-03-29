@@ -22,12 +22,12 @@ import com.github.tno.gltsdiff.scorers.lts.WalkinshawLocalLTSScorer;
 import com.github.tno.gltsdiff.writers.lts.LTSDotWriter;
 
 /**
- * Builder to more easily configure the various settings for comparing, merging and writing {@link LTS LTSs} and more
+ * Builder to more easily configure the various settings for comparing, merging and (re)writing {@link LTS LTSs} and more
  * specialized representations.
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
- * @param <U> The type of LTSs to compare and combine.
+ * @param <U> The type of LTSs to compare, combine and rewrite.
  */
 public abstract class LTSStructureComparatorBuilder<S extends LTSStateProperty, T, U extends LTS<S, T>>
         extends StructureComparatorBuilder<S, T, U>
