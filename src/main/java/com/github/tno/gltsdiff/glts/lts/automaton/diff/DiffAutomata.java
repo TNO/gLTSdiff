@@ -21,7 +21,7 @@ import com.github.tno.gltsdiff.operators.projectors.lts.automaton.diff.DiffKindP
 import com.github.tno.gltsdiff.operators.projectors.lts.automaton.diff.DiffPropertyProjector;
 import com.google.common.base.Preconditions;
 
-/** Utilities for working with difference automata. */
+/** Utilities for working with {@link BaseDiffAutomaton difference automata}. */
 public class DiffAutomata {
     /** Constructor for the {@link DiffAutomata} class. */
     private DiffAutomata() {
@@ -38,8 +38,8 @@ public class DiffAutomata {
      * @return The projected difference automaton, containing only state and transition properties related to
      *     {@code along}.
      */
-    public static <T> DiffAutomaton<DiffAutomatonStateProperty, T> project(
-            DiffAutomaton<DiffAutomatonStateProperty, T> automaton, Projector<T, DiffKind> projector, DiffKind along)
+    public static <T> DiffAutomaton<T> project(DiffAutomaton<T> automaton, Projector<T, DiffKind> projector,
+            DiffKind along)
     {
         DiffKindProjector diffKindProjector = new DiffKindProjector();
         return automaton.project(DiffAutomaton::new, new DiffAutomatonStatePropertyProjector<>(diffKindProjector),
@@ -55,9 +55,7 @@ public class DiffAutomata {
      * @return The left (LHS) projection of the difference automaton, containing only the states, initial states and
      *     transitions that are {@link DiffKind#REMOVED}.
      */
-    public static <T> DiffAutomaton<DiffAutomatonStateProperty, T>
-            projectLeft(DiffAutomaton<DiffAutomatonStateProperty, T> automaton, Projector<T, DiffKind> projector)
-    {
+    public static <T> DiffAutomaton<T> projectLeft(DiffAutomaton<T> automaton, Projector<T, DiffKind> projector) {
         return project(automaton, projector, DiffKind.REMOVED);
     }
 
@@ -70,9 +68,7 @@ public class DiffAutomata {
      * @return The right (RHS) projection of the difference automaton, containing only the states, initial states and
      *     transitions that are {@link DiffKind#ADDED}.
      */
-    public static <T> DiffAutomaton<DiffAutomatonStateProperty, T>
-            projectRight(DiffAutomaton<DiffAutomatonStateProperty, T> automaton, Projector<T, DiffKind> projector)
-    {
+    public static <T> DiffAutomaton<T> projectRight(DiffAutomaton<T> automaton, Projector<T, DiffKind> projector) {
         return project(automaton, projector, DiffKind.ADDED);
     }
 
@@ -86,9 +82,7 @@ public class DiffAutomata {
      *     is mapped to {@code null} will not be included in the returned automaton.
      * @return The non-{@code null} automaton.
      */
-    public static <D, A> Automaton<AutomatonStateProperty, A>
-            toAutomaton(DiffAutomaton<DiffAutomatonStateProperty, D> automaton, Function<D, A> transitionPropertyMapper)
-    {
+    public static <D, A> Automaton<A> toAutomaton(DiffAutomaton<D> automaton, Function<D, A> transitionPropertyMapper) {
         return automaton.map(Automaton::new,
                 stateProperty -> new AutomatonStateProperty(stateProperty.isInitial(), stateProperty.isAccepting()),
                 transitionProperty -> transitionPropertyMapper.apply(transitionProperty.getProperty()));
@@ -103,9 +97,7 @@ public class DiffAutomata {
      *     transitions.
      * @return The non-{@code null} difference automaton.
      */
-    public static <T> DiffAutomaton<DiffAutomatonStateProperty, T>
-            fromAutomaton(Automaton<AutomatonStateProperty, T> automaton, DiffKind diffKind)
-    {
+    public static <T> DiffAutomaton<T> fromAutomaton(Automaton<T> automaton, DiffKind diffKind) {
         Preconditions.checkNotNull(automaton, "Expected a non-null automaton.");
         Preconditions.checkNotNull(diffKind, "Expected a non-null difference kind.");
 
