@@ -12,6 +12,7 @@ package com.github.tno.gltsdiff.scorers.lts;
 
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.lts.LTS;
+import com.github.tno.gltsdiff.glts.lts.LTSStateProperty;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.scorers.WalkinshawGlobalScorer;
 import com.github.tno.gltsdiff.scorers.WalkinshawLocalScorer;
@@ -21,11 +22,13 @@ import com.github.tno.gltsdiff.scorers.WalkinshawLocalScorer;
  * similarity scores to a problem of solving a system of linear equations, as proposed by Walkinshaw et al. Takes
  * initial state information into account.
  *
- * @param <S> The type of state properties.
+ * @param <S> The type of LTS state properties.
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs.
  */
-public class WalkinshawGlobalLTSScorer<S, T, U extends LTS<S, T>> extends WalkinshawGlobalScorer<S, T, U> {
+public class WalkinshawGlobalLTSScorer<S extends LTSStateProperty, T, U extends LTS<S, T>>
+        extends WalkinshawGlobalScorer<S, T, U>
+{
     /**
      * Instantiates a new Walkinshaw global scorer for LTSs. Uses an attenuation factor of 0.6.
      *
@@ -59,7 +62,7 @@ public class WalkinshawGlobalLTSScorer<S, T, U extends LTS<S, T>> extends Walkin
         double adjustment = super.getNumeratorAdjustment(lhs, rhs, leftState, rightState, isForward);
 
         // Adjust the numerator if backward scores are computed and 'leftState' and 'rightState' are both initial.
-        if (!isForward && lhs.isInitialState(leftState) && rhs.isInitialState(rightState)) {
+        if (!isForward && leftState.getProperty().isInitial() && rightState.getProperty().isInitial()) {
             adjustment += 1d;
         }
 
@@ -73,7 +76,7 @@ public class WalkinshawGlobalLTSScorer<S, T, U extends LTS<S, T>> extends Walkin
         double adjustment = super.getDenominatorAdjustment(lhs, rhs, leftState, rightState, isForward);
 
         // Adjust the denominator if backward scores are computed and 'leftState' and/or 'rightState' is initial.
-        if (!isForward && (lhs.isInitialState(leftState) || rhs.isInitialState(rightState))) {
+        if (!isForward && (leftState.getProperty().isInitial() || rightState.getProperty().isInitial())) {
             adjustment += 1d;
         }
 
