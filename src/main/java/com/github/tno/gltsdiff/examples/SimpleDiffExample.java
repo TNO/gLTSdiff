@@ -16,7 +16,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
-import com.github.tno.gltsdiff.builders.lts.automaton.diff.BaseDiffAutomatonStructureComparatorBuilder;
+import com.github.tno.gltsdiff.builders.lts.automaton.diff.DiffAutomatonStructureComparatorBuilder;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomatonStateProperty;
@@ -76,7 +76,7 @@ public class SimpleDiffExample {
         second.addTransition(s4, new DiffProperty<>("e", DiffKind.ADDED), s1);
 
         // Configure comparison, merging and writing.
-        BaseDiffAutomatonStructureComparatorBuilder<String> builder = new BaseDiffAutomatonStructureComparatorBuilder<>();
+        DiffAutomatonStructureComparatorBuilder<String> builder = new DiffAutomatonStructureComparatorBuilder<>();
         builder.setTransitionSubPropertyHider(new SubstitutionHider<>("[skip]"));
         var comparator = builder.createComparator();
         var writer = builder.createWriter();

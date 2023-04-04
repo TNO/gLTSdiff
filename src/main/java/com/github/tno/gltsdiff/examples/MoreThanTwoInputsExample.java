@@ -18,7 +18,7 @@ import java.util.Set;
 
 import org.apache.commons.math3.util.Pair;
 
-import com.github.tno.gltsdiff.builders.lts.automaton.BaseAutomatonStructureComparatorBuilder;
+import com.github.tno.gltsdiff.builders.lts.automaton.AutomatonStructureComparatorBuilder;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.lts.automaton.Automaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
@@ -88,7 +88,7 @@ public class MoreThanTwoInputsExample {
         List<Automaton<AutomatonStateProperty, Pair<String, Set<Integer>>>> inputs = List.of(first, second, third);
 
         // Configure comparison, merging and writing.
-        BaseAutomatonStructureComparatorBuilder<Pair<String, Set<Integer>>> builder = new BaseAutomatonStructureComparatorBuilder<>();
+        AutomatonStructureComparatorBuilder<Pair<String, Set<Integer>>> builder = new AutomatonStructureComparatorBuilder<>();
         builder.setTransitionPropertyCombiner(
                 new PairCombiner<>(new EqualityCombiner<>(), new SetCombiner<>(new EqualityCombiner<>())));
         builder.setTransitionPropertyHtmlPrinter(new PairHtmlPrinter<>("", new StringHtmlPrinter<>(), "<br/>",

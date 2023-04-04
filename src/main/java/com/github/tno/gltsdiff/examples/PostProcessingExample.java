@@ -17,7 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import com.github.tno.gltsdiff.builders.lts.automaton.diff.BaseDiffAutomatonStructureComparatorBuilder;
+import com.github.tno.gltsdiff.builders.lts.automaton.diff.DiffAutomatonStructureComparatorBuilder;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomatonStateProperty;
@@ -74,7 +74,7 @@ public class PostProcessingExample {
         second.addTransition(s4, new DiffProperty<>("d", DiffKind.ADDED), s1);
 
         // Configure comparison, merging and writing, without rewriters for post-processing.
-        BaseDiffAutomatonStructureComparatorBuilder<String> builder = new BaseDiffAutomatonStructureComparatorBuilder<>();
+        DiffAutomatonStructureComparatorBuilder<String> builder = new DiffAutomatonStructureComparatorBuilder<>();
         builder.setTransitionSubPropertyHider(new SubstitutionHider<>("[skip]"));
         builder.setRewriters(Collections.emptyList());
         var comparator = builder.createComparator();
