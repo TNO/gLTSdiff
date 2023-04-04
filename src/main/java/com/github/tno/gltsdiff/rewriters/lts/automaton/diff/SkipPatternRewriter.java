@@ -17,7 +17,7 @@ import java.util.Stack;
 import java.util.function.Function;
 
 import com.github.tno.gltsdiff.glts.State;
-import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomaton;
+import com.github.tno.gltsdiff.glts.lts.automaton.diff.BaseDiffAutomaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffKind;
 import com.github.tno.gltsdiff.utils.TriFunction;
@@ -26,13 +26,13 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
 /**
- * Base class for rewriters that rewrite skip patterns in difference automata.
+ * Base class for rewriters that rewrite skip patterns in {@link BaseDiffAutomaton difference automata}..
  *
  * @param <S> The type of difference automaton state properties.
  * @param <T> The type of transition properties.
  * @param <U> The type of difference automata to rewrite.
  */
-public abstract class SkipPatternRewriter<S extends DiffAutomatonStateProperty, T, U extends DiffAutomaton<S, T>>
+public abstract class SkipPatternRewriter<S extends DiffAutomatonStateProperty, T, U extends BaseDiffAutomaton<S, T>>
         extends DiffAutomatonRewriter<S, T, U>
 {
     /**

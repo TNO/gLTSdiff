@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.Transition;
-import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomaton;
+import com.github.tno.gltsdiff.glts.lts.automaton.diff.BaseDiffAutomaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffKind;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffProperty;
@@ -28,7 +28,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 
 /**
- * A rewriter that rewrites tangles in {@link DiffAutomaton difference automata}.
+ * A rewriter that rewrites tangles in {@link BaseDiffAutomaton difference automata}.
  *
  * <p>
  * A <i>tangle</i> is defined to be an {@link DiffKind#UNCHANGED unchanged} state that has no unchanged incoming or
@@ -41,7 +41,7 @@ import com.google.common.collect.Sets;
  * @param <T> The type of transition properties.
  * @param <U> The type of difference automata to rewrite.
  */
-public class EntanglementRewriter<S extends DiffAutomatonStateProperty, T, U extends DiffAutomaton<S, T>>
+public class EntanglementRewriter<S extends DiffAutomatonStateProperty, T, U extends BaseDiffAutomaton<S, T>>
         extends DiffAutomatonRewriter<S, T, U>
 {
     /**
