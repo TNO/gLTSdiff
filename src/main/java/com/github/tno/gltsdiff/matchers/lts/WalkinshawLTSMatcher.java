@@ -17,6 +17,7 @@ import org.apache.commons.math3.util.Pair;
 
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.lts.LTS;
+import com.github.tno.gltsdiff.glts.lts.LTSStateProperty;
 import com.github.tno.gltsdiff.matchers.WalkinshawMatcher;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.scorers.SimilarityScorer;
@@ -26,11 +27,13 @@ import com.google.common.collect.ImmutableSet;
  * Matcher for {@link LTS LTSs} based on landmarks, 'obviously' matching state pairs, as proposed by Walkinshaw et al,
  * thereby taking initial state information into account.
  *
- * @param <S> The type of state properties.
+ * @param <S> The type of LTS state properties.
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs.
  */
-public class WalkinshawLTSMatcher<S, T, U extends LTS<S, T>> extends WalkinshawMatcher<S, T, U> {
+public class WalkinshawLTSMatcher<S extends LTSStateProperty, T, U extends LTS<S, T>>
+        extends WalkinshawMatcher<S, T, U>
+{
     /**
      * Instantiates a new Walkinshaw matcher for LTSs. Uses a landmark threshold of 0.25 and a landmark ratio of 1.5.
      *
