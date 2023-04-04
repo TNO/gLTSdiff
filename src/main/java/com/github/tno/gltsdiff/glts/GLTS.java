@@ -243,9 +243,8 @@ public class GLTS<S, T> {
      * @param predicate The predicate.
      * @return The number of transitions with a property that satisfies the predicate.
      */
-    public long countTransitions(Predicate<T> predicate) {
-        return getStates().stream().flatMap(state -> getOutgoingTransitions(state).stream())
-                .map(Transition::getProperty).filter(predicate).count();
+    public long countTransitions(Predicate<Transition<S, T>> predicate) {
+        return getStates().stream().flatMap(state -> getOutgoingTransitions(state).stream()).filter(predicate).count();
     }
 
     /**
