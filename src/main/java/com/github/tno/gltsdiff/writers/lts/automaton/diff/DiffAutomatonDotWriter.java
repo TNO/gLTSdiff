@@ -12,7 +12,7 @@ package com.github.tno.gltsdiff.writers.lts.automaton.diff;
 
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.Transition;
-import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomaton;
+import com.github.tno.gltsdiff.glts.lts.automaton.diff.BaseDiffAutomaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffKind;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffProperty;
@@ -22,13 +22,13 @@ import com.github.tno.gltsdiff.writers.lts.automaton.AutomatonDotWriter;
 import com.google.common.base.Preconditions;
 
 /**
- * Writer for writing {@link DiffAutomaton difference automata} in DOT format.
+ * Writer for writing {@link BaseDiffAutomaton difference automata} in DOT format.
  *
  * @param <S> The type of difference automaton transition properties.
  * @param <T> The type of transition properties.
  * @param <U> The type of difference automata to be written.
  */
-public class DiffAutomatonDotWriter<S extends DiffAutomatonStateProperty, T, U extends DiffAutomaton<S, T>>
+public class DiffAutomatonDotWriter<S extends DiffAutomatonStateProperty, T, U extends BaseDiffAutomaton<S, T>>
         extends AutomatonDotWriter<S, DiffProperty<T>, U>
 {
     /** The contrast color to use. */
