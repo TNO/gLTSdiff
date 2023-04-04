@@ -8,22 +8,25 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.matchers.scorers;
+package com.github.tno.gltsdiff.matchers.scorers.lts;
 
 import org.apache.commons.math3.linear.RealMatrix;
 
 import com.github.tno.gltsdiff.glts.lts.LTS;
+import com.github.tno.gltsdiff.glts.lts.LTSStateProperty;
 import com.github.tno.gltsdiff.scorers.SimilarityScorer;
 import com.google.common.base.Preconditions;
 
 /**
  * A similarity scorer that simply returns fixed similarity scores.
  *
- * @param <S> The type of state properties.
+ * @param <S> The type of LTS state properties.
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs.
  */
-public class FixedScoresScorer<S, T, U extends LTS<S, T>> implements SimilarityScorer<S, T, U> {
+public class LTSFixedScoresScorer<S extends LTSStateProperty, T, U extends LTS<S, T>>
+        implements SimilarityScorer<S, T, U>
+{
     /** The fixed matrix of similarity scores. */
     private final RealMatrix scores;
 
@@ -32,7 +35,7 @@ public class FixedScoresScorer<S, T, U extends LTS<S, T>> implements SimilarityS
      *
      * @param scores The fixed matrix of similarity scores.
      */
-    public FixedScoresScorer(RealMatrix scores) {
+    public LTSFixedScoresScorer(RealMatrix scores) {
         this.scores = scores;
     }
 
