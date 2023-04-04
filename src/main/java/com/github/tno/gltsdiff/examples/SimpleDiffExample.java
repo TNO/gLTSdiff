@@ -48,7 +48,7 @@ public class SimpleDiffExample {
      */
     public static void main(String[] args) throws IOException {
         // Create the first input automaton to compare.
-        DiffAutomaton<DiffAutomatonStateProperty, String> first = new DiffAutomaton<>();
+        DiffAutomaton<String> first = new DiffAutomaton<>();
         State<DiffAutomatonStateProperty> f1 = first
                 .addState(new DiffAutomatonStateProperty(true, DiffKind.REMOVED, Optional.of(DiffKind.REMOVED)));
         State<DiffAutomatonStateProperty> f2 = first
@@ -60,7 +60,7 @@ public class SimpleDiffExample {
         first.addTransition(f3, new DiffProperty<>("c", DiffKind.REMOVED), f1);
 
         // Create the second input automaton to compare.
-        DiffAutomaton<DiffAutomatonStateProperty, String> second = new DiffAutomaton<>();
+        DiffAutomaton<String> second = new DiffAutomaton<>();
         State<DiffAutomatonStateProperty> s1 = second
                 .addState(new DiffAutomatonStateProperty(true, DiffKind.ADDED, Optional.of(DiffKind.ADDED)));
         State<DiffAutomatonStateProperty> s2 = second
@@ -82,16 +82,16 @@ public class SimpleDiffExample {
         var writer = builder.createWriter();
 
         // Write the inputs to files in DOT format, and render them to SVG.
-        List<DiffAutomaton<DiffAutomatonStateProperty, String>> inputs = List.of(first, second);
+        List<DiffAutomaton<String>> inputs = List.of(first, second);
         for (int i = 0; i < inputs.size(); i++) {
-            DiffAutomaton<DiffAutomatonStateProperty, String> input = inputs.get(i);
+            DiffAutomaton<String> input = inputs.get(i);
             Path dotPath = Paths.get("examples/SimpleDiff/input" + (i + 1) + ".dot");
             writer.write(input, dotPath);
             DotRenderer.renderDot(dotPath);
         }
 
         // Apply structural comparison to the two input automata.
-        DiffAutomaton<DiffAutomatonStateProperty, String> result = comparator.compare(first, second);
+        DiffAutomaton<String> result = comparator.compare(first, second);
 
         // Write the result to a file in DOT format, and render it to SVG.
         Path resultDotPath = Paths.get("examples/SimpleDiff/result.dot");
