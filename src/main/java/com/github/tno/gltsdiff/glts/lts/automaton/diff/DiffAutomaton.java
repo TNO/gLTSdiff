@@ -10,22 +10,12 @@
 
 package com.github.tno.gltsdiff.glts.lts.automaton.diff;
 
-import java.util.Optional;
-import java.util.function.Function;
-
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.lts.automaton.Automaton;
-import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
-import com.github.tno.gltsdiff.glts.lts.automaton.SimpleAutomaton;
-import com.github.tno.gltsdiff.operators.projectors.Projector;
-import com.github.tno.gltsdiff.operators.projectors.lts.automaton.diff.DiffAutomatonStatePropertyProjector;
-import com.github.tno.gltsdiff.operators.projectors.lts.automaton.diff.DiffKindProjector;
-import com.github.tno.gltsdiff.operators.projectors.lts.automaton.diff.DiffPropertyProjector;
 import com.google.common.base.Preconditions;
 
 /**
- * A difference automaton, which is a concrete automaton with difference information associated to states, initial
- * states and transitions.
+ * A difference automaton, an {@link Automaton} with difference information for states, initial states and transitions.
  *
  * <p>
  * Difference automata maintain the invariant that difference kinds are always properly nested, meaning that:
@@ -37,34 +27,12 @@ import com.google.common.base.Preconditions;
  * {@link DiffKind#ADDED added} or {@link DiffKind#UNCHANGED unchanged}.</li>
  * </ul>
  *
+ * @param <S> The type of difference automaton state properties.
  * @param <T> The type of transition properties.
  */
-public class DiffAutomaton<T> extends Automaton<DiffAutomatonStateProperty, DiffProperty<T>> {
+public class DiffAutomaton<S extends DiffAutomatonStateProperty, T> extends Automaton<S, DiffProperty<T>> {
     @Override
-    public boolean isInitial(DiffAutomatonStateProperty property) {
-        Preconditions.checkNotNull(property, "Expected a non-null state property.");
-        return property.isInitial();
-    }
-
-    @Override
-    public boolean isAccepting(DiffAutomatonStateProperty property) {
-        Preconditions.checkNotNull(property, "Expected a non-null state property.");
-        return property.isAccepting();
-    }
-
-    /**
-     * Returns the difference kind associated to the given initial state.
-     *
-     * @param state The non-{@code null} initial state.
-     * @return The associated difference kind.
-     */
-    public DiffKind getInitialStateDiffKind(State<DiffAutomatonStateProperty> state) {
-        Preconditions.checkArgument(isInitialState(state), "Expected an initial state.");
-        return state.getProperty().getInitDiffKind();
-    }
-
-    @Override
-    public void setStateProperty(State<DiffAutomatonStateProperty> state, DiffAutomatonStateProperty property) {
+    public void setStateProperty(State<S> state, S property) {
         Preconditions.checkNotNull(property, "Expected a non-null state property.");
 
         // Make sure that the difference kinds are consistent.
@@ -81,9 +49,7 @@ public class DiffAutomaton<T> extends Automaton<DiffAutomatonStateProperty, Diff
     }
 
     @Override
-    public void addTransition(State<DiffAutomatonStateProperty> source, DiffProperty<T> property,
-            State<DiffAutomatonStateProperty> target)
-    {
+    public void addTransition(State<S> source, DiffProperty<T> property, State<S> target) {
         Preconditions.checkNotNull(property, "Expected a non-null transition property.");
 
         // Make sure that the difference kinds are consistent.
@@ -97,74 +63,5 @@ public class DiffAutomaton<T> extends Automaton<DiffAutomatonStateProperty, Diff
                 "Expected the difference kind of the transition property to be consistent with the target state.");
 
         super.addTransition(source, property, target);
-    }
-
-    /**
-     * Projects this difference automaton along a given difference kind.
-     *
-     * @param projector The projector for projecting inner transition properties.
-     * @param along The non-{@code null} difference kind to project along.
-     * @return The projected difference automaton, containing only state and transition properties related to
-     *     {@code along}.
-     */
-    public DiffAutomaton<T> project(Projector<T, DiffKind> projector, DiffKind along) {
-        DiffKindProjector diffKindProjector = new DiffKindProjector();
-        return project(DiffAutomaton::new, new DiffAutomatonStatePropertyProjector<>(diffKindProjector),
-                new DiffPropertyProjector<>(projector, diffKindProjector), along);
-    }
-
-    /**
-     * Returns the left (LHS) projection of this difference automaton.
-     *
-     * @param projector The projector for projecting inner transition properties.
-     * @return The left (LHS) projection of this difference automaton, containing only the states, initial states and
-     *     transitions that are {@link DiffKind#REMOVED}.
-     */
-    public DiffAutomaton<T> projectLeft(Projector<T, DiffKind> projector) {
-        return project(projector, DiffKind.REMOVED);
-    }
-
-    /**
-     * Returns the right (RHS) projection of this difference automaton.
-     *
-     * @param projector The projector for projecting inner transition properties.
-     * @return The right (RHS) projection of this difference automaton, containing only the states, initial states and
-     *     transitions that are {@link DiffKind#ADDED}.
-     */
-    public DiffAutomaton<T> projectRight(Projector<T, DiffKind> projector) {
-        return project(projector, DiffKind.ADDED);
-    }
-
-    /**
-     * Converts this difference automaton to a simple automaton with potentially different transition properties.
-     *
-     * @param <U> The target type of transition properties.
-     * @param transitionPropertyMapper A function for mapping transition properties. Any transition with a property that
-     *     is mapped to {@code null} will not be included in the returned simple automaton.
-     * @return The non-{@code null} converted simple automaton.
-     */
-    public <U> SimpleAutomaton<U> toSimple(Function<T, U> transitionPropertyMapper) {
-        return map(SimpleAutomaton::new,
-                stateProperty -> new AutomatonStateProperty(stateProperty.isInitial(), stateProperty.isAccepting()),
-                transitionProperty -> transitionPropertyMapper.apply(transitionProperty.getProperty()));
-    }
-
-    /**
-     * Converts a given simple automaton to a difference automaton.
-     *
-     * @param <T> The type of transition properties.
-     * @param automaton The non-{@code null} automaton to convert.
-     * @param diffKind The non-{@code null} difference kind to be associated to all converted states, initial states and
-     *     transitions.
-     * @return The non-{@code null} converted difference automaton.
-     */
-    public static <T> DiffAutomaton<T> from(SimpleAutomaton<T> automaton, DiffKind diffKind) {
-        Preconditions.checkNotNull(automaton, "Expected a non-null automaton.");
-        Preconditions.checkNotNull(diffKind, "Expected a non-null difference kind.");
-
-        return automaton.map(DiffAutomaton::new,
-                stateProperty -> new DiffAutomatonStateProperty(stateProperty.isAccepting(), diffKind,
-                        stateProperty.isInitial() ? Optional.of(diffKind) : Optional.empty()),
-                transitionProperty -> new DiffProperty<>(transitionProperty, diffKind));
     }
 }
