@@ -57,30 +57,30 @@ public abstract class BaseDiffAutomatonStructureComparatorBuilder<S extends Diff
     }
 
     /**
-     * Set the transition property combiner, based on a combiner for the sub-properties of {@link DiffProperty}.
+     * Set the transition property combiner, based on a combiner for {@link DiffProperty} sub-properties.
      *
      * @param subPropertyCombiner The {@link DiffProperty} sub-property combiner.
      * @return This builder, for chaining.
      */
     public BaseStructureComparatorBuilder<S, DiffProperty<T>, U>
-            setTransitionSubPropertyCombiner(Combiner<T> subPropertyCombiner)
+            setDiffAutomatonTransitionPropertyCombiner(Combiner<T> subPropertyCombiner)
     {
         return setTransitionPropertyCombiner(new DiffPropertyCombiner<>(subPropertyCombiner));
     }
 
     @Override
     public BaseStructureComparatorBuilder<S, DiffProperty<T>, U> setDefaultTransitionPropertyCombiner() {
-        return setTransitionSubPropertyCombiner(new EqualityCombiner<>());
+        return setDiffAutomatonTransitionPropertyCombiner(new EqualityCombiner<>());
     }
 
     /**
-     * Set the transition property hider, based on a hider for the sub-properties of {@link DiffProperty}.
+     * Set the transition property hider, based on a hider for {@link DiffProperty} sub-properties.
      *
      * @param subPropertyHider The {@link DiffProperty} sub-property hider.
      * @return This builder, for chaining.
      */
     public BaseStructureComparatorBuilder<S, DiffProperty<T>, U>
-            setTransitionSubPropertyHider(Hider<T> subPropertyHider)
+            setDiffAutomatonTransitionPropertyHider(Hider<T> subPropertyHider)
     {
         return setTransitionPropertyHider(new DiffPropertyHider<>(subPropertyHider));
     }
@@ -159,20 +159,20 @@ public abstract class BaseDiffAutomatonStructureComparatorBuilder<S extends Diff
     }
 
     /**
-     * Set the transition label HTML printer, based on a printer for the sub-properties of {@link DiffProperty}.
+     * Set the transition label HTML printer, based on a printer for {@link DiffProperty} sub-properties.
      *
      * @param subPropertyPrinter The {@link DiffProperty} sub-property HTML printer.
      * @return This builder, for chaining.
      */
     public BaseStructureComparatorBuilder<S, DiffProperty<T>, U>
-            setTransitionSubPropertyHtmlPrinter(HtmlPrinter<T> subPropertyPrinter)
+            setDiffAutomatonTransitionPropertyHtmlPrinter(HtmlPrinter<T> subPropertyPrinter)
     {
         return setTransitionPropertyHtmlPrinter(new DiffPropertyHtmlPrinter<>(subPropertyPrinter));
     }
 
     @Override
     public BaseStructureComparatorBuilder<S, DiffProperty<T>, U> setDefaultTransitionLabelHtmlPrinter() {
-        return setTransitionSubPropertyHtmlPrinter(new StringHtmlPrinter<>());
+        return setDiffAutomatonTransitionPropertyHtmlPrinter(new StringHtmlPrinter<>());
     }
 
     @Override
