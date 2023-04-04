@@ -32,7 +32,7 @@ public class LTSStateProperty {
      * @return {@code true} if the associated state is initial, {@code false} otherwise.
      */
     public boolean isInitial() {
-        return this.isInitial;
+        return isInitial;
     }
 
     @Override
