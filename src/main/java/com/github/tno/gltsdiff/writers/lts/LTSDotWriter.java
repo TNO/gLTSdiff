@@ -17,17 +17,18 @@ import java.util.Comparator;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.Transition;
 import com.github.tno.gltsdiff.glts.lts.LTS;
+import com.github.tno.gltsdiff.glts.lts.LTSStateProperty;
 import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
 import com.github.tno.gltsdiff.writers.DotWriter;
 
 /**
  * Writer for writing {@link LTS LTSs} in DOT format.
  *
- * @param <S> The type of state properties.
+ * @param <S> The type of LTS state properties.
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs to be written.
  */
-public class LTSDotWriter<S, T, U extends LTS<S, T>> extends DotWriter<S, T, U> {
+public class LTSDotWriter<S extends LTSStateProperty, T, U extends LTS<S, T>> extends DotWriter<S, T, U> {
     /**
      * Instantiates a writer for LTSs, which prints state identifiers as state labels.
      *
@@ -56,7 +57,7 @@ public class LTSDotWriter<S, T, U extends LTS<S, T>> extends DotWriter<S, T, U> 
     protected Comparator<State<S>> getStateComparator(U lts) {
         return Comparator
                 // First compare initial state information (descending order: first true, then false).
-                .comparing((State<S> state) -> !lts.isInitialState(state))
+                .comparing((State<S> state) -> !state.getProperty().isInitial())
                 // Then compare states in the default way.
                 .thenComparing(super.getStateComparator(lts));
     }

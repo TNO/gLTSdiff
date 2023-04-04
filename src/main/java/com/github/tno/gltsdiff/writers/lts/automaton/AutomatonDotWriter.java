@@ -13,17 +13,20 @@ package com.github.tno.gltsdiff.writers.lts.automaton;
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.Transition;
 import com.github.tno.gltsdiff.glts.lts.automaton.Automaton;
+import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
 import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
 import com.github.tno.gltsdiff.writers.lts.LTSDotWriter;
 
 /**
  * Writer for writing {@link Automaton automata} in DOT format.
  *
- * @param <S> The type of state properties.
+ * @param <S> The type of automaton state properties.
  * @param <T> The type of transition properties.
  * @param <U> The type of automata to be written.
  */
-public class AutomatonDotWriter<S, T, U extends Automaton<S, T>> extends LTSDotWriter<S, T, U> {
+public class AutomatonDotWriter<S extends AutomatonStateProperty, T, U extends Automaton<S, T>>
+        extends LTSDotWriter<S, T, U>
+{
     /** The double circle shape style to use. */
     protected static final String SHAPE_DOUBLE_CIRCLE = "doublecircle";
 
@@ -55,6 +58,6 @@ public class AutomatonDotWriter<S, T, U extends Automaton<S, T>> extends LTSDotW
 
     @Override
     protected String stateShape(U automaton, State<S> state) {
-        return automaton.isAcceptingState(state) ? SHAPE_DOUBLE_CIRCLE : super.stateShape(automaton, state);
+        return state.getProperty().isAccepting() ? SHAPE_DOUBLE_CIRCLE : super.stateShape(automaton, state);
     }
 }
