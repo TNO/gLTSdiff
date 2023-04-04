@@ -18,24 +18,27 @@ import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.Transition;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomatonStateProperty;
+import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffKind;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffProperty;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
-import com.github.tno.gltsdiff.operators.combiners.lts.automaton.diff.DiffAutomatonStatePropertyCombiner;
 import com.github.tno.gltsdiff.operators.hiders.Hider;
 import com.github.tno.gltsdiff.operators.inclusions.Inclusion;
+import com.github.tno.gltsdiff.utils.TriFunction;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 
 /**
  * A rewriter that rewrites skip join patterns in {@link DiffAutomaton difference automata}.
  *
+ * @param <S> The type of difference automaton state properties.
  * @param <T> The type of transition properties.
+ * @param <U> The type of difference automata to rewrite.
  */
-public class SkipJoinPatternRewriter<T>
-        extends SkipPatternRewriter<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
+public class SkipJoinPatternRewriter<S extends DiffAutomatonStateProperty, T, U extends DiffAutomaton<S, T>>
+        extends SkipPatternRewriter<S, T, U>
 {
     /** The combiner for state properties. */
-    private final Combiner<DiffAutomatonStateProperty> statePropertyCombiner = new DiffAutomatonStatePropertyCombiner();
+    private final Combiner<S> statePropertyCombiner;
 
     /** The combiner for transition properties. */
     private final Combiner<DiffProperty<T>> transitionPropertyCombiner;
@@ -60,23 +63,32 @@ public class SkipJoinPatternRewriter<T>
      * <i>hidden(e1)</i> and <i>hidden(e2)</i> then <i>hidden(combine(e1, e2))</i>.</li>
      * </ol>
      *
+     * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      * @param transitionPropertyHider The hider for transition properties.
      * @param inclusion The transition property inclusion operator.
+     * @param statePropertyTransformer Function to transform a difference automaton state property. Given an existing
+     *     difference automaton state property, a new state difference kind, and a new initial state difference kind
+     *     (present if state is an initial state, absent otherwise), returns a difference automaton state property that
+     *     has the new (initial) state difference kinds. The function should not modify the existing state property.
      */
-    public SkipJoinPatternRewriter(Combiner<DiffProperty<T>> transitionPropertyCombiner,
-            Hider<DiffProperty<T>> transitionPropertyHider, Inclusion<DiffProperty<T>> inclusion)
+    public SkipJoinPatternRewriter(Combiner<S> statePropertyCombiner,
+            Combiner<DiffProperty<T>> transitionPropertyCombiner, Hider<DiffProperty<T>> transitionPropertyHider,
+            Inclusion<DiffProperty<T>> inclusion,
+            TriFunction<S, DiffKind, Optional<DiffKind>, S> statePropertyTransformer)
     {
+        super(statePropertyTransformer);
+        this.statePropertyCombiner = statePropertyCombiner;
         this.transitionPropertyCombiner = transitionPropertyCombiner;
         this.transitionPropertyHider = transitionPropertyHider;
         this.inclusion = inclusion;
     }
 
     @Override
-    public boolean rewrite(DiffAutomaton<T> diff) {
+    public boolean rewrite(U diff) {
         boolean effective = false;
 
-        for (State<DiffAutomatonStateProperty> state: diff.getStates()) {
+        for (State<S> state: diff.getStates()) {
             effective |= apply(diff, state);
         }
 
@@ -90,14 +102,13 @@ public class SkipJoinPatternRewriter<T>
      * @param state The potential origin state of skip join patterns.
      * @return {@code true} if any rewrites have been performed, {@code false} otherwise.
      */
-    private boolean apply(DiffAutomaton<T> diff, State<DiffAutomatonStateProperty> state) {
+    private boolean apply(U diff, State<S> state) {
         boolean effective = false;
 
-        List<Transition<DiffAutomatonStateProperty, DiffProperty<T>>> transitions = new LinkedList<>(
-                diff.getIncomingTransitions(state));
+        List<Transition<S, DiffProperty<T>>> transitions = new LinkedList<>(diff.getIncomingTransitions(state));
 
-        for (Transition<DiffAutomatonStateProperty, DiffProperty<T>> left: transitions) {
-            for (Transition<DiffAutomatonStateProperty, DiffProperty<T>> right: transitions) {
+        for (Transition<S, DiffProperty<T>> left: transitions) {
+            for (Transition<S, DiffProperty<T>> right: transitions) {
                 if (!left.equals(right) && isSkipJoinPattern(diff, left, right)) {
                     rewriteSkipJoinPattern(diff, left, right);
                     effective = true;
@@ -133,9 +144,8 @@ public class SkipJoinPatternRewriter<T>
      * @param right The right transition, which must be different from {@code left} but must have the same target state.
      * @return {@code true} if {@code left} and {@code right} together form a valid skip join pattern.
      */
-    private boolean isSkipJoinPattern(DiffAutomaton<T> diff,
-            Transition<DiffAutomatonStateProperty, DiffProperty<T>> left,
-            Transition<DiffAutomatonStateProperty, DiffProperty<T>> right)
+    private boolean isSkipJoinPattern(U diff, Transition<S, DiffProperty<T>> left,
+            Transition<S, DiffProperty<T>> right)
     {
         Preconditions.checkArgument(!left.equals(right), "Expected the two given transitions to be different.");
 
@@ -147,9 +157,9 @@ public class SkipJoinPatternRewriter<T>
         Preconditions.checkArgument(left.getTarget() == right.getTarget(),
                 "Expected the two given transitions to have the same target state.");
 
-        State<DiffAutomatonStateProperty> leftSource = left.getSource();
-        State<DiffAutomatonStateProperty> rightSource = right.getSource();
-        State<DiffAutomatonStateProperty> target = left.getTarget();
+        State<S> leftSource = left.getSource();
+        State<S> rightSource = right.getSource();
+        State<S> target = left.getTarget();
 
         // It is required that 'leftSource', 'rightSource' and 'target' are all different states.
         // Otherwise this skip join pattern would either contain self-loops, or patterns of local redundancy.
@@ -194,24 +204,23 @@ public class SkipJoinPatternRewriter<T>
      * @param left The left transition, which must have the same target state as {@code right}.
      * @param right The right transition, which must have the same target state as {@code left}.
      */
-    private void rewriteSkipJoinPattern(DiffAutomaton<T> diff,
-            Transition<DiffAutomatonStateProperty, DiffProperty<T>> left,
-            Transition<DiffAutomatonStateProperty, DiffProperty<T>> right)
+    private void rewriteSkipJoinPattern(U diff, Transition<S, DiffProperty<T>> left,
+            Transition<S, DiffProperty<T>> right)
     {
         Preconditions.checkArgument(left.getTarget() == right.getTarget(),
                 "Expected the two given transitions to have the same target state.");
 
-        State<DiffAutomatonStateProperty> leftSource = left.getSource();
-        State<DiffAutomatonStateProperty> rightSource = right.getSource();
-        State<DiffAutomatonStateProperty> target = left.getTarget();
+        State<S> leftSource = left.getSource();
+        State<S> rightSource = right.getSource();
+        State<S> target = left.getTarget();
 
         Preconditions.checkArgument(ImmutableSet.of(leftSource, rightSource, target).size() == 3,
                 "Expected the join pattern to consist of three different non-overlapping states.");
 
         // 1. Upgrade the property of 'rightSource'.
-        DiffAutomatonStateProperty rightSourceProperty = rightSource.getProperty();
-        DiffAutomatonStateProperty otherProperty = new DiffAutomatonStateProperty(rightSourceProperty.isAccepting(),
-                left.getProperty().getDiffKind(), Optional.empty());
+        S rightSourceProperty = rightSource.getProperty();
+        S otherProperty = statePropertyTransformer.apply(rightSourceProperty, left.getProperty().getDiffKind(),
+                Optional.empty());
         diff.setStateProperty(rightSource, statePropertyCombiner.combine(rightSourceProperty, otherProperty));
 
         // 2. Upgrade the property of the 'right' transition.
