@@ -17,12 +17,12 @@ import com.github.tno.gltsdiff.glts.GLTS;
 import com.github.tno.gltsdiff.glts.State;
 
 /**
- * A labeled transition system, a {@link GLTS} with initial state information for states.
+ * A base class for labeled transition systems, {@link GLTS GLTSs} with initial state information for states.
  *
  * @param <S> The type of LTS state properties.
  * @param <T> The type of transition properties.
  */
-public class LTS<S extends LTSStateProperty, T> extends GLTS<S, T> {
+public abstract class BaseLTS<S extends LTSStateProperty, T> extends GLTS<S, T> {
     /**
      * Returns the initial states of this LTS.
      *

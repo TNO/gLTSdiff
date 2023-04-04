@@ -11,11 +11,12 @@
 package com.github.tno.gltsdiff.glts.lts.automaton.diff;
 
 import com.github.tno.gltsdiff.glts.State;
-import com.github.tno.gltsdiff.glts.lts.automaton.Automaton;
+import com.github.tno.gltsdiff.glts.lts.automaton.BaseAutomaton;
 import com.google.common.base.Preconditions;
 
 /**
- * A difference automaton, an {@link Automaton} with difference information for states, initial states and transitions.
+ * A base class for difference automata, {@link BaseAutomaton automata} with difference information for states, initial
+ * states and transitions.
  *
  * <p>
  * Difference automata maintain the invariant that difference kinds are always properly nested, meaning that:
@@ -30,7 +31,9 @@ import com.google.common.base.Preconditions;
  * @param <S> The type of difference automaton state properties.
  * @param <T> The type of transition properties.
  */
-public class DiffAutomaton<S extends DiffAutomatonStateProperty, T> extends Automaton<S, DiffProperty<T>> {
+public abstract class BaseDiffAutomaton<S extends DiffAutomatonStateProperty, T>
+        extends BaseAutomaton<S, DiffProperty<T>>
+{
     @Override
     public void setStateProperty(State<S> state, S property) {
         Preconditions.checkNotNull(property, "Expected a non-null state property.");

@@ -10,14 +10,14 @@
 
 package com.github.tno.gltsdiff.glts.lts.automaton;
 
-import com.github.tno.gltsdiff.glts.lts.LTS;
+import com.github.tno.gltsdiff.glts.lts.BaseLTS;
 
 /**
- * An automaton, an {@link LTS} with accepting state information for states.
+ * A base class for automata, {@link BaseLTS LTSs} with accepting state information for states.
  *
  * @param <S> The type of automaton state properties.
  * @param <T> The type of transition properties.
  */
-public class Automaton<S extends AutomatonStateProperty, T> extends LTS<S, T> {
+public abstract class BaseAutomaton<S extends AutomatonStateProperty, T> extends BaseLTS<S, T> {
     // Nothing to add or override.
 }
