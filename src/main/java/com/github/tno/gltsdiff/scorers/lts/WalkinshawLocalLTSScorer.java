@@ -11,20 +11,20 @@
 package com.github.tno.gltsdiff.scorers.lts;
 
 import com.github.tno.gltsdiff.glts.State;
-import com.github.tno.gltsdiff.glts.lts.LTS;
+import com.github.tno.gltsdiff.glts.lts.BaseLTS;
 import com.github.tno.gltsdiff.glts.lts.LTSStateProperty;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.scorers.WalkinshawLocalScorer;
 
 /**
- * Scorer that computes local similarity scores for pairs of (LHS, RHS)-states in {@link LTS LTSs}, thereby taking
+ * Scorer that computes local similarity scores for pairs of (LHS, RHS)-states in {@link BaseLTS LTSs}, thereby taking
  * initial state information into account.
  *
  * @param <S> The type of LTS state properties.
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs.
  */
-public class WalkinshawLocalLTSScorer<S extends LTSStateProperty, T, U extends LTS<S, T>>
+public class WalkinshawLocalLTSScorer<S extends LTSStateProperty, T, U extends BaseLTS<S, T>>
         extends WalkinshawLocalScorer<S, T, U>
 {
     /**

@@ -12,21 +12,21 @@ package com.github.tno.gltsdiff.scorers.lts;
 
 import java.util.function.BiFunction;
 
-import com.github.tno.gltsdiff.glts.lts.LTS;
+import com.github.tno.gltsdiff.glts.lts.BaseLTS;
 import com.github.tno.gltsdiff.glts.lts.LTSStateProperty;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.scorers.DynamicScorer;
 import com.github.tno.gltsdiff.scorers.SimilarityScorer;
 
 /**
- * Scorer that computes state similarity scores for {@link LTS LTSs} that makes a trade-off between computational
+ * Scorer that computes state similarity scores for {@link BaseLTS LTSs} that makes a trade-off between computational
  * intensity and the quality of the computed scores.
  *
  * @param <S> The type of LTS state properties.
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs.
  */
-public class DynamicLTSScorer<S extends LTSStateProperty, T, U extends LTS<S, T>> extends DynamicScorer<S, T, U> {
+public class DynamicLTSScorer<S extends LTSStateProperty, T, U extends BaseLTS<S, T>> extends DynamicScorer<S, T, U> {
     /**
      * Instantiates a new dynamic scoring algorithm for LTSs, that uses a default configuration of scoring algorithms.
      *
@@ -61,7 +61,7 @@ public class DynamicLTSScorer<S extends LTSStateProperty, T, U extends LTS<S, T>
      * @param transitionPropertyCombiner The transition property combiner.
      * @return The scorer.
      */
-    private static final <S extends LTSStateProperty, T, U extends LTS<S, T>> SimilarityScorer<S, T, U>
+    private static final <S extends LTSStateProperty, T, U extends BaseLTS<S, T>> SimilarityScorer<S, T, U>
             defaultScoringAlgorithmCreator(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner)
     {
         SimilarityScorer<S, T, U> globalScorer = new WalkinshawGlobalLTSScorer<>(statePropertyCombiner,
