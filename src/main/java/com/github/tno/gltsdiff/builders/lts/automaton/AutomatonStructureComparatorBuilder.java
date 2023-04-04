@@ -11,24 +11,26 @@
 package com.github.tno.gltsdiff.builders.lts.automaton;
 
 import com.github.tno.gltsdiff.builders.StructureComparatorBuilder;
-import com.github.tno.gltsdiff.builders.lts.LTSStructureComparatorBuilder;
-import com.github.tno.gltsdiff.glts.lts.automaton.Automaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
-import com.github.tno.gltsdiff.writers.lts.automaton.AutomatonDotWriter;
+import com.github.tno.gltsdiff.glts.lts.automaton.SimpleAutomaton;
+import com.github.tno.gltsdiff.operators.combiners.lts.automaton.AutomatonStatePropertyCombiner;
 
 /**
- * Builder to more easily configure the various settings for comparing, merging and (re)writing {@link Automaton
- * automata} and more specialized representations.
+ * {@link StructureComparatorBuilder Structure comparator builder} to more easily configure the various settings for
+ * comparing, merging and (re)writing {@link SimpleAutomaton simple automata}.
  *
- * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
- * @param <U> The type of automata to compare, combine and (re)write.
  */
-public abstract class AutomatonStructureComparatorBuilder<S extends AutomatonStateProperty, T,
-        U extends Automaton<S, T>> extends LTSStructureComparatorBuilder<S, T, U>
+public class SimpleAutomatonStructureComparatorBuilder<T>
+        extends AutomatonStructureComparatorBuilder<AutomatonStateProperty, T, SimpleAutomaton<T>>
 {
     @Override
-    public StructureComparatorBuilder<S, T, U> setDefaultDotWriter() {
-        return setDotWriter((sp, tp) -> new AutomatonDotWriter<>(sp, tp));
+    public StructureComparatorBuilder<AutomatonStateProperty, T, SimpleAutomaton<T>> setDefaultInstantiator() {
+        return setInstantiator(() -> new SimpleAutomaton<>());
+    }
+
+    @Override
+    public StructureComparatorBuilder<AutomatonStateProperty, T, SimpleAutomaton<T>> setDefaultStatePropertyCombiner() {
+        return setStatePropertyCombiner(new AutomatonStatePropertyCombiner());
     }
 }
