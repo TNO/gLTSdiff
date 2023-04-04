@@ -21,6 +21,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffKind;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffProperty;
+import com.github.tno.gltsdiff.operators.hiders.lts.automaton.diff.DiffPropertyHider;
 
 /** {@link Hider} tests. */
 public class HidersTest {

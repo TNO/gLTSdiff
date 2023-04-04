@@ -20,8 +20,8 @@ import org.junit.jupiter.api.Test;
 
 import com.github.tno.gltsdiff.TestAutomata;
 import com.github.tno.gltsdiff.glts.State;
+import com.github.tno.gltsdiff.glts.lts.automaton.Automaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
-import com.github.tno.gltsdiff.glts.lts.automaton.SimpleAutomaton;
 import com.github.tno.gltsdiff.matchers.Matcher;
 import com.github.tno.gltsdiff.matchers.MatcherTest;
 import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;
@@ -31,8 +31,8 @@ import com.github.tno.gltsdiff.scorers.SimilarityScorer;
 /** {@link BruteForceLTSMatcher} tests. */
 public class BruteForceLTSMatcherTest extends MatcherTest {
     @Override
-    public <T> Matcher<AutomatonStateProperty, T, SimpleAutomaton<T>>
-            newMatcher(SimilarityScorer<AutomatonStateProperty, T, SimpleAutomaton<T>> scorer)
+    public <T> Matcher<AutomatonStateProperty, T, Automaton<AutomatonStateProperty, T>>
+            newMatcher(SimilarityScorer<AutomatonStateProperty, T, Automaton<AutomatonStateProperty, T>> scorer)
     {
         return new BruteForceLTSMatcher<>(new AutomatonStatePropertyCombiner(), new EqualityCombiner<>());
     }
@@ -41,13 +41,13 @@ public class BruteForceLTSMatcherTest extends MatcherTest {
     @Test
     public void testSuccessOnSmallInput() {
         // Obtain test automata.
-        Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = TestAutomata
+        Pair<Automaton<AutomatonStateProperty, String>, Automaton<AutomatonStateProperty, String>> automata = TestAutomata
                 .smallAutomataForBruteForceTesting();
-        SimpleAutomaton<String> lhs = automata.getFirst();
-        SimpleAutomaton<String> rhs = automata.getSecond();
+        Automaton<AutomatonStateProperty, String> lhs = automata.getFirst();
+        Automaton<AutomatonStateProperty, String> rhs = automata.getSecond();
 
         // Apply the brute force matcher.
-        Matcher<AutomatonStateProperty, String, SimpleAutomaton<String>> matcher = newMatcher(null);
+        Matcher<AutomatonStateProperty, String, Automaton<AutomatonStateProperty, String>> matcher = newMatcher(null);
         Map<State<AutomatonStateProperty>, State<AutomatonStateProperty>> matching = matcher.compute(lhs, rhs);
 
         // State abbreviations.
