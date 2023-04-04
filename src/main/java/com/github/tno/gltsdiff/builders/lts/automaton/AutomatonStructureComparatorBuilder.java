@@ -11,26 +11,30 @@
 package com.github.tno.gltsdiff.builders.lts.automaton;
 
 import com.github.tno.gltsdiff.builders.BaseStructureComparatorBuilder;
+import com.github.tno.gltsdiff.glts.lts.automaton.Automaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
-import com.github.tno.gltsdiff.glts.lts.automaton.SimpleAutomaton;
 import com.github.tno.gltsdiff.operators.combiners.lts.automaton.AutomatonStatePropertyCombiner;
 
 /**
  * {@link BaseStructureComparatorBuilder Structure comparator builder} to more easily configure the various settings for
- * comparing, merging and (re)writing {@link SimpleAutomaton simple automata}.
+ * comparing, merging and (re)writing {@link Automaton automata}.
  *
  * @param <T> The type of transition properties.
  */
 public class AutomatonStructureComparatorBuilder<T>
-        extends BaseAutomatonStructureComparatorBuilder<AutomatonStateProperty, T, SimpleAutomaton<T>>
+        extends BaseAutomatonStructureComparatorBuilder<AutomatonStateProperty, T, Automaton<AutomatonStateProperty, T>>
 {
     @Override
-    public BaseStructureComparatorBuilder<AutomatonStateProperty, T, SimpleAutomaton<T>> setDefaultInstantiator() {
-        return setInstantiator(() -> new SimpleAutomaton<>());
+    public BaseStructureComparatorBuilder<AutomatonStateProperty, T, Automaton<AutomatonStateProperty, T>>
+            setDefaultInstantiator()
+    {
+        return setInstantiator(() -> new Automaton<>());
     }
 
     @Override
-    public BaseStructureComparatorBuilder<AutomatonStateProperty, T, SimpleAutomaton<T>> setDefaultStatePropertyCombiner() {
+    public BaseStructureComparatorBuilder<AutomatonStateProperty, T, Automaton<AutomatonStateProperty, T>>
+            setDefaultStatePropertyCombiner()
+    {
         return setStatePropertyCombiner(new AutomatonStatePropertyCombiner());
     }
 }
