@@ -36,7 +36,7 @@ public class AutomatonStateProperty extends LTSStateProperty {
      * @return {@code true} if the associated state is accepting, {@code false} otherwise.
      */
     public boolean isAccepting() {
-        return this.isAccepting;
+        return isAccepting;
     }
 
     @Override
