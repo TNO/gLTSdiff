@@ -31,13 +31,12 @@ public class WalkinshawLocalLTSScorerTest extends WalkinshawScorerTest {
     @Test
     public void testSmallWalkinshawExampleWithOneRefinement() {
         // Obtain test automata.
-        Pair<Automaton<AutomatonStateProperty, String>, Automaton<AutomatonStateProperty, String>> automata = TestAutomata
-                .smallWalkinshawExample();
-        Automaton<AutomatonStateProperty, String> lhs = automata.getFirst();
-        Automaton<AutomatonStateProperty, String> rhs = automata.getSecond();
+        Pair<Automaton<String>, Automaton<String>> automata = TestAutomata.smallWalkinshawExample();
+        Automaton<String> lhs = automata.getFirst();
+        Automaton<String> rhs = automata.getSecond();
 
         // Compute local state similarity scores.
-        SimilarityScorer<AutomatonStateProperty, String, Automaton<AutomatonStateProperty, String>> scorer = new WalkinshawLocalLTSScorer<>(
+        SimilarityScorer<AutomatonStateProperty, String, Automaton<String>> scorer = new WalkinshawLocalLTSScorer<>(
                 new AutomatonStatePropertyCombiner(), new EqualityCombiner<>(), 1);
         RealMatrix scores = scorer.compute(lhs, rhs);
 
@@ -61,13 +60,12 @@ public class WalkinshawLocalLTSScorerTest extends WalkinshawScorerTest {
     @Test
     public void testSmallWalkinshawExampleWithTwoRefinements() {
         // Obtain test automata.
-        Pair<Automaton<AutomatonStateProperty, String>, Automaton<AutomatonStateProperty, String>> automata = TestAutomata
-                .smallWalkinshawExample();
-        Automaton<AutomatonStateProperty, String> lhs = automata.getFirst();
-        Automaton<AutomatonStateProperty, String> rhs = automata.getSecond();
+        Pair<Automaton<String>, Automaton<String>> automata = TestAutomata.smallWalkinshawExample();
+        Automaton<String> lhs = automata.getFirst();
+        Automaton<String> rhs = automata.getSecond();
 
         // Compute local state similarity scores.
-        SimilarityScorer<AutomatonStateProperty, String, Automaton<AutomatonStateProperty, String>> scorer = new WalkinshawLocalLTSScorer<>(
+        SimilarityScorer<AutomatonStateProperty, String, Automaton<String>> scorer = new WalkinshawLocalLTSScorer<>(
                 new AutomatonStatePropertyCombiner(), new EqualityCombiner<>(), 2);
         RealMatrix scores = scorer.compute(lhs, rhs);
 

@@ -29,11 +29,9 @@ public class TestAutomata {
      *
      * @return The test automata pair.
      */
-    public static Pair<Automaton<AutomatonStateProperty, String>, Automaton<AutomatonStateProperty, String>>
-            smallTwoAndThreeStatesExample()
-    {
+    public static Pair<Automaton<String>, Automaton<String>> smallTwoAndThreeStatesExample() {
         // Create the LHS automaton.
-        Automaton<AutomatonStateProperty, String> lhs = new Automaton<>();
+        Automaton<String> lhs = new Automaton<>();
 
         State<AutomatonStateProperty> a = lhs.addState(new AutomatonStateProperty(true, true));
         State<AutomatonStateProperty> b = lhs.addState(new AutomatonStateProperty(false, true));
@@ -42,7 +40,7 @@ public class TestAutomata {
         lhs.addTransition(b, "e2", a);
 
         // Create RHS automaton.
-        Automaton<AutomatonStateProperty, String> rhs = new Automaton<>();
+        Automaton<String> rhs = new Automaton<>();
 
         State<AutomatonStateProperty> c = rhs.addState(new AutomatonStateProperty(true, true));
         State<AutomatonStateProperty> d = rhs.addState(new AutomatonStateProperty(false, true));
@@ -62,11 +60,9 @@ public class TestAutomata {
      *
      * @return The test automata pair.
      */
-    public static Pair<Automaton<AutomatonStateProperty, String>, Automaton<AutomatonStateProperty, String>>
-            smallWalkinshawExample()
-    {
+    public static Pair<Automaton<String>, Automaton<String>> smallWalkinshawExample() {
         // Create the LHS automaton.
-        Automaton<AutomatonStateProperty, String> lhs = new Automaton<>();
+        Automaton<String> lhs = new Automaton<>();
 
         State<AutomatonStateProperty> a = lhs.addState(new AutomatonStateProperty(true, true));
         State<AutomatonStateProperty> b = lhs.addState(new AutomatonStateProperty(false, true));
@@ -78,7 +74,7 @@ public class TestAutomata {
         lhs.addTransition(b, "c", c);
 
         // Create the RHS automaton.
-        Automaton<AutomatonStateProperty, String> rhs = new Automaton<>();
+        Automaton<String> rhs = new Automaton<>();
 
         State<AutomatonStateProperty> e = rhs.addState(new AutomatonStateProperty(true, true));
         State<AutomatonStateProperty> f = rhs.addState(new AutomatonStateProperty(false, true));
@@ -99,11 +95,9 @@ public class TestAutomata {
      *
      * @return The test automata pair.
      */
-    public static Pair<Automaton<AutomatonStateProperty, String>, Automaton<AutomatonStateProperty, String>>
-            runningExampleWalkinshaw()
-    {
+    public static Pair<Automaton<String>, Automaton<String>> runningExampleWalkinshaw() {
         // Create the LHS automaton.
-        Automaton<AutomatonStateProperty, String> lhs = new Automaton<>();
+        Automaton<String> lhs = new Automaton<>();
 
         State<AutomatonStateProperty> sA = lhs.addState(new AutomatonStateProperty(true, true));
         State<AutomatonStateProperty> sB = lhs.addState(new AutomatonStateProperty(false, true));
@@ -118,7 +112,7 @@ public class TestAutomata {
         lhs.addTransition(sD, "ok", sB);
 
         // Create the RHS automaton.
-        Automaton<AutomatonStateProperty, String> rhs = new Automaton<>();
+        Automaton<String> rhs = new Automaton<>();
 
         State<AutomatonStateProperty> sE = rhs.addState(new AutomatonStateProperty(true, true));
         State<AutomatonStateProperty> sF = rhs.addState(new AutomatonStateProperty(false, true));
@@ -144,11 +138,9 @@ public class TestAutomata {
      *
      * @return The test automata pair.
      */
-    public static Pair<Automaton<AutomatonStateProperty, String>, Automaton<AutomatonStateProperty, String>>
-            industrialExample1()
-    {
+    public static Pair<Automaton<String>, Automaton<String>> industrialExample1() {
         // Create the LHS automaton.
-        Automaton<AutomatonStateProperty, String> lhs = new Automaton<>();
+        Automaton<String> lhs = new Automaton<>();
 
         State<AutomatonStateProperty> s1 = lhs.addState(new AutomatonStateProperty(true, true));
         State<AutomatonStateProperty> s2 = lhs.addState(new AutomatonStateProperty(false, true));
@@ -161,7 +153,7 @@ public class TestAutomata {
         lhs.addTransition(s4, "e4", s1);
 
         // Create the RHS automaton.
-        Automaton<AutomatonStateProperty, String> rhs = new Automaton<>();
+        Automaton<String> rhs = new Automaton<>();
 
         State<AutomatonStateProperty> t1 = rhs.addState(new AutomatonStateProperty(true, true));
         State<AutomatonStateProperty> t2 = rhs.addState(new AutomatonStateProperty(false, true));
@@ -179,11 +171,9 @@ public class TestAutomata {
      *
      * @return The test automata pair.
      */
-    public static Pair<Automaton<AutomatonStateProperty, String>, Automaton<AutomatonStateProperty, String>>
-            industrialExample2()
-    {
+    public static Pair<Automaton<String>, Automaton<String>> industrialExample2() {
         // Create the LHS automaton.
-        Automaton<AutomatonStateProperty, String> lhs = new Automaton<>();
+        Automaton<String> lhs = new Automaton<>();
 
         State<AutomatonStateProperty> s4 = lhs.addState(new AutomatonStateProperty(true, true));
         State<AutomatonStateProperty> s5 = lhs.addState(new AutomatonStateProperty(false, true));
@@ -215,7 +205,7 @@ public class TestAutomata {
         lhs.addTransition(s16, "e11", s8);
 
         // Create the RHS automaton.
-        Automaton<AutomatonStateProperty, String> rhs = new Automaton<>();
+        Automaton<String> rhs = new Automaton<>();
 
         State<AutomatonStateProperty> t1 = rhs.addState(new AutomatonStateProperty(false, true));
         State<AutomatonStateProperty> t2 = rhs.addState(new AutomatonStateProperty(false, true));
@@ -258,11 +248,9 @@ public class TestAutomata {
      *
      * @return The test automata pair.
      */
-    public static Pair<Automaton<AutomatonStateProperty, String>, Automaton<AutomatonStateProperty, String>>
-            smallThreeStateLoopWithSwappedEvents()
-    {
+    public static Pair<Automaton<String>, Automaton<String>> smallThreeStateLoopWithSwappedEvents() {
         // Create the LHS automaton.
-        Automaton<AutomatonStateProperty, String> lhs = new Automaton<>();
+        Automaton<String> lhs = new Automaton<>();
 
         State<AutomatonStateProperty> s1 = lhs.addState(new AutomatonStateProperty(true, true));
         State<AutomatonStateProperty> s2 = lhs.addState(new AutomatonStateProperty(false, true));
@@ -273,7 +261,7 @@ public class TestAutomata {
         lhs.addTransition(s3, "c", s1);
 
         // Create the RHS automaton.
-        Automaton<AutomatonStateProperty, String> rhs = new Automaton<>();
+        Automaton<String> rhs = new Automaton<>();
 
         State<AutomatonStateProperty> t1 = rhs.addState(new AutomatonStateProperty(true, true));
         State<AutomatonStateProperty> t2 = rhs.addState(new AutomatonStateProperty(false, true));
@@ -292,11 +280,9 @@ public class TestAutomata {
      *
      * @return The test automata pair.
      */
-    public static Pair<Automaton<AutomatonStateProperty, String>, Automaton<AutomatonStateProperty, String>>
-            smallAutomataForBruteForceTesting()
-    {
+    public static Pair<Automaton<String>, Automaton<String>> smallAutomataForBruteForceTesting() {
         // Create the LHS automaton.
-        Automaton<AutomatonStateProperty, String> lhs = new Automaton<>();
+        Automaton<String> lhs = new Automaton<>();
 
         State<AutomatonStateProperty> s1 = lhs.addState(new AutomatonStateProperty(true, true));
         State<AutomatonStateProperty> s2 = lhs.addState(new AutomatonStateProperty(false, true));
@@ -307,7 +293,7 @@ public class TestAutomata {
         lhs.addTransition(s3, "d", s1);
 
         // Create the RHS automaton.
-        Automaton<AutomatonStateProperty, String> rhs = new Automaton<>();
+        Automaton<String> rhs = new Automaton<>();
 
         State<AutomatonStateProperty> t1 = rhs.addState(new AutomatonStateProperty(true, true));
         State<AutomatonStateProperty> t2 = rhs.addState(new AutomatonStateProperty(false, true));

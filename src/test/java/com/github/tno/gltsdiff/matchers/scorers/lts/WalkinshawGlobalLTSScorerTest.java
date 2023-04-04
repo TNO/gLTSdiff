@@ -31,13 +31,12 @@ public class WalkinshawGlobalLTSScorerTest extends WalkinshawScorerTest {
     @Test
     public void testSmallTwoAndThreeStatesExample() {
         // Obtain test automata.
-        Pair<Automaton<AutomatonStateProperty, String>, Automaton<AutomatonStateProperty, String>> automata = TestAutomata
-                .smallTwoAndThreeStatesExample();
-        Automaton<AutomatonStateProperty, String> lhs = automata.getFirst();
-        Automaton<AutomatonStateProperty, String> rhs = automata.getSecond();
+        Pair<Automaton<String>, Automaton<String>> automata = TestAutomata.smallTwoAndThreeStatesExample();
+        Automaton<String> lhs = automata.getFirst();
+        Automaton<String> rhs = automata.getSecond();
 
         // Compute state pair scores.
-        SimilarityScorer<AutomatonStateProperty, String, Automaton<AutomatonStateProperty, String>> scorer = new WalkinshawGlobalLTSScorer<>(
+        SimilarityScorer<AutomatonStateProperty, String, Automaton<String>> scorer = new WalkinshawGlobalLTSScorer<>(
                 new AutomatonStatePropertyCombiner(), new EqualityCombiner<>());
         RealMatrix scores = scorer.compute(lhs, rhs);
 
@@ -61,13 +60,12 @@ public class WalkinshawGlobalLTSScorerTest extends WalkinshawScorerTest {
     @Test
     public void testSmallWalkinshawExample() {
         // Obtain test automata.
-        Pair<Automaton<AutomatonStateProperty, String>, Automaton<AutomatonStateProperty, String>> automata = TestAutomata
-                .smallWalkinshawExample();
-        Automaton<AutomatonStateProperty, String> lhs = automata.getFirst();
-        Automaton<AutomatonStateProperty, String> rhs = automata.getSecond();
+        Pair<Automaton<String>, Automaton<String>> automata = TestAutomata.smallWalkinshawExample();
+        Automaton<String> lhs = automata.getFirst();
+        Automaton<String> rhs = automata.getSecond();
 
         // Compute state pair scores.
-        SimilarityScorer<AutomatonStateProperty, String, Automaton<AutomatonStateProperty, String>> scorer = new WalkinshawGlobalLTSScorer<>(
+        SimilarityScorer<AutomatonStateProperty, String, Automaton<String>> scorer = new WalkinshawGlobalLTSScorer<>(
                 new AutomatonStatePropertyCombiner(), new EqualityCombiner<>());
         RealMatrix scores = scorer.compute(lhs, rhs);
 
@@ -91,13 +89,12 @@ public class WalkinshawGlobalLTSScorerTest extends WalkinshawScorerTest {
     @Test
     public void testRunningExampleWalkinshaw() {
         // Obtain test automata.
-        Pair<Automaton<AutomatonStateProperty, String>, Automaton<AutomatonStateProperty, String>> automata = TestAutomata
-                .runningExampleWalkinshaw();
-        Automaton<AutomatonStateProperty, String> lhs = automata.getFirst();
-        Automaton<AutomatonStateProperty, String> rhs = automata.getSecond();
+        Pair<Automaton<String>, Automaton<String>> automata = TestAutomata.runningExampleWalkinshaw();
+        Automaton<String> lhs = automata.getFirst();
+        Automaton<String> rhs = automata.getSecond();
 
         // Compute state pair scores.
-        SimilarityScorer<AutomatonStateProperty, String, Automaton<AutomatonStateProperty, String>> scorer = new WalkinshawGlobalLTSScorer<>(
+        SimilarityScorer<AutomatonStateProperty, String, Automaton<String>> scorer = new WalkinshawGlobalLTSScorer<>(
                 new AutomatonStatePropertyCombiner(), new EqualityCombiner<>());
         RealMatrix scores = scorer.compute(lhs, rhs);
 
@@ -122,13 +119,12 @@ public class WalkinshawGlobalLTSScorerTest extends WalkinshawScorerTest {
     @Test
     public void testIndustrialExample1() {
         // Obtain test automata.
-        Pair<Automaton<AutomatonStateProperty, String>, Automaton<AutomatonStateProperty, String>> automata = TestAutomata
-                .industrialExample1();
-        Automaton<AutomatonStateProperty, String> lhs = automata.getFirst();
-        Automaton<AutomatonStateProperty, String> rhs = automata.getSecond();
+        Pair<Automaton<String>, Automaton<String>> automata = TestAutomata.industrialExample1();
+        Automaton<String> lhs = automata.getFirst();
+        Automaton<String> rhs = automata.getSecond();
 
         // Compute state pair scores.
-        SimilarityScorer<AutomatonStateProperty, String, Automaton<AutomatonStateProperty, String>> scorer = new WalkinshawGlobalLTSScorer<>(
+        SimilarityScorer<AutomatonStateProperty, String, Automaton<String>> scorer = new WalkinshawGlobalLTSScorer<>(
                 new AutomatonStatePropertyCombiner(), new EqualityCombiner<>());
         RealMatrix scores = scorer.compute(lhs, rhs);
 
@@ -155,13 +151,12 @@ public class WalkinshawGlobalLTSScorerTest extends WalkinshawScorerTest {
     @Test
     public void testSmallThreeStateLoopWithSwappedEvents() {
         // Obtain test automata.
-        Pair<Automaton<AutomatonStateProperty, String>, Automaton<AutomatonStateProperty, String>> automata = TestAutomata
-                .smallThreeStateLoopWithSwappedEvents();
-        Automaton<AutomatonStateProperty, String> lhs = automata.getFirst();
-        Automaton<AutomatonStateProperty, String> rhs = automata.getSecond();
+        Pair<Automaton<String>, Automaton<String>> automata = TestAutomata.smallThreeStateLoopWithSwappedEvents();
+        Automaton<String> lhs = automata.getFirst();
+        Automaton<String> rhs = automata.getSecond();
 
         // Compute state pair scores.
-        SimilarityScorer<AutomatonStateProperty, String, Automaton<AutomatonStateProperty, String>> scorer = new WalkinshawGlobalLTSScorer<>(
+        SimilarityScorer<AutomatonStateProperty, String, Automaton<String>> scorer = new WalkinshawGlobalLTSScorer<>(
                 new AutomatonStatePropertyCombiner(), new EqualityCombiner<>());
         RealMatrix scores = scorer.compute(lhs, rhs);
 

@@ -31,8 +31,8 @@ import com.github.tno.gltsdiff.scorers.SimilarityScorer;
 /** {@link BruteForceLTSMatcher} tests. */
 public class BruteForceLTSMatcherTest extends MatcherTest {
     @Override
-    public <T> Matcher<AutomatonStateProperty, T, Automaton<AutomatonStateProperty, T>>
-            newMatcher(SimilarityScorer<AutomatonStateProperty, T, Automaton<AutomatonStateProperty, T>> scorer)
+    public <T> Matcher<AutomatonStateProperty, T, Automaton<T>>
+            newMatcher(SimilarityScorer<AutomatonStateProperty, T, Automaton<T>> scorer)
     {
         return new BruteForceLTSMatcher<>(new AutomatonStatePropertyCombiner(), new EqualityCombiner<>());
     }
@@ -41,13 +41,12 @@ public class BruteForceLTSMatcherTest extends MatcherTest {
     @Test
     public void testSuccessOnSmallInput() {
         // Obtain test automata.
-        Pair<Automaton<AutomatonStateProperty, String>, Automaton<AutomatonStateProperty, String>> automata = TestAutomata
-                .smallAutomataForBruteForceTesting();
-        Automaton<AutomatonStateProperty, String> lhs = automata.getFirst();
-        Automaton<AutomatonStateProperty, String> rhs = automata.getSecond();
+        Pair<Automaton<String>, Automaton<String>> automata = TestAutomata.smallAutomataForBruteForceTesting();
+        Automaton<String> lhs = automata.getFirst();
+        Automaton<String> rhs = automata.getSecond();
 
         // Apply the brute force matcher.
-        Matcher<AutomatonStateProperty, String, Automaton<AutomatonStateProperty, String>> matcher = newMatcher(null);
+        Matcher<AutomatonStateProperty, String, Automaton<String>> matcher = newMatcher(null);
         Map<State<AutomatonStateProperty>, State<AutomatonStateProperty>> matching = matcher.compute(lhs, rhs);
 
         // State abbreviations.

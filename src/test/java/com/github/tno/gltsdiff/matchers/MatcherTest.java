@@ -36,20 +36,19 @@ public abstract class MatcherTest {
      * @param scorer The scorer to use to create scoring-based matchers. May be ignored by non-scoring-based matchers.
      * @return The matcher.
      */
-    public abstract <T> Matcher<AutomatonStateProperty, T, Automaton<AutomatonStateProperty, T>>
-            newMatcher(SimilarityScorer<AutomatonStateProperty, T, Automaton<AutomatonStateProperty, T>> scorer);
+    public abstract <T> Matcher<AutomatonStateProperty, T, Automaton<T>>
+            newMatcher(SimilarityScorer<AutomatonStateProperty, T, Automaton<T>> scorer);
 
     /** Test {@link TestAutomata#smallTwoAndThreeStatesExample}. */
     @Test
     public void testSmallTwoAndThreeStatesExample() {
         // Obtain test automata.
-        Pair<Automaton<AutomatonStateProperty, String>, Automaton<AutomatonStateProperty, String>> automata = TestAutomata
-                .smallTwoAndThreeStatesExample();
-        Automaton<AutomatonStateProperty, String> lhs = automata.getFirst();
-        Automaton<AutomatonStateProperty, String> rhs = automata.getSecond();
+        Pair<Automaton<String>, Automaton<String>> automata = TestAutomata.smallTwoAndThreeStatesExample();
+        Automaton<String> lhs = automata.getFirst();
+        Automaton<String> rhs = automata.getSecond();
 
         // Perform state matching.
-        Matcher<AutomatonStateProperty, String, Automaton<AutomatonStateProperty, String>> matcher = newMatcher(
+        Matcher<AutomatonStateProperty, String, Automaton<String>> matcher = newMatcher(
                 new WalkinshawGlobalLTSScorer<>(new AutomatonStatePropertyCombiner(), new EqualityCombiner<>()));
         Map<State<AutomatonStateProperty>, State<AutomatonStateProperty>> matching = matcher.compute(lhs, rhs);
 
@@ -72,13 +71,12 @@ public abstract class MatcherTest {
     @Test
     public void testSmallWalkinshawExample() {
         // Obtain test automata.
-        Pair<Automaton<AutomatonStateProperty, String>, Automaton<AutomatonStateProperty, String>> automata = TestAutomata
-                .smallWalkinshawExample();
-        Automaton<AutomatonStateProperty, String> lhs = automata.getFirst();
-        Automaton<AutomatonStateProperty, String> rhs = automata.getSecond();
+        Pair<Automaton<String>, Automaton<String>> automata = TestAutomata.smallWalkinshawExample();
+        Automaton<String> lhs = automata.getFirst();
+        Automaton<String> rhs = automata.getSecond();
 
         // Perform state matching.
-        Matcher<AutomatonStateProperty, String, Automaton<AutomatonStateProperty, String>> matcher = newMatcher(
+        Matcher<AutomatonStateProperty, String, Automaton<String>> matcher = newMatcher(
                 new WalkinshawGlobalLTSScorer<>(new AutomatonStatePropertyCombiner(), new EqualityCombiner<>()));
         Map<State<AutomatonStateProperty>, State<AutomatonStateProperty>> matching = matcher.compute(lhs, rhs);
 
@@ -99,13 +97,12 @@ public abstract class MatcherTest {
     @Test
     public void testRunningExampleWalkinshaw() {
         // Obtain test automata.
-        Pair<Automaton<AutomatonStateProperty, String>, Automaton<AutomatonStateProperty, String>> automata = TestAutomata
-                .runningExampleWalkinshaw();
-        Automaton<AutomatonStateProperty, String> lhs = automata.getFirst();
-        Automaton<AutomatonStateProperty, String> rhs = automata.getSecond();
+        Pair<Automaton<String>, Automaton<String>> automata = TestAutomata.runningExampleWalkinshaw();
+        Automaton<String> lhs = automata.getFirst();
+        Automaton<String> rhs = automata.getSecond();
 
         // Perform state matching.
-        Matcher<AutomatonStateProperty, String, Automaton<AutomatonStateProperty, String>> matcher = newMatcher(
+        Matcher<AutomatonStateProperty, String, Automaton<String>> matcher = newMatcher(
                 new WalkinshawGlobalLTSScorer<>(new AutomatonStatePropertyCombiner(), new EqualityCombiner<>()));
         Map<State<AutomatonStateProperty>, State<AutomatonStateProperty>> matching = matcher.compute(lhs, rhs);
 
@@ -131,13 +128,12 @@ public abstract class MatcherTest {
     @Test
     public void testIndustrialExample1() {
         // Obtain test automata.
-        Pair<Automaton<AutomatonStateProperty, String>, Automaton<AutomatonStateProperty, String>> automata = TestAutomata
-                .industrialExample1();
-        Automaton<AutomatonStateProperty, String> lhs = automata.getFirst();
-        Automaton<AutomatonStateProperty, String> rhs = automata.getSecond();
+        Pair<Automaton<String>, Automaton<String>> automata = TestAutomata.industrialExample1();
+        Automaton<String> lhs = automata.getFirst();
+        Automaton<String> rhs = automata.getSecond();
 
         // Perform state matching.
-        Matcher<AutomatonStateProperty, String, Automaton<AutomatonStateProperty, String>> matcher = newMatcher(
+        Matcher<AutomatonStateProperty, String, Automaton<String>> matcher = newMatcher(
                 new WalkinshawGlobalLTSScorer<>(new AutomatonStatePropertyCombiner(), new EqualityCombiner<>()));
         Map<State<AutomatonStateProperty>, State<AutomatonStateProperty>> matching = matcher.compute(lhs, rhs);
 
@@ -161,13 +157,12 @@ public abstract class MatcherTest {
     @Test
     public void testIndustrialExample2() {
         // Obtain test automata.
-        Pair<Automaton<AutomatonStateProperty, String>, Automaton<AutomatonStateProperty, String>> automata = TestAutomata
-                .industrialExample2();
-        Automaton<AutomatonStateProperty, String> lhs = automata.getFirst();
-        Automaton<AutomatonStateProperty, String> rhs = automata.getSecond();
+        Pair<Automaton<String>, Automaton<String>> automata = TestAutomata.industrialExample2();
+        Automaton<String> lhs = automata.getFirst();
+        Automaton<String> rhs = automata.getSecond();
 
         // Perform state matching.
-        Matcher<AutomatonStateProperty, String, Automaton<AutomatonStateProperty, String>> matcher = newMatcher(
+        Matcher<AutomatonStateProperty, String, Automaton<String>> matcher = newMatcher(
                 new WalkinshawGlobalLTSScorer<>(new AutomatonStatePropertyCombiner(), new EqualityCombiner<>()));
         Map<State<AutomatonStateProperty>, State<AutomatonStateProperty>> matching = matcher.compute(lhs, rhs);
 
@@ -202,21 +197,21 @@ public abstract class MatcherTest {
     @Test
     public void testMatchingsShouldAlwaysAgreeOnStateAcceptance() {
         // Obtain the LHS.
-        Automaton<AutomatonStateProperty, String> lhs = new Automaton<>();
+        Automaton<String> lhs = new Automaton<>();
         State<AutomatonStateProperty> s1 = lhs.addState(new AutomatonStateProperty(true, true));
         State<AutomatonStateProperty> s2 = lhs.addState(new AutomatonStateProperty(false, true));
         lhs.addTransition(s1, "e1", s2);
         lhs.addTransition(s2, "e2", s1);
 
         // Obtain the RHS.
-        Automaton<AutomatonStateProperty, String> rhs = new Automaton<>();
+        Automaton<String> rhs = new Automaton<>();
         State<AutomatonStateProperty> t1 = rhs.addState(new AutomatonStateProperty(true, true));
         State<AutomatonStateProperty> t2 = rhs.addState(new AutomatonStateProperty(false, false));
         rhs.addTransition(t1, "e1", t2);
         rhs.addTransition(t2, "e2", t1);
 
         // Compute a matching.
-        Matcher<AutomatonStateProperty, String, Automaton<AutomatonStateProperty, String>> matcher = newMatcher(
+        Matcher<AutomatonStateProperty, String, Automaton<String>> matcher = newMatcher(
                 new WalkinshawGlobalLTSScorer<>(new AutomatonStatePropertyCombiner(), new EqualityCombiner<>()));
         Map<State<AutomatonStateProperty>, State<AutomatonStateProperty>> matching = matcher.compute(lhs, rhs);
 

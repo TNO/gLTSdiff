@@ -12,7 +12,7 @@ package com.github.tno.gltsdiff.matchers.scorers.lts;
 
 import org.apache.commons.math3.linear.RealMatrix;
 
-import com.github.tno.gltsdiff.glts.lts.LTS;
+import com.github.tno.gltsdiff.glts.lts.BaseLTS;
 import com.github.tno.gltsdiff.glts.lts.LTSStateProperty;
 import com.github.tno.gltsdiff.scorers.SimilarityScorer;
 import com.google.common.base.Preconditions;
@@ -24,7 +24,7 @@ import com.google.common.base.Preconditions;
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs.
  */
-public class LTSFixedScoresScorer<S extends LTSStateProperty, T, U extends LTS<S, T>>
+public class LTSFixedScoresScorer<S extends LTSStateProperty, T, U extends BaseLTS<S, T>>
         implements SimilarityScorer<S, T, U>
 {
     /** The fixed matrix of similarity scores. */

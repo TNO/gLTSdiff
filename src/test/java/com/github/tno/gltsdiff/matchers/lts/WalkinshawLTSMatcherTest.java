@@ -21,8 +21,8 @@ import com.github.tno.gltsdiff.scorers.SimilarityScorer;
 /** {@link WalkinshawLTSMatcher} tests. */
 public class WalkinshawLTSMatcherTest extends MatcherTest {
     @Override
-    public <T> Matcher<AutomatonStateProperty, T, Automaton<AutomatonStateProperty, T>>
-            newMatcher(SimilarityScorer<AutomatonStateProperty, T, Automaton<AutomatonStateProperty, T>> scorer)
+    public <T> Matcher<AutomatonStateProperty, T, Automaton<T>>
+            newMatcher(SimilarityScorer<AutomatonStateProperty, T, Automaton<T>> scorer)
     {
         return new WalkinshawLTSMatcher<>(scorer, new AutomatonStatePropertyCombiner(), new EqualityCombiner<>());
     }
