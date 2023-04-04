@@ -11,7 +11,7 @@
 package com.github.tno.gltsdiff.builders.lts;
 
 import com.github.tno.gltsdiff.builders.BaseStructureComparatorBuilder;
-import com.github.tno.gltsdiff.glts.lts.LTS;
+import com.github.tno.gltsdiff.glts.lts.BaseLTS;
 import com.github.tno.gltsdiff.glts.lts.LTSStateProperty;
 import com.github.tno.gltsdiff.matchers.lts.BruteForceLTSMatcher;
 import com.github.tno.gltsdiff.matchers.lts.DynamicLTSMatcher;
@@ -23,13 +23,13 @@ import com.github.tno.gltsdiff.writers.lts.LTSDotWriter;
 
 /**
  * {@link BaseStructureComparatorBuilder Structure comparator builder} to more easily configure the various settings for
- * comparing, merging and (re)writing {@link LTS LTSs} and more specialized representations.
+ * comparing, merging and (re)writing {@link BaseLTS LTSs} and more specialized representations.
  *
  * @param <S> The type of LTS state properties.
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs to compare, combine and (re)write.
  */
-public abstract class BaseLTSStructureComparatorBuilder<S extends LTSStateProperty, T, U extends LTS<S, T>>
+public abstract class BaseLTSStructureComparatorBuilder<S extends LTSStateProperty, T, U extends BaseLTS<S, T>>
         extends BaseStructureComparatorBuilder<S, T, U>
 {
     @Override

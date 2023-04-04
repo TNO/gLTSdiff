@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 
 import com.github.tno.gltsdiff.builders.BaseStructureComparatorBuilder;
 import com.github.tno.gltsdiff.builders.lts.automaton.BaseAutomatonStructureComparatorBuilder;
-import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomaton;
+import com.github.tno.gltsdiff.glts.lts.automaton.diff.BaseDiffAutomaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffKind;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffProperty;
@@ -39,14 +39,15 @@ import com.google.common.base.Preconditions;
 
 /**
  * {@link BaseStructureComparatorBuilder Structure comparator builder} to more easily configure the various settings for
- * comparing, merging and (re)writing {@link DiffAutomaton difference automata} and more specialized representations.
+ * comparing, merging and (re)writing {@link BaseDiffAutomaton difference automata} and more specialized
+ * representations.
  *
- * @param <S> The type of state properties.
+ * @param <S> The type of difference automaton state properties.
  * @param <T> The type of transition properties.
  * @param <U> The type of difference automata to compare, combine and (re)write.
  */
 public abstract class BaseDiffAutomatonStructureComparatorBuilder<S extends DiffAutomatonStateProperty, T,
-        U extends DiffAutomaton<S, T>> extends BaseAutomatonStructureComparatorBuilder<S, DiffProperty<T>, U>
+        U extends BaseDiffAutomaton<S, T>> extends BaseAutomatonStructureComparatorBuilder<S, DiffProperty<T>, U>
 {
     /** Difference automaton state property transformer. */
     private TriFunction<S, DiffKind, Optional<DiffKind>, S> statePropertyTransformer;

@@ -21,18 +21,14 @@ import com.github.tno.gltsdiff.operators.combiners.lts.LTSStatePropertyCombiner;
  *
  * @param <T> The type of transition properties.
  */
-public class LTSStructureComparatorBuilder<T>
-        extends BaseLTSStructureComparatorBuilder<LTSStateProperty, T, LTS<LTSStateProperty, T>>
-{
+public class LTSStructureComparatorBuilder<T> extends BaseLTSStructureComparatorBuilder<LTSStateProperty, T, LTS<T>> {
     @Override
-    public BaseStructureComparatorBuilder<LTSStateProperty, T, LTS<LTSStateProperty, T>> setDefaultInstantiator() {
+    public BaseStructureComparatorBuilder<LTSStateProperty, T, LTS<T>> setDefaultInstantiator() {
         return setInstantiator(() -> new LTS<>());
     }
 
     @Override
-    public BaseStructureComparatorBuilder<LTSStateProperty, T, LTS<LTSStateProperty, T>>
-            setDefaultStatePropertyCombiner()
-    {
+    public BaseStructureComparatorBuilder<LTSStateProperty, T, LTS<T>> setDefaultStatePropertyCombiner() {
         return setStatePropertyCombiner(new LTSStatePropertyCombiner());
     }
 }

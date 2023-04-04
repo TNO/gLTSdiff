@@ -11,6 +11,7 @@
 package com.github.tno.gltsdiff.builders.lts.automaton.diff;
 
 import com.github.tno.gltsdiff.builders.BaseStructureComparatorBuilder;
+import com.github.tno.gltsdiff.glts.lts.automaton.diff.BaseDiffAutomaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffProperty;
@@ -18,29 +19,29 @@ import com.github.tno.gltsdiff.operators.combiners.lts.automaton.diff.DiffAutoma
 
 /**
  * {@link BaseStructureComparatorBuilder Structure comparator builder} to more easily configure the various settings for
- * comparing, merging and (re)writing {@link DiffAutomaton difference automata}.
+ * comparing, merging and (re)writing {@link BaseDiffAutomaton difference automata}.
  *
  * @param <T> The type of transition properties.
  */
-public class DiffAutomatonStructureComparatorBuilder<T> extends
-        BaseDiffAutomatonStructureComparatorBuilder<DiffAutomatonStateProperty, T, DiffAutomaton<DiffAutomatonStateProperty, T>>
+public class DiffAutomatonStructureComparatorBuilder<T>
+        extends BaseDiffAutomatonStructureComparatorBuilder<DiffAutomatonStateProperty, T, DiffAutomaton<T>>
 {
     @Override
-    public BaseStructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<DiffAutomatonStateProperty, T>>
+    public BaseStructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
             setDefaultInstantiator()
     {
         return setInstantiator(() -> new DiffAutomaton<>());
     }
 
     @Override
-    public BaseStructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<DiffAutomatonStateProperty, T>>
+    public BaseStructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
             setDefaultStatePropertyCombiner()
     {
         return setStatePropertyCombiner(new DiffAutomatonStatePropertyCombiner());
     }
 
     @Override
-    public BaseStructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<DiffAutomatonStateProperty, T>>
+    public BaseStructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
             setDefaultDiffAutomatonStatePropertyTransformer()
     {
         return setDiffAutomatonStatePropertyTransformer(

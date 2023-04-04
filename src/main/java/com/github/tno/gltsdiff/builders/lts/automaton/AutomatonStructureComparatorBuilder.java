@@ -22,19 +22,15 @@ import com.github.tno.gltsdiff.operators.combiners.lts.automaton.AutomatonStateP
  * @param <T> The type of transition properties.
  */
 public class AutomatonStructureComparatorBuilder<T>
-        extends BaseAutomatonStructureComparatorBuilder<AutomatonStateProperty, T, Automaton<AutomatonStateProperty, T>>
+        extends BaseAutomatonStructureComparatorBuilder<AutomatonStateProperty, T, Automaton<T>>
 {
     @Override
-    public BaseStructureComparatorBuilder<AutomatonStateProperty, T, Automaton<AutomatonStateProperty, T>>
-            setDefaultInstantiator()
-    {
+    public BaseStructureComparatorBuilder<AutomatonStateProperty, T, Automaton<T>> setDefaultInstantiator() {
         return setInstantiator(() -> new Automaton<>());
     }
 
     @Override
-    public BaseStructureComparatorBuilder<AutomatonStateProperty, T, Automaton<AutomatonStateProperty, T>>
-            setDefaultStatePropertyCombiner()
-    {
+    public BaseStructureComparatorBuilder<AutomatonStateProperty, T, Automaton<T>> setDefaultStatePropertyCombiner() {
         return setStatePropertyCombiner(new AutomatonStatePropertyCombiner());
     }
 }
