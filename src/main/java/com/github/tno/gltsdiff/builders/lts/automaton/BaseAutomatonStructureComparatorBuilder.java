@@ -10,8 +10,8 @@
 
 package com.github.tno.gltsdiff.builders.lts.automaton;
 
-import com.github.tno.gltsdiff.builders.StructureComparatorBuilder;
-import com.github.tno.gltsdiff.builders.lts.LTSStructureComparatorBuilder;
+import com.github.tno.gltsdiff.builders.BaseStructureComparatorBuilder;
+import com.github.tno.gltsdiff.builders.lts.BaseLTSStructureComparatorBuilder;
 import com.github.tno.gltsdiff.glts.lts.automaton.Automaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
 import com.github.tno.gltsdiff.writers.lts.automaton.AutomatonDotWriter;
@@ -24,11 +24,11 @@ import com.github.tno.gltsdiff.writers.lts.automaton.AutomatonDotWriter;
  * @param <T> The type of transition properties.
  * @param <U> The type of automata to compare, combine and (re)write.
  */
-public abstract class AutomatonStructureComparatorBuilder<S extends AutomatonStateProperty, T,
-        U extends Automaton<S, T>> extends LTSStructureComparatorBuilder<S, T, U>
+public abstract class BaseAutomatonStructureComparatorBuilder<S extends AutomatonStateProperty, T,
+        U extends Automaton<S, T>> extends BaseLTSStructureComparatorBuilder<S, T, U>
 {
     @Override
-    public StructureComparatorBuilder<S, T, U> setDefaultDotWriter() {
+    public BaseStructureComparatorBuilder<S, T, U> setDefaultDotWriter() {
         return setDotWriter((sp, tp) -> new AutomatonDotWriter<>(sp, tp));
     }
 }

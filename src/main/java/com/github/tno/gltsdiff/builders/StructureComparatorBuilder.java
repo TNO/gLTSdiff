@@ -13,15 +13,15 @@ package com.github.tno.gltsdiff.builders;
 import com.github.tno.gltsdiff.glts.GLTS;
 
 /**
- * {@link StructureComparatorBuilder Structure comparator builder} to more easily configure the various settings for
+ * {@link BaseStructureComparatorBuilder Structure comparator builder} to more easily configure the various settings for
  * comparing, merging and (re)writing {@link GLTS GLTSs}.
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
  */
-public class GLTSStructureComparatorBuilder<S, T> extends StructureComparatorBuilder<S, T, GLTS<S, T>> {
+public class StructureComparatorBuilder<S, T> extends BaseStructureComparatorBuilder<S, T, GLTS<S, T>> {
     @Override
-    public StructureComparatorBuilder<S, T, GLTS<S, T>> setDefaultInstantiator() {
+    public BaseStructureComparatorBuilder<S, T, GLTS<S, T>> setDefaultInstantiator() {
         return setInstantiator(() -> new GLTS<>());
     }
 }

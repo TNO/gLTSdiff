@@ -73,7 +73,7 @@ import com.google.common.base.Preconditions;
  * @param <T> The type of transition properties.
  * @param <U> The type of GLTSs to compare, merge and (re)write.
  */
-public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
+public abstract class BaseStructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
     /** GLTS instantiator. */
     private Supplier<U> instantiator;
 
@@ -111,7 +111,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
     private BiFunction<HtmlPrinter<State<S>>, HtmlPrinter<Transition<S, T>>, DotWriter<S, T, U>> writerProvider;
 
     /** Instantiates a new GLTS structure comparator builder. */
-    public StructureComparatorBuilder() {
+    public BaseStructureComparatorBuilder() {
         setDefaultInstantiator();
         setDefaultStatePropertyCombiner();
         setDefaultTransitionPropertyCombiner();
@@ -132,7 +132,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      * @param instantiator The GLTS instantiator.
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> setInstantiator(Supplier<U> instantiator) {
+    public BaseStructureComparatorBuilder<S, T, U> setInstantiator(Supplier<U> instantiator) {
         Preconditions.checkNotNull(instantiator, "Expected a non-null instantiator.");
         this.instantiator = instantiator;
         return this;
@@ -143,7 +143,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      *
      * @return This builder, for chaining.
      */
-    public abstract StructureComparatorBuilder<S, T, U> setDefaultInstantiator();
+    public abstract BaseStructureComparatorBuilder<S, T, U> setDefaultInstantiator();
 
     /**
      * Set the state property combiner.
@@ -151,7 +151,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      * @param statePropertyCombiner The state property combiner.
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> setStatePropertyCombiner(Combiner<S> statePropertyCombiner) {
+    public BaseStructureComparatorBuilder<S, T, U> setStatePropertyCombiner(Combiner<S> statePropertyCombiner) {
         Preconditions.checkNotNull(statePropertyCombiner, "Expected a non-null state property combiner.");
         this.statePropertyCombiner = statePropertyCombiner;
         return this;
@@ -162,7 +162,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      *
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> setDefaultStatePropertyCombiner() {
+    public BaseStructureComparatorBuilder<S, T, U> setDefaultStatePropertyCombiner() {
         return setStatePropertyCombiner(new EqualityCombiner<>());
     }
 
@@ -172,7 +172,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      * @param transitionPropertyCombiner The transition property combiner.
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> setTransitionPropertyCombiner(Combiner<T> transitionPropertyCombiner) {
+    public BaseStructureComparatorBuilder<S, T, U> setTransitionPropertyCombiner(Combiner<T> transitionPropertyCombiner) {
         Preconditions.checkNotNull(transitionPropertyCombiner, "Expected a non-null transition property combiner.");
         this.transitionPropertyCombiner = transitionPropertyCombiner;
         return this;
@@ -183,7 +183,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      *
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> setDefaultTransitionPropertyCombiner() {
+    public BaseStructureComparatorBuilder<S, T, U> setDefaultTransitionPropertyCombiner() {
         return setTransitionPropertyCombiner(new EqualityCombiner<>());
     }
 
@@ -194,7 +194,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      *     transition property combiner.
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U>
+    public BaseStructureComparatorBuilder<S, T, U>
             setScorer(BiFunction<Combiner<S>, Combiner<T>, SimilarityScorer<S, T, U>> scorerProvider)
     {
         Preconditions.checkNotNull(scorerProvider, "Expected a non-null scorer provider.");
@@ -207,7 +207,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      *
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> setDynamicScorer() {
+    public BaseStructureComparatorBuilder<S, T, U> setDynamicScorer() {
         return setScorer((s, t) -> new DynamicScorer<>(s, t));
     }
 
@@ -216,7 +216,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      *
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> setWalkinshawGlobalScorer() {
+    public BaseStructureComparatorBuilder<S, T, U> setWalkinshawGlobalScorer() {
         return setScorer((s, t) -> new WalkinshawGlobalScorer<>(s, t));
     }
 
@@ -231,7 +231,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      *     similarities contribute equally much as local ones.
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> setWalkinshawGlobalScorer(double attenuationFactor) {
+    public BaseStructureComparatorBuilder<S, T, U> setWalkinshawGlobalScorer(double attenuationFactor) {
         return setScorer((s, t) -> new WalkinshawGlobalScorer<>(s, t, attenuationFactor));
     }
 
@@ -240,7 +240,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      *
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> setWalkinshawLocalScorer() {
+    public BaseStructureComparatorBuilder<S, T, U> setWalkinshawLocalScorer() {
         return setScorer((s, t) -> new WalkinshawLocalScorer<>(s, t));
     }
 
@@ -250,7 +250,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      * @param nrOfRefinements The number of refinements to perform, which must be at least 1.
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> setWalkinshawLocalScorer(int nrOfRefinements) {
+    public BaseStructureComparatorBuilder<S, T, U> setWalkinshawLocalScorer(int nrOfRefinements) {
         return setScorer((s, t) -> new WalkinshawLocalScorer<>(s, t, nrOfRefinements));
     }
 
@@ -266,7 +266,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      *     similarities contribute equally much as local ones.
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> setWalkinshawLocalScorer(int nrOfRefinements, double attenuationFactor) {
+    public BaseStructureComparatorBuilder<S, T, U> setWalkinshawLocalScorer(int nrOfRefinements, double attenuationFactor) {
         return setScorer((s, t) -> new WalkinshawLocalScorer<>(s, t, nrOfRefinements, attenuationFactor));
     }
 
@@ -278,7 +278,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      *
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> setMatcher(
+    public BaseStructureComparatorBuilder<S, T, U> setMatcher(
             TriFunction<Combiner<S>, Combiner<T>, SimilarityScorer<S, T, U>, Matcher<S, T, U>> matcherProvider)
     {
         Preconditions.checkNotNull(matcherProvider, "Expected a non-null matcher provider.");
@@ -291,7 +291,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      *
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> setBruteForceMatcher() {
+    public BaseStructureComparatorBuilder<S, T, U> setBruteForceMatcher() {
         return setMatcher((s, t, sc) -> new BruteForceMatcher<>(s, t));
     }
 
@@ -300,7 +300,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      *
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> setDynamicMatcher() {
+    public BaseStructureComparatorBuilder<S, T, U> setDynamicMatcher() {
         return setMatcher((s, t, sc) -> new DynamicMatcher<>(s, t));
     }
 
@@ -309,7 +309,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      *
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> setKuhnMunkresMatcher() {
+    public BaseStructureComparatorBuilder<S, T, U> setKuhnMunkresMatcher() {
         return setMatcher((s, t, sc) -> new KuhnMunkresMatcher<>(sc, s));
     }
 
@@ -318,7 +318,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      *
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> setWalkinshawMatcher() {
+    public BaseStructureComparatorBuilder<S, T, U> setWalkinshawMatcher() {
         return setMatcher((s, t, sc) -> new WalkinshawMatcher<>(sc, s, t));
     }
 
@@ -340,7 +340,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      *     lower than 1.0.
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> setWalkinshawMatcher(double landmarkThreshold, double landmarkRatio) {
+    public BaseStructureComparatorBuilder<S, T, U> setWalkinshawMatcher(double landmarkThreshold, double landmarkRatio) {
         return setMatcher((s, t, sc) -> new WalkinshawMatcher<>(sc, s, t, landmarkThreshold, landmarkRatio));
     }
 
@@ -351,7 +351,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      *     property combiner and a GLTS instantiator.
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U>
+    public BaseStructureComparatorBuilder<S, T, U>
             setMerger(TriFunction<Combiner<S>, Combiner<T>, Supplier<U>, Merger<S, T, U>> mergerProvider)
     {
         Preconditions.checkNotNull(mergerProvider, "Expected a non-null merger provider.");
@@ -364,7 +364,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      *
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> setDefaultMerger() {
+    public BaseStructureComparatorBuilder<S, T, U> setDefaultMerger() {
         return setMerger((s, t, i) -> new DefaultMerger<>(s, t, i));
     }
 
@@ -374,7 +374,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      * @param inclusion The transition property inclusion operator.
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> setInclusionOperator(Inclusion<T> inclusion) {
+    public BaseStructureComparatorBuilder<S, T, U> setInclusionOperator(Inclusion<T> inclusion) {
         Preconditions.checkNotNull(inclusion, "Expected a non-null transition property inclusion operator.");
         this.inclusion = inclusion;
         return this;
@@ -385,7 +385,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      *
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> setEqualToCombinationInclusionOperator() {
+    public BaseStructureComparatorBuilder<S, T, U> setEqualToCombinationInclusionOperator() {
         return setInclusionOperator(new EqualToCombinationInclusion<>());
     }
 
@@ -395,7 +395,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      * @param hiderProvider The hider provider that creates a hider.
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> setTransitionPropertyHider(Supplier<Hider<T>> hiderProvider) {
+    public BaseStructureComparatorBuilder<S, T, U> setTransitionPropertyHider(Supplier<Hider<T>> hiderProvider) {
         Preconditions.checkNotNull(hiderProvider, "Expected a non-null transition property hider provider.");
         this.hiderProvider = hiderProvider;
         return this;
@@ -407,7 +407,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      * @param hider The hider.
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> setTransitionPropertyHider(Hider<T> hider) {
+    public BaseStructureComparatorBuilder<S, T, U> setTransitionPropertyHider(Hider<T> hider) {
         return setTransitionPropertyHider(() -> hider);
     }
 
@@ -416,7 +416,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      *
      * @return This builder, for chaining.
      */
-    protected StructureComparatorBuilder<S, T, U> setThrowingTransitionPropertyHider() {
+    protected BaseStructureComparatorBuilder<S, T, U> setThrowingTransitionPropertyHider() {
         return setTransitionPropertyHider(() -> {
             throw new IllegalStateException("The transition property hider is not yet configured. "
                     + "Configure it before invoking any of the builder's creation methods.");
@@ -431,7 +431,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      *     provider.
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> setRewriters(
+    public BaseStructureComparatorBuilder<S, T, U> setRewriters(
             Collection<QuadFunction<Combiner<S>, Combiner<T>, Inclusion<T>, Supplier<Hider<T>>, Rewriter<S, T, U>>> rewriterProviders)
     {
         Preconditions.checkNotNull(rewriterProviders, "Expected a non-null collection of rewriter providers.");
@@ -449,7 +449,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      *     provider.
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> addRewriter(
+    public BaseStructureComparatorBuilder<S, T, U> addRewriter(
             QuadFunction<Combiner<S>, Combiner<T>, Inclusion<T>, Supplier<Hider<T>>, Rewriter<S, T, U>> rewriterProvider)
     {
         Preconditions.checkNotNull(rewriterProvider, "Expected a non-null rewriter provider.");
@@ -465,7 +465,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      *
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> addDefaultRewriters() {
+    public BaseStructureComparatorBuilder<S, T, U> addDefaultRewriters() {
         return addLocalRedundancyRewriter();
     }
 
@@ -474,7 +474,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      *
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> addLocalRedundancyRewriter() {
+    public BaseStructureComparatorBuilder<S, T, U> addLocalRedundancyRewriter() {
         return addRewriter((s, t, i, hp) -> new LocalRedundancyRewriter<>(t));
     }
 
@@ -484,7 +484,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      * @param stateLabelPrinter The state label HTML printer.
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> setStateLabelHtmlPrinter(HtmlPrinter<State<S>> stateLabelPrinter) {
+    public BaseStructureComparatorBuilder<S, T, U> setStateLabelHtmlPrinter(HtmlPrinter<State<S>> stateLabelPrinter) {
         Preconditions.checkNotNull(stateLabelPrinter, "Expected a non-null state label HTML printer.");
         this.stateLabelPrinter = stateLabelPrinter;
         return this;
@@ -495,7 +495,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      *
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> setDefaultStateLabelHtmlPrinter() {
+    public BaseStructureComparatorBuilder<S, T, U> setDefaultStateLabelHtmlPrinter() {
         return setStateLabelHtmlPrinter(new StateHtmlPrinter<>());
     }
 
@@ -505,7 +505,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      * @param transitionLabelPrinter The transition label HTML printer.
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U>
+    public BaseStructureComparatorBuilder<S, T, U>
             setTransitionLabelHtmlPrinter(HtmlPrinter<Transition<S, T>> transitionLabelPrinter)
     {
         Preconditions.checkNotNull(transitionLabelPrinter, "Expected a non-null transition label HTML printer.");
@@ -519,7 +519,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      * @param transitionPropertyPrinter The transition property HTML printer.
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U>
+    public BaseStructureComparatorBuilder<S, T, U>
             setTransitionPropertyHtmlPrinter(HtmlPrinter<T> transitionPropertyPrinter)
     {
         return setTransitionLabelHtmlPrinter(new TransitionHtmlPrinter<>(transitionPropertyPrinter));
@@ -530,7 +530,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      *
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> setDefaultTransitionLabelHtmlPrinter() {
+    public BaseStructureComparatorBuilder<S, T, U> setDefaultTransitionLabelHtmlPrinter() {
         return setTransitionPropertyHtmlPrinter(new StringHtmlPrinter<>());
     }
 
@@ -542,7 +542,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      *
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> setDotWriter(
+    public BaseStructureComparatorBuilder<S, T, U> setDotWriter(
             BiFunction<HtmlPrinter<State<S>>, HtmlPrinter<Transition<S, T>>, DotWriter<S, T, U>> writerProvider)
     {
         Preconditions.checkNotNull(writerProvider, "Expected a non-null writer provider.");
@@ -555,7 +555,7 @@ public abstract class StructureComparatorBuilder<S, T, U extends GLTS<S, T>> {
      *
      * @return This builder, for chaining.
      */
-    public StructureComparatorBuilder<S, T, U> setDefaultDotWriter() {
+    public BaseStructureComparatorBuilder<S, T, U> setDefaultDotWriter() {
         return setDotWriter((sp, tp) -> new DotWriter<>(sp, tp));
     }
 
