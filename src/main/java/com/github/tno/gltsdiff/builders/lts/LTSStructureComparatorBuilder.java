@@ -11,26 +11,28 @@
 package com.github.tno.gltsdiff.builders.lts;
 
 import com.github.tno.gltsdiff.builders.BaseStructureComparatorBuilder;
+import com.github.tno.gltsdiff.glts.lts.LTS;
 import com.github.tno.gltsdiff.glts.lts.LTSStateProperty;
-import com.github.tno.gltsdiff.glts.lts.SimpleLTS;
 import com.github.tno.gltsdiff.operators.combiners.lts.LTSStatePropertyCombiner;
 
 /**
  * {@link BaseStructureComparatorBuilder Structure comparator builder} to more easily configure the various settings for
- * comparing, merging and (re)writing {@link SimpleLTS simple LTSs}.
+ * comparing, merging and (re)writing {@link LTS LTSs}.
  *
  * @param <T> The type of transition properties.
  */
 public class LTSStructureComparatorBuilder<T>
-        extends BaseLTSStructureComparatorBuilder<LTSStateProperty, T, SimpleLTS<T>>
+        extends BaseLTSStructureComparatorBuilder<LTSStateProperty, T, LTS<LTSStateProperty, T>>
 {
     @Override
-    public BaseStructureComparatorBuilder<LTSStateProperty, T, SimpleLTS<T>> setDefaultInstantiator() {
-        return setInstantiator(() -> new SimpleLTS<>());
+    public BaseStructureComparatorBuilder<LTSStateProperty, T, LTS<LTSStateProperty, T>> setDefaultInstantiator() {
+        return setInstantiator(() -> new LTS<>());
     }
 
     @Override
-    public BaseStructureComparatorBuilder<LTSStateProperty, T, SimpleLTS<T>> setDefaultStatePropertyCombiner() {
+    public BaseStructureComparatorBuilder<LTSStateProperty, T, LTS<LTSStateProperty, T>>
+            setDefaultStatePropertyCombiner()
+    {
         return setStatePropertyCombiner(new LTSStatePropertyCombiner());
     }
 }

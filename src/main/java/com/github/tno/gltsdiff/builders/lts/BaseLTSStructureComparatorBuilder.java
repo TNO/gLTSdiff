@@ -22,10 +22,10 @@ import com.github.tno.gltsdiff.scorers.lts.WalkinshawLocalLTSScorer;
 import com.github.tno.gltsdiff.writers.lts.LTSDotWriter;
 
 /**
- * Builder to more easily configure the various settings for comparing, merging and (re)writing {@link LTS LTSs} and
- * more specialized representations.
+ * {@link BaseStructureComparatorBuilder Structure comparator builder} to more easily configure the various settings for
+ * comparing, merging and (re)writing {@link LTS LTSs} and more specialized representations.
  *
- * @param <S> The type of state properties.
+ * @param <S> The type of LTS state properties.
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs to compare, combine and (re)write.
  */
@@ -58,7 +58,9 @@ public abstract class BaseLTSStructureComparatorBuilder<S extends LTSStateProper
     }
 
     @Override
-    public BaseStructureComparatorBuilder<S, T, U> setWalkinshawLocalScorer(int nrOfRefinements, double attenuationFactor) {
+    public BaseStructureComparatorBuilder<S, T, U> setWalkinshawLocalScorer(int nrOfRefinements,
+            double attenuationFactor)
+    {
         return setScorer((s, t) -> new WalkinshawLocalLTSScorer<>(s, t, nrOfRefinements, attenuationFactor));
     }
 
@@ -78,7 +80,9 @@ public abstract class BaseLTSStructureComparatorBuilder<S extends LTSStateProper
     }
 
     @Override
-    public BaseStructureComparatorBuilder<S, T, U> setWalkinshawMatcher(double landmarkThreshold, double landmarkRatio) {
+    public BaseStructureComparatorBuilder<S, T, U> setWalkinshawMatcher(double landmarkThreshold,
+            double landmarkRatio)
+    {
         return setMatcher((s, t, sc) -> new WalkinshawLTSMatcher<>(sc, s, t, landmarkThreshold, landmarkRatio));
     }
 
