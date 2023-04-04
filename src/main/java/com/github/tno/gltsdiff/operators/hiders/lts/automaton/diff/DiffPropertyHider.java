@@ -8,10 +8,11 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package com.github.tno.gltsdiff.operators.hiders;
+package com.github.tno.gltsdiff.operators.hiders.lts.automaton.diff;
 
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffKind;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffProperty;
+import com.github.tno.gltsdiff.operators.hiders.Hider;
 import com.google.common.base.Preconditions;
 
 /**
