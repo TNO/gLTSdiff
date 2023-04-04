@@ -16,7 +16,7 @@ import java.util.Optional;
 import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
 import com.google.common.base.Preconditions;
 
-/** A property that is associated to states in {@link DiffAutomaton difference automata}. */
+/** A property that is associated to states in {@link BaseDiffAutomaton difference automata}. */
 public class DiffAutomatonStateProperty extends AutomatonStateProperty {
     /** The non-{@code null} difference kind of the associated state. */
     private final DiffKind stateDiffKind;
