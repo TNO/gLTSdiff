@@ -10,46 +10,50 @@
 
 package com.github.tno.gltsdiff.builders.lts.automaton.diff;
 
+import java.util.Optional;
+import java.util.function.Supplier;
+
 import com.github.tno.gltsdiff.builders.BaseStructureComparatorBuilder;
 import com.github.tno.gltsdiff.builders.lts.automaton.BaseAutomatonStructureComparatorBuilder;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomatonStateProperty;
+import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffKind;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffProperty;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;
-import com.github.tno.gltsdiff.operators.combiners.lts.automaton.diff.DiffAutomatonStatePropertyCombiner;
 import com.github.tno.gltsdiff.operators.combiners.lts.automaton.diff.DiffPropertyCombiner;
-import com.github.tno.gltsdiff.operators.hiders.DiffPropertyHider;
 import com.github.tno.gltsdiff.operators.hiders.Hider;
+import com.github.tno.gltsdiff.operators.hiders.lts.automaton.diff.DiffPropertyHider;
+import com.github.tno.gltsdiff.operators.inclusions.Inclusion;
 import com.github.tno.gltsdiff.operators.printers.HtmlPrinter;
 import com.github.tno.gltsdiff.operators.printers.StringHtmlPrinter;
 import com.github.tno.gltsdiff.operators.printers.lts.automaton.diff.DiffPropertyHtmlPrinter;
+import com.github.tno.gltsdiff.rewriters.Rewriter;
 import com.github.tno.gltsdiff.rewriters.lts.automaton.diff.EntanglementRewriter;
 import com.github.tno.gltsdiff.rewriters.lts.automaton.diff.SkipForkPatternRewriter;
 import com.github.tno.gltsdiff.rewriters.lts.automaton.diff.SkipJoinPatternRewriter;
+import com.github.tno.gltsdiff.utils.QuintFunction;
+import com.github.tno.gltsdiff.utils.TriFunction;
 import com.github.tno.gltsdiff.writers.lts.automaton.diff.DiffAutomatonDotWriter;
+import com.google.common.base.Preconditions;
 
 /**
- * Builder to more easily configure the various settings for comparing, merging and (re)writing {@link DiffAutomaton
- * difference automata}.
+ * {@link BaseStructureComparatorBuilder Structure comparator builder} to more easily configure the various settings for
+ * comparing, merging and (re)writing {@link DiffAutomaton difference automata} and more specialized representations.
  *
+ * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
+ * @param <U> The type of difference automata to compare, combine and (re)write.
  */
-public class BaseDiffAutomatonStructureComparatorBuilder<T>
-        extends BaseAutomatonStructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
+public abstract class BaseDiffAutomatonStructureComparatorBuilder<S extends DiffAutomatonStateProperty, T,
+        U extends DiffAutomaton<S, T>> extends BaseAutomatonStructureComparatorBuilder<S, DiffProperty<T>, U>
 {
-    @Override
-    public BaseStructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
-            setDefaultInstantiator()
-    {
-        return setInstantiator(() -> new DiffAutomaton<>());
-    }
+    /** Difference automaton state property transformer. */
+    private TriFunction<S, DiffKind, Optional<DiffKind>, S> statePropertyTransformer;
 
-    @Override
-    public BaseStructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
-            setDefaultStatePropertyCombiner()
-    {
-        return setStatePropertyCombiner(new DiffAutomatonStatePropertyCombiner());
+    /** Instantiates a new base difference automaton structure comparator builder. */
+    public BaseDiffAutomatonStructureComparatorBuilder() {
+        setDefaultDiffAutomatonStatePropertyTransformer();
     }
 
     /**
@@ -58,16 +62,14 @@ public class BaseDiffAutomatonStructureComparatorBuilder<T>
      * @param subPropertyCombiner The {@link DiffProperty} sub-property combiner.
      * @return This builder, for chaining.
      */
-    public BaseStructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
+    public BaseStructureComparatorBuilder<S, DiffProperty<T>, U>
             setTransitionSubPropertyCombiner(Combiner<T> subPropertyCombiner)
     {
         return setTransitionPropertyCombiner(new DiffPropertyCombiner<>(subPropertyCombiner));
     }
 
     @Override
-    public BaseStructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
-            setDefaultTransitionPropertyCombiner()
-    {
+    public BaseStructureComparatorBuilder<S, DiffProperty<T>, U> setDefaultTransitionPropertyCombiner() {
         return setTransitionSubPropertyCombiner(new EqualityCombiner<>());
     }
 
@@ -77,16 +79,14 @@ public class BaseDiffAutomatonStructureComparatorBuilder<T>
      * @param subPropertyHider The {@link DiffProperty} sub-property hider.
      * @return This builder, for chaining.
      */
-    public BaseStructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
+    public BaseStructureComparatorBuilder<S, DiffProperty<T>, U>
             setTransitionSubPropertyHider(Hider<T> subPropertyHider)
     {
         return setTransitionPropertyHider(new DiffPropertyHider<>(subPropertyHider));
     }
 
     @Override
-    public BaseStructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
-            addDefaultRewriters()
-    {
+    public BaseStructureComparatorBuilder<S, DiffProperty<T>, U> addDefaultRewriters() {
         addEntanglementRewriter();
         super.addDefaultRewriters();
         addSkipForkPatternRewriter();
@@ -95,14 +95,49 @@ public class BaseDiffAutomatonStructureComparatorBuilder<T>
     }
 
     /**
+     * Set the difference automaton state property transformer.
+     *
+     * @param statePropertyTransformer The difference automaton state property transformer .
+     * @return This builder, for chaining.
+     */
+    public BaseStructureComparatorBuilder<S, DiffProperty<T>, U> setDiffAutomatonStatePropertyTransformer(
+            TriFunction<S, DiffKind, Optional<DiffKind>, S> statePropertyTransformer)
+    {
+        Preconditions.checkNotNull(statePropertyTransformer,
+                "Expected a non-null difference automaton state property transformer.");
+        this.statePropertyTransformer = statePropertyTransformer;
+        return this;
+    }
+
+    /**
+     * Set the default difference automaton state property transformer.
+     *
+     * @return This builder, for chaining.
+     */
+    public abstract BaseStructureComparatorBuilder<S, DiffProperty<T>, U>
+            setDefaultDiffAutomatonStatePropertyTransformer();
+
+    /**
+     * Add a difference automaton rewriter.
+     *
+     * @param rewriterProvider The rewriter provider that creates a rewriter, given a state property combiner, a
+     *     transition property combiner, a transition property inclusion operator, a transition property hider provider
+     *     and a transition property transformer.
+     * @return This builder, for chaining.
+     */
+    public BaseStructureComparatorBuilder<S, DiffProperty<T>, U> addDiffAutomatonRewriter(
+            QuintFunction<Combiner<S>, Combiner<DiffProperty<T>>, Inclusion<DiffProperty<T>>, Supplier<Hider<DiffProperty<T>>>, TriFunction<S, DiffKind, Optional<DiffKind>, S>, Rewriter<S, DiffProperty<T>, U>> rewriterProvider)
+    {
+        return addRewriter((s, t, i, hp) -> rewriterProvider.apply(s, t, i, hp, getStatePropertyTransformer()));
+    }
+
+    /**
      * Add the {@link EntanglementRewriter} as rewriter.
      *
      * @return This builder, for chaining.
      */
-    public BaseStructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
-            addEntanglementRewriter()
-    {
-        return addRewriter((s, t, i, hp) -> new EntanglementRewriter<>());
+    public BaseStructureComparatorBuilder<S, DiffProperty<T>, U> addEntanglementRewriter() {
+        return addDiffAutomatonRewriter((s, t, i, hp, tf) -> new EntanglementRewriter<>(tf));
     }
 
     /**
@@ -110,10 +145,8 @@ public class BaseDiffAutomatonStructureComparatorBuilder<T>
      *
      * @return This builder, for chaining.
      */
-    public BaseStructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
-            addSkipForkPatternRewriter()
-    {
-        return addRewriter((s, t, i, hp) -> new SkipForkPatternRewriter<>(t, hp.get(), i));
+    public BaseStructureComparatorBuilder<S, DiffProperty<T>, U> addSkipForkPatternRewriter() {
+        return addDiffAutomatonRewriter((s, t, i, hp, tf) -> new SkipForkPatternRewriter<>(s, t, hp.get(), i, tf));
     }
 
     /**
@@ -121,10 +154,8 @@ public class BaseDiffAutomatonStructureComparatorBuilder<T>
      *
      * @return This builder, for chaining.
      */
-    public BaseStructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
-            addSkipJoinPatternRewriter()
-    {
-        return addRewriter((s, t, i, hp) -> new SkipJoinPatternRewriter<>(t, hp.get(), i));
+    public BaseStructureComparatorBuilder<S, DiffProperty<T>, U> addSkipJoinPatternRewriter() {
+        return addDiffAutomatonRewriter((s, t, i, hp, tf) -> new SkipJoinPatternRewriter<>(s, t, hp.get(), i, tf));
     }
 
     /**
@@ -133,23 +164,33 @@ public class BaseDiffAutomatonStructureComparatorBuilder<T>
      * @param subPropertyPrinter The {@link DiffProperty} sub-property HTML printer.
      * @return This builder, for chaining.
      */
-    public BaseStructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
+    public BaseStructureComparatorBuilder<S, DiffProperty<T>, U>
             setTransitionSubPropertyHtmlPrinter(HtmlPrinter<T> subPropertyPrinter)
     {
         return setTransitionPropertyHtmlPrinter(new DiffPropertyHtmlPrinter<>(subPropertyPrinter));
     }
 
     @Override
-    public BaseStructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
-            setDefaultTransitionLabelHtmlPrinter()
-    {
+    public BaseStructureComparatorBuilder<S, DiffProperty<T>, U> setDefaultTransitionLabelHtmlPrinter() {
         return setTransitionSubPropertyHtmlPrinter(new StringHtmlPrinter<>());
     }
 
     @Override
-    public BaseStructureComparatorBuilder<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
-            setDefaultDotWriter()
-    {
+    public BaseStructureComparatorBuilder<S, DiffProperty<T>, U> setDefaultDotWriter() {
         return setDotWriter((sp, tp) -> new DiffAutomatonDotWriter<>(sp, tp));
+    }
+
+    /**
+     * Get the configured difference automaton state property transformer.
+     *
+     * @return The difference automaton state property transformer.
+     */
+    protected TriFunction<S, DiffKind, Optional<DiffKind>, S> getStatePropertyTransformer() {
+        if (statePropertyTransformer == null) {
+            throw new IllegalStateException(
+                    "The difference automaton state property transformer is not yet configured. "
+                            + "Configure it before invoking any of the builder's creation methods.");
+        }
+        return statePropertyTransformer;
     }
 }
