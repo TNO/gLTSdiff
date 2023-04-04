@@ -172,7 +172,9 @@ public abstract class BaseStructureComparatorBuilder<S, T, U extends GLTS<S, T>>
      * @param transitionPropertyCombiner The transition property combiner.
      * @return This builder, for chaining.
      */
-    public BaseStructureComparatorBuilder<S, T, U> setTransitionPropertyCombiner(Combiner<T> transitionPropertyCombiner) {
+    public BaseStructureComparatorBuilder<S, T, U>
+            setTransitionPropertyCombiner(Combiner<T> transitionPropertyCombiner)
+    {
         Preconditions.checkNotNull(transitionPropertyCombiner, "Expected a non-null transition property combiner.");
         this.transitionPropertyCombiner = transitionPropertyCombiner;
         return this;
@@ -266,7 +268,9 @@ public abstract class BaseStructureComparatorBuilder<S, T, U extends GLTS<S, T>>
      *     similarities contribute equally much as local ones.
      * @return This builder, for chaining.
      */
-    public BaseStructureComparatorBuilder<S, T, U> setWalkinshawLocalScorer(int nrOfRefinements, double attenuationFactor) {
+    public BaseStructureComparatorBuilder<S, T, U> setWalkinshawLocalScorer(int nrOfRefinements,
+            double attenuationFactor)
+    {
         return setScorer((s, t) -> new WalkinshawLocalScorer<>(s, t, nrOfRefinements, attenuationFactor));
     }
 
@@ -340,7 +344,9 @@ public abstract class BaseStructureComparatorBuilder<S, T, U extends GLTS<S, T>>
      *     lower than 1.0.
      * @return This builder, for chaining.
      */
-    public BaseStructureComparatorBuilder<S, T, U> setWalkinshawMatcher(double landmarkThreshold, double landmarkRatio) {
+    public BaseStructureComparatorBuilder<S, T, U> setWalkinshawMatcher(double landmarkThreshold,
+            double landmarkRatio)
+    {
         return setMatcher((s, t, sc) -> new WalkinshawMatcher<>(sc, s, t, landmarkThreshold, landmarkRatio));
     }
 
