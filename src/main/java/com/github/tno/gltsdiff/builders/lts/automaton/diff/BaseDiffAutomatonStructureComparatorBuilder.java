@@ -86,15 +86,6 @@ public abstract class BaseDiffAutomatonStructureComparatorBuilder<S extends Diff
         return setTransitionPropertyHider(new DiffPropertyHider<>(subPropertyHider));
     }
 
-    @Override
-    public BaseStructureComparatorBuilder<S, DiffProperty<T>, U> addDefaultRewriters() {
-        addEntanglementRewriter();
-        super.addDefaultRewriters();
-        addSkipForkPatternRewriter();
-        addSkipJoinPatternRewriter();
-        return this;
-    }
-
     /**
      * Set the difference automaton state property transformer.
      *
@@ -117,6 +108,15 @@ public abstract class BaseDiffAutomatonStructureComparatorBuilder<S extends Diff
      */
     public abstract BaseStructureComparatorBuilder<S, DiffProperty<T>, U>
             setDefaultDiffAutomatonStatePropertyTransformer();
+
+    @Override
+    public BaseStructureComparatorBuilder<S, DiffProperty<T>, U> addDefaultRewriters() {
+        addEntanglementRewriter();
+        super.addDefaultRewriters();
+        addSkipForkPatternRewriter();
+        addSkipJoinPatternRewriter();
+        return this;
+    }
 
     /**
      * Add a difference automaton rewriter.
