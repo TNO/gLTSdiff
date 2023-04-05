@@ -19,7 +19,7 @@ import com.google.common.base.Preconditions;
  *
  * <p>
  * It is a pair, with an element of type {@code T} together with an element of type {@link DiffKind}. The pair is used
- * as transition properties of {@link DiffAutomaton difference automata}.
+ * as transition properties of {@link BaseDiffAutomaton difference automata}.
  * </p>
  *
  * @param <T> The type of inner properties.

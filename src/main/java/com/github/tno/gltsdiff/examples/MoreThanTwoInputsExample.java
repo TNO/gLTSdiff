@@ -18,10 +18,10 @@ import java.util.Set;
 
 import org.apache.commons.math3.util.Pair;
 
-import com.github.tno.gltsdiff.builders.lts.automaton.SimpleAutomatonStructureComparatorBuilder;
+import com.github.tno.gltsdiff.builders.lts.automaton.AutomatonStructureComparatorBuilder;
 import com.github.tno.gltsdiff.glts.State;
+import com.github.tno.gltsdiff.glts.lts.automaton.Automaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
-import com.github.tno.gltsdiff.glts.lts.automaton.SimpleAutomaton;
 import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;
 import com.github.tno.gltsdiff.operators.combiners.PairCombiner;
 import com.github.tno.gltsdiff.operators.combiners.SetCombiner;
@@ -55,29 +55,29 @@ public class MoreThanTwoInputsExample {
      */
     public static void main(String[] args) throws IOException {
         // Create the first input automaton to compare.
-        SimpleAutomaton<Pair<String, Set<Integer>>> first = new SimpleAutomaton<>();
-        State<AutomatonStateProperty> f1 = first.addState(false);
-        State<AutomatonStateProperty> f2 = first.addState(false);
-        State<AutomatonStateProperty> f3 = first.addState(false);
+        Automaton<Pair<String, Set<Integer>>> first = new Automaton<>();
+        State<AutomatonStateProperty> f1 = first.addState(new AutomatonStateProperty(false, false));
+        State<AutomatonStateProperty> f2 = first.addState(new AutomatonStateProperty(false, false));
+        State<AutomatonStateProperty> f3 = first.addState(new AutomatonStateProperty(false, false));
         first.addTransition(f1, Pair.create("a", ImmutableSet.of(1)), f2);
         first.addTransition(f2, Pair.create("b", ImmutableSet.of(1)), f3);
         first.addTransition(f3, Pair.create("c", ImmutableSet.of(1)), f1);
 
         // Create the second input automaton to compare.
-        SimpleAutomaton<Pair<String, Set<Integer>>> second = new SimpleAutomaton<>();
-        State<AutomatonStateProperty> s1 = second.addState(false);
-        State<AutomatonStateProperty> s2 = second.addState(false);
-        State<AutomatonStateProperty> s3 = second.addState(false);
+        Automaton<Pair<String, Set<Integer>>> second = new Automaton<>();
+        State<AutomatonStateProperty> s1 = second.addState(new AutomatonStateProperty(false, false));
+        State<AutomatonStateProperty> s2 = second.addState(new AutomatonStateProperty(false, false));
+        State<AutomatonStateProperty> s3 = second.addState(new AutomatonStateProperty(false, false));
         second.addTransition(s1, Pair.create("a", ImmutableSet.of(2)), s2);
         second.addTransition(s2, Pair.create("b", ImmutableSet.of(2)), s3);
         second.addTransition(s3, Pair.create("c", ImmutableSet.of(2)), s1);
         second.addTransition(s3, Pair.create("d", ImmutableSet.of(2)), s1);
 
         // Create the third input automaton to compare.
-        SimpleAutomaton<Pair<String, Set<Integer>>> third = new SimpleAutomaton<>();
-        State<AutomatonStateProperty> t1 = third.addState(false);
-        State<AutomatonStateProperty> t2 = third.addState(false);
-        State<AutomatonStateProperty> t3 = third.addState(false);
+        Automaton<Pair<String, Set<Integer>>> third = new Automaton<>();
+        State<AutomatonStateProperty> t1 = third.addState(new AutomatonStateProperty(false, false));
+        State<AutomatonStateProperty> t2 = third.addState(new AutomatonStateProperty(false, false));
+        State<AutomatonStateProperty> t3 = third.addState(new AutomatonStateProperty(false, false));
         third.addTransition(t1, Pair.create("a", ImmutableSet.of(3)), t2);
         third.addTransition(t2, Pair.create("b", ImmutableSet.of(3)), t3);
         third.addTransition(t3, Pair.create("c", ImmutableSet.of(3)), t1);
@@ -85,10 +85,10 @@ public class MoreThanTwoInputsExample {
         third.addTransition(t1, Pair.create("e", ImmutableSet.of(3)), t2);
 
         // Get all inputs.
-        List<SimpleAutomaton<Pair<String, Set<Integer>>>> inputs = List.of(first, second, third);
+        List<Automaton<Pair<String, Set<Integer>>>> inputs = List.of(first, second, third);
 
         // Configure comparison, merging and writing.
-        SimpleAutomatonStructureComparatorBuilder<Pair<String, Set<Integer>>> builder = new SimpleAutomatonStructureComparatorBuilder<>();
+        AutomatonStructureComparatorBuilder<Pair<String, Set<Integer>>> builder = new AutomatonStructureComparatorBuilder<>();
         builder.setTransitionPropertyCombiner(
                 new PairCombiner<>(new EqualityCombiner<>(), new SetCombiner<>(new EqualityCombiner<>())));
         builder.setTransitionPropertyHtmlPrinter(new PairHtmlPrinter<>("", new StringHtmlPrinter<>(), "<br/>",
@@ -98,14 +98,14 @@ public class MoreThanTwoInputsExample {
 
         // Write the inputs to files in DOT format, and render them to SVG.
         for (int i = 0; i < inputs.size(); i++) {
-            SimpleAutomaton<Pair<String, Set<Integer>>> input = inputs.get(i);
+            Automaton<Pair<String, Set<Integer>>> input = inputs.get(i);
             Path dotPath = Paths.get("examples/MoreThanTwoInputs/input" + (i + 1) + ".dot");
             writer.write(input, dotPath);
             DotRenderer.renderDot(dotPath);
         }
 
         // Apply structural comparison to the three input automata.
-        SimpleAutomaton<Pair<String, Set<Integer>>> result = comparator.compare(inputs);
+        Automaton<Pair<String, Set<Integer>>> result = comparator.compare(inputs);
 
         // Write the result to a file in DOT format, and render it to SVG.
         Path resultDotPath = Paths.get("examples/MoreThanTwoInputs/result.dot");

@@ -77,7 +77,7 @@ public class SimpleDiffExample {
 
         // Configure comparison, merging and writing.
         DiffAutomatonStructureComparatorBuilder<String> builder = new DiffAutomatonStructureComparatorBuilder<>();
-        builder.setTransitionSubPropertyHider(new SubstitutionHider<>("[skip]"));
+        builder.setDiffAutomatonTransitionPropertyHider(new SubstitutionHider<>("[skip]"));
         var comparator = builder.createComparator();
         var writer = builder.createWriter();
 

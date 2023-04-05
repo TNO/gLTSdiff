@@ -12,7 +12,8 @@ package com.github.tno.gltsdiff.matchers.lts;
 
 import java.util.function.BiFunction;
 
-import com.github.tno.gltsdiff.glts.lts.LTS;
+import com.github.tno.gltsdiff.glts.lts.BaseLTS;
+import com.github.tno.gltsdiff.glts.lts.LTSStateProperty;
 import com.github.tno.gltsdiff.matchers.DynamicMatcher;
 import com.github.tno.gltsdiff.matchers.KuhnMunkresMatcher;
 import com.github.tno.gltsdiff.matchers.Matcher;
@@ -21,14 +22,14 @@ import com.github.tno.gltsdiff.scorers.SimilarityScorer;
 import com.github.tno.gltsdiff.scorers.lts.DynamicLTSScorer;
 
 /**
- * Matcher that computes state matchings for {@link LTS LTSs}, that makes a trade-off between computational intensity
- * and the quality of the computed matchings.
+ * Matcher that computes state matchings for {@link BaseLTS LTSs}, that makes a trade-off between computational
+ * intensity and the quality of the computed matchings.
  *
- * @param <S> The type of state properties.
+ * @param <S> The type of LTS state properties.
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs.
  */
-public class DynamicLTSMatcher<S, T, U extends LTS<S, T>> extends DynamicMatcher<S, T, U> {
+public class DynamicLTSMatcher<S extends LTSStateProperty, T, U extends BaseLTS<S, T>> extends DynamicMatcher<S, T, U> {
     /**
      * Instantiates a new dynamic matcher for LTSs, that uses a default configuration of matching algorithms.
      *
@@ -56,14 +57,14 @@ public class DynamicLTSMatcher<S, T, U extends LTS<S, T>> extends DynamicMatcher
     /**
      * Returns the default matcher.
      *
-     * @param <S> The type of state properties.
+     * @param <S> The type of LTS state properties.
      * @param <T> The type of transition properties.
      * @param <U> The type of LTSs.
      * @param statePropertyCombiner The state property combiner.
      * @param transitionPropertyCombiner The transition property combiner.
      * @return The matcher.
      */
-    private static final <S, T, U extends LTS<S, T>> Matcher<S, T, U>
+    private static final <S extends LTSStateProperty, T, U extends BaseLTS<S, T>> Matcher<S, T, U>
             defaultMatchingAlgorithmCreator(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner)
     {
         SimilarityScorer<S, T, U> scorer = new DynamicLTSScorer<>(statePropertyCombiner, transitionPropertyCombiner);

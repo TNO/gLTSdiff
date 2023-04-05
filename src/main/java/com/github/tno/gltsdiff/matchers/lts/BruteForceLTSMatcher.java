@@ -11,19 +11,22 @@
 package com.github.tno.gltsdiff.matchers.lts;
 
 import com.github.tno.gltsdiff.glts.State;
-import com.github.tno.gltsdiff.glts.lts.LTS;
+import com.github.tno.gltsdiff.glts.lts.BaseLTS;
+import com.github.tno.gltsdiff.glts.lts.LTSStateProperty;
 import com.github.tno.gltsdiff.matchers.BruteForceMatcher;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 
 /**
- * A brute force matching algorithm for {@link LTS LTSs} that calculates a best possible maximal (LHS, RHS)-state
+ * A brute force matching algorithm for {@link BaseLTS LTSs} that calculates a best possible maximal (LHS, RHS)-state
  * matching, thereby taking initial state information into account.
  *
- * @param <S> The type of state properties.
+ * @param <S> The type of LTS state properties.
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs.
  */
-public class BruteForceLTSMatcher<S, T, U extends LTS<S, T>> extends BruteForceMatcher<S, T, U> {
+public class BruteForceLTSMatcher<S extends LTSStateProperty, T, U extends BaseLTS<S, T>>
+        extends BruteForceMatcher<S, T, U>
+{
     /**
      * Instantiates a new brute force matcher for LTSs.
      *
@@ -39,7 +42,7 @@ public class BruteForceLTSMatcher<S, T, U extends LTS<S, T>> extends BruteForceM
         int adjustment = super.getOptimizationObjectiveAdjustment(lhs, rhs, leftState, rightState);
 
         // Account for combinable initial state arrows.
-        if (lhs.isInitialState(leftState) && rhs.isInitialState(rightState)) {
+        if (leftState.getProperty().isInitial() && rightState.getProperty().isInitial()) {
             adjustment += 1;
         }
 

@@ -22,17 +22,17 @@ import org.junit.jupiter.api.Test;
 
 import com.github.tno.gltsdiff.TestAutomata;
 import com.github.tno.gltsdiff.glts.State;
+import com.github.tno.gltsdiff.glts.lts.automaton.Automaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
-import com.github.tno.gltsdiff.glts.lts.automaton.SimpleAutomaton;
-import com.github.tno.gltsdiff.matchers.scorers.FixedScoresScorer;
+import com.github.tno.gltsdiff.matchers.scorers.lts.LTSFixedScoresScorer;
 import com.github.tno.gltsdiff.operators.combiners.lts.automaton.AutomatonStatePropertyCombiner;
 import com.github.tno.gltsdiff.scorers.SimilarityScorer;
 
 /** {@link KuhnMunkresMatcher} tests. */
 public class KuhnMunkresMatcherTest extends MatcherTest {
     @Override
-    public <T> Matcher<AutomatonStateProperty, T, SimpleAutomaton<T>>
-            newMatcher(SimilarityScorer<AutomatonStateProperty, T, SimpleAutomaton<T>> scorer)
+    public <T> Matcher<AutomatonStateProperty, T, Automaton<T>>
+            newMatcher(SimilarityScorer<AutomatonStateProperty, T, Automaton<T>> scorer)
     {
         return new KuhnMunkresMatcher<>(scorer, new AutomatonStatePropertyCombiner());
     }
@@ -41,10 +41,9 @@ public class KuhnMunkresMatcherTest extends MatcherTest {
     @Test
     public void testPreviouslyNonTerminatingExample() {
         // Obtain LHS and RHS.
-        Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = TestAutomata
-                .smallThreeStateLoopWithSwappedEvents();
-        SimpleAutomaton<String> lhs = automata.getFirst();
-        SimpleAutomaton<String> rhs = automata.getSecond();
+        Pair<Automaton<String>, Automaton<String>> automata = TestAutomata.smallThreeStateLoopWithSwappedEvents();
+        Automaton<String> lhs = automata.getFirst();
+        Automaton<String> rhs = automata.getSecond();
 
         // Construct a scores matrix (higher score means better match).
         RealMatrix scores = new Array2DRowRealMatrix(3, 3);
@@ -53,8 +52,8 @@ public class KuhnMunkresMatcherTest extends MatcherTest {
         scores.setRow(2, new double[] {0.25d, 0.25d, 0d});
 
         // Compute a matching based on the scores.
-        Matcher<AutomatonStateProperty, String, SimpleAutomaton<String>> matcher = newMatcher(
-                new FixedScoresScorer<>(scores));
+        Matcher<AutomatonStateProperty, String, Automaton<String>> matcher = newMatcher(
+                new LTSFixedScoresScorer<>(scores));
         Map<State<AutomatonStateProperty>, State<AutomatonStateProperty>> matching = matcher.compute(lhs, rhs);
 
         // State abbreviations.

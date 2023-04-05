@@ -20,8 +20,8 @@ import org.junit.jupiter.api.Test;
 
 import com.github.tno.gltsdiff.TestAutomata;
 import com.github.tno.gltsdiff.glts.State;
+import com.github.tno.gltsdiff.glts.lts.automaton.Automaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
-import com.github.tno.gltsdiff.glts.lts.automaton.SimpleAutomaton;
 import com.github.tno.gltsdiff.matchers.Matcher;
 import com.github.tno.gltsdiff.matchers.MatcherTest;
 import com.github.tno.gltsdiff.operators.combiners.EqualityCombiner;
@@ -31,8 +31,8 @@ import com.github.tno.gltsdiff.scorers.SimilarityScorer;
 /** {@link BruteForceLTSMatcher} tests. */
 public class BruteForceLTSMatcherTest extends MatcherTest {
     @Override
-    public <T> Matcher<AutomatonStateProperty, T, SimpleAutomaton<T>>
-            newMatcher(SimilarityScorer<AutomatonStateProperty, T, SimpleAutomaton<T>> scorer)
+    public <T> Matcher<AutomatonStateProperty, T, Automaton<T>>
+            newMatcher(SimilarityScorer<AutomatonStateProperty, T, Automaton<T>> scorer)
     {
         return new BruteForceLTSMatcher<>(new AutomatonStatePropertyCombiner(), new EqualityCombiner<>());
     }
@@ -41,13 +41,12 @@ public class BruteForceLTSMatcherTest extends MatcherTest {
     @Test
     public void testSuccessOnSmallInput() {
         // Obtain test automata.
-        Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> automata = TestAutomata
-                .smallAutomataForBruteForceTesting();
-        SimpleAutomaton<String> lhs = automata.getFirst();
-        SimpleAutomaton<String> rhs = automata.getSecond();
+        Pair<Automaton<String>, Automaton<String>> automata = TestAutomata.smallAutomataForBruteForceTesting();
+        Automaton<String> lhs = automata.getFirst();
+        Automaton<String> rhs = automata.getSecond();
 
         // Apply the brute force matcher.
-        Matcher<AutomatonStateProperty, String, SimpleAutomaton<String>> matcher = newMatcher(null);
+        Matcher<AutomatonStateProperty, String, Automaton<String>> matcher = newMatcher(null);
         Map<State<AutomatonStateProperty>, State<AutomatonStateProperty>> matching = matcher.compute(lhs, rhs);
 
         // State abbreviations.

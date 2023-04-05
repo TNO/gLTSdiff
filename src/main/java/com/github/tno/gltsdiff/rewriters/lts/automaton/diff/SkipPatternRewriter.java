@@ -11,25 +11,42 @@
 package com.github.tno.gltsdiff.rewriters.lts.automaton.diff;
 
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
 import java.util.function.Function;
 
-import com.github.tno.gltsdiff.glts.GLTS;
 import com.github.tno.gltsdiff.glts.State;
-import com.github.tno.gltsdiff.rewriters.Rewriter;
+import com.github.tno.gltsdiff.glts.lts.automaton.diff.BaseDiffAutomaton;
+import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomatonStateProperty;
+import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffKind;
+import com.github.tno.gltsdiff.utils.TriFunction;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
 /**
- * Base class for rewriters that rewrite skip patterns.
+ * Base class for rewriters that rewrite skip patterns in {@link BaseDiffAutomaton difference automata}..
  *
- * @param <S> The type of state properties.
+ * @param <S> The type of difference automaton state properties.
  * @param <T> The type of transition properties.
- * @param <U> The type of GLTSs to rewrite.
+ * @param <U> The type of difference automata to rewrite.
  */
-public abstract class SkipPatternRewriter<S, T, U extends GLTS<S, T>> implements Rewriter<S, T, U> {
+public abstract class SkipPatternRewriter<S extends DiffAutomatonStateProperty, T, U extends BaseDiffAutomaton<S, T>>
+        extends DiffAutomatonRewriter<S, T, U>
+{
+    /**
+     * Instantiates a new difference automata skip pattern rewriter.
+     *
+     * @param statePropertyTransformer Function to transform a difference automaton state property. Given an existing
+     *     difference automaton state property, a new state difference kind, and a new initial state difference kind
+     *     (present if state is an initial state, absent otherwise), returns a difference automaton state property that
+     *     has the new (initial) state difference kinds. The function should not modify the existing state property.
+     */
+    protected SkipPatternRewriter(TriFunction<S, DiffKind, Optional<DiffKind>, S> statePropertyTransformer) {
+        super(statePropertyTransformer);
+    }
+
     /**
      * Determines whether there exists structure between {@code source} and {@code target} in {@code glts} that can
      * intuitively be skipped. Such structure exists if either <b>(1)</b> there exists a pattern of intuitively

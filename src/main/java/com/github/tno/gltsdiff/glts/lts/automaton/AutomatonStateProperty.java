@@ -14,7 +14,7 @@ import java.util.Objects;
 
 import com.github.tno.gltsdiff.glts.lts.LTSStateProperty;
 
-/** A property that is associated to states in {@link Automaton automata}. */
+/** A property that is associated to states in {@link BaseAutomaton automata}. */
 public class AutomatonStateProperty extends LTSStateProperty {
     /** Whether the associated state is accepting. */
     private final boolean isAccepting;
@@ -36,7 +36,7 @@ public class AutomatonStateProperty extends LTSStateProperty {
      * @return {@code true} if the associated state is accepting, {@code false} otherwise.
      */
     public boolean isAccepting() {
-        return this.isAccepting;
+        return isAccepting;
     }
 
     @Override

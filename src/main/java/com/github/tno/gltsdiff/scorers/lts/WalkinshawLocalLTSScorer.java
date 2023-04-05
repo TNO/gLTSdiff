@@ -11,19 +11,22 @@
 package com.github.tno.gltsdiff.scorers.lts;
 
 import com.github.tno.gltsdiff.glts.State;
-import com.github.tno.gltsdiff.glts.lts.LTS;
+import com.github.tno.gltsdiff.glts.lts.BaseLTS;
+import com.github.tno.gltsdiff.glts.lts.LTSStateProperty;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
 import com.github.tno.gltsdiff.scorers.WalkinshawLocalScorer;
 
 /**
- * Scorer that computes local similarity scores for pairs of (LHS, RHS)-states in {@link LTS LTSs}, thereby taking
+ * Scorer that computes local similarity scores for pairs of (LHS, RHS)-states in {@link BaseLTS LTSs}, thereby taking
  * initial state information into account.
  *
- * @param <S> The type of state properties.
+ * @param <S> The type of LTS state properties.
  * @param <T> The type of transition properties.
  * @param <U> The type of LTSs.
  */
-public class WalkinshawLocalLTSScorer<S, T, U extends LTS<S, T>> extends WalkinshawLocalScorer<S, T, U> {
+public class WalkinshawLocalLTSScorer<S extends LTSStateProperty, T, U extends BaseLTS<S, T>>
+        extends WalkinshawLocalScorer<S, T, U>
+{
     /**
      * Instantiates a new Walkinshaw local similarity scorer for LTSs, that performs only a single refinement. Uses an
      * attenuation factor of 0.6.
@@ -72,7 +75,7 @@ public class WalkinshawLocalLTSScorer<S, T, U extends LTS<S, T>> extends Walkins
         double adjustment = super.getNumeratorAdjustment(lhs, rhs, leftState, rightState, isForward);
 
         // Adjust the numerator if backward scores are computed and 'leftState' and 'rightState' are both initial.
-        if (!isForward && lhs.isInitialState(leftState) && rhs.isInitialState(rightState)) {
+        if (!isForward && leftState.getProperty().isInitial() && rightState.getProperty().isInitial()) {
             adjustment += 1d;
         }
 
@@ -86,7 +89,7 @@ public class WalkinshawLocalLTSScorer<S, T, U extends LTS<S, T>> extends Walkins
         double adjustment = super.getDenominatorAdjustment(lhs, rhs, leftState, rightState, isForward);
 
         // Adjust the denominator if backward scores are computed and 'leftState' and/or 'rightState' is initial.
-        if (!isForward && (lhs.isInitialState(leftState) || rhs.isInitialState(rightState))) {
+        if (!isForward && (leftState.getProperty().isInitial() || rightState.getProperty().isInitial())) {
             adjustment += 1d;
         }
 

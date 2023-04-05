@@ -75,7 +75,7 @@ public class PostProcessingExample {
 
         // Configure comparison, merging and writing, without rewriters for post-processing.
         DiffAutomatonStructureComparatorBuilder<String> builder = new DiffAutomatonStructureComparatorBuilder<>();
-        builder.setTransitionSubPropertyHider(new SubstitutionHider<>("[skip]"));
+        builder.setDiffAutomatonTransitionPropertyHider(new SubstitutionHider<>("[skip]"));
         builder.setRewriters(Collections.emptyList());
         var comparator = builder.createComparator();
         var writer = builder.createWriter();

@@ -13,8 +13,8 @@ package com.github.tno.gltsdiff;
 import org.apache.commons.math3.util.Pair;
 
 import com.github.tno.gltsdiff.glts.State;
+import com.github.tno.gltsdiff.glts.lts.automaton.Automaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.AutomatonStateProperty;
-import com.github.tno.gltsdiff.glts.lts.automaton.SimpleAutomaton;
 
 /** Automata to use for testing. */
 public class TestAutomata {
@@ -29,22 +29,22 @@ public class TestAutomata {
      *
      * @return The test automata pair.
      */
-    public static Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> smallTwoAndThreeStatesExample() {
+    public static Pair<Automaton<String>, Automaton<String>> smallTwoAndThreeStatesExample() {
         // Create the LHS automaton.
-        SimpleAutomaton<String> lhs = new SimpleAutomaton<>();
+        Automaton<String> lhs = new Automaton<>();
 
-        State<AutomatonStateProperty> a = lhs.addInitialState(true);
-        State<AutomatonStateProperty> b = lhs.addState(true);
+        State<AutomatonStateProperty> a = lhs.addState(new AutomatonStateProperty(true, true));
+        State<AutomatonStateProperty> b = lhs.addState(new AutomatonStateProperty(false, true));
 
         lhs.addTransition(a, "e1", b);
         lhs.addTransition(b, "e2", a);
 
         // Create RHS automaton.
-        SimpleAutomaton<String> rhs = new SimpleAutomaton<>();
+        Automaton<String> rhs = new Automaton<>();
 
-        State<AutomatonStateProperty> c = rhs.addInitialState(true);
-        State<AutomatonStateProperty> d = rhs.addState(true);
-        State<AutomatonStateProperty> e = rhs.addState(true);
+        State<AutomatonStateProperty> c = rhs.addState(new AutomatonStateProperty(true, true));
+        State<AutomatonStateProperty> d = rhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> e = rhs.addState(new AutomatonStateProperty(false, true));
 
         rhs.addTransition(c, "e1", d);
         rhs.addTransition(d, "e2", e);
@@ -60,13 +60,13 @@ public class TestAutomata {
      *
      * @return The test automata pair.
      */
-    public static Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> smallWalkinshawExample() {
+    public static Pair<Automaton<String>, Automaton<String>> smallWalkinshawExample() {
         // Create the LHS automaton.
-        SimpleAutomaton<String> lhs = new SimpleAutomaton<>();
+        Automaton<String> lhs = new Automaton<>();
 
-        State<AutomatonStateProperty> a = lhs.addInitialState(true);
-        State<AutomatonStateProperty> b = lhs.addState(true);
-        State<AutomatonStateProperty> c = lhs.addState(true);
+        State<AutomatonStateProperty> a = lhs.addState(new AutomatonStateProperty(true, true));
+        State<AutomatonStateProperty> b = lhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> c = lhs.addState(new AutomatonStateProperty(false, true));
 
         lhs.addTransition(a, "a", b);
         lhs.addTransition(b, "b", a);
@@ -74,10 +74,10 @@ public class TestAutomata {
         lhs.addTransition(b, "c", c);
 
         // Create the RHS automaton.
-        SimpleAutomaton<String> rhs = new SimpleAutomaton<>();
+        Automaton<String> rhs = new Automaton<>();
 
-        State<AutomatonStateProperty> e = rhs.addInitialState(true);
-        State<AutomatonStateProperty> f = rhs.addState(true);
+        State<AutomatonStateProperty> e = rhs.addState(new AutomatonStateProperty(true, true));
+        State<AutomatonStateProperty> f = rhs.addState(new AutomatonStateProperty(false, true));
 
         rhs.addTransition(e, "a", f);
         rhs.addTransition(e, "c", f);
@@ -95,14 +95,14 @@ public class TestAutomata {
      *
      * @return The test automata pair.
      */
-    public static Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> runningExampleWalkinshaw() {
+    public static Pair<Automaton<String>, Automaton<String>> runningExampleWalkinshaw() {
         // Create the LHS automaton.
-        SimpleAutomaton<String> lhs = new SimpleAutomaton<>();
+        Automaton<String> lhs = new Automaton<>();
 
-        State<AutomatonStateProperty> sA = lhs.addInitialState(true);
-        State<AutomatonStateProperty> sB = lhs.addState(true);
-        State<AutomatonStateProperty> sC = lhs.addState(true);
-        State<AutomatonStateProperty> sD = lhs.addState(true);
+        State<AutomatonStateProperty> sA = lhs.addState(new AutomatonStateProperty(true, true));
+        State<AutomatonStateProperty> sB = lhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> sC = lhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> sD = lhs.addState(new AutomatonStateProperty(false, true));
 
         lhs.addTransition(sA, "load", sB);
         lhs.addTransition(sA, "exit", sC);
@@ -112,13 +112,13 @@ public class TestAutomata {
         lhs.addTransition(sD, "ok", sB);
 
         // Create the RHS automaton.
-        SimpleAutomaton<String> rhs = new SimpleAutomaton<>();
+        Automaton<String> rhs = new Automaton<>();
 
-        State<AutomatonStateProperty> sE = rhs.addInitialState(true);
-        State<AutomatonStateProperty> sF = rhs.addState(true);
-        State<AutomatonStateProperty> sG = rhs.addState(true);
-        State<AutomatonStateProperty> sH = rhs.addState(true);
-        State<AutomatonStateProperty> sI = rhs.addState(true);
+        State<AutomatonStateProperty> sE = rhs.addState(new AutomatonStateProperty(true, true));
+        State<AutomatonStateProperty> sF = rhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> sG = rhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> sH = rhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> sI = rhs.addState(new AutomatonStateProperty(false, true));
 
         rhs.addTransition(sE, "load", sF);
         rhs.addTransition(sE, "exit", sH);
@@ -138,14 +138,14 @@ public class TestAutomata {
      *
      * @return The test automata pair.
      */
-    public static Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> industrialExample1() {
+    public static Pair<Automaton<String>, Automaton<String>> industrialExample1() {
         // Create the LHS automaton.
-        SimpleAutomaton<String> lhs = new SimpleAutomaton<>();
+        Automaton<String> lhs = new Automaton<>();
 
-        State<AutomatonStateProperty> s1 = lhs.addInitialState(true);
-        State<AutomatonStateProperty> s2 = lhs.addState(true);
-        State<AutomatonStateProperty> s3 = lhs.addState(true);
-        State<AutomatonStateProperty> s4 = lhs.addState(true);
+        State<AutomatonStateProperty> s1 = lhs.addState(new AutomatonStateProperty(true, true));
+        State<AutomatonStateProperty> s2 = lhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> s3 = lhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> s4 = lhs.addState(new AutomatonStateProperty(false, true));
 
         lhs.addTransition(s1, "e1", s2);
         lhs.addTransition(s2, "e2", s3);
@@ -153,10 +153,10 @@ public class TestAutomata {
         lhs.addTransition(s4, "e4", s1);
 
         // Create the RHS automaton.
-        SimpleAutomaton<String> rhs = new SimpleAutomaton<>();
+        Automaton<String> rhs = new Automaton<>();
 
-        State<AutomatonStateProperty> t1 = rhs.addInitialState(true);
-        State<AutomatonStateProperty> t2 = rhs.addState(true);
+        State<AutomatonStateProperty> t1 = rhs.addState(new AutomatonStateProperty(true, true));
+        State<AutomatonStateProperty> t2 = rhs.addState(new AutomatonStateProperty(false, true));
 
         rhs.addTransition(t1, "e1", t2);
         rhs.addTransition(t2, "e4", t1);
@@ -171,23 +171,23 @@ public class TestAutomata {
      *
      * @return The test automata pair.
      */
-    public static Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> industrialExample2() {
+    public static Pair<Automaton<String>, Automaton<String>> industrialExample2() {
         // Create the LHS automaton.
-        SimpleAutomaton<String> lhs = new SimpleAutomaton<>();
+        Automaton<String> lhs = new Automaton<>();
 
-        State<AutomatonStateProperty> s4 = lhs.addInitialState(true);
-        State<AutomatonStateProperty> s5 = lhs.addState(true);
-        State<AutomatonStateProperty> s6 = lhs.addState(true);
-        State<AutomatonStateProperty> s7 = lhs.addState(true);
-        State<AutomatonStateProperty> s8 = lhs.addState(true);
-        State<AutomatonStateProperty> s9 = lhs.addState(true);
-        State<AutomatonStateProperty> s10 = lhs.addState(true);
-        State<AutomatonStateProperty> s11 = lhs.addState(true);
-        State<AutomatonStateProperty> s12 = lhs.addState(true);
-        State<AutomatonStateProperty> s13 = lhs.addState(true);
-        State<AutomatonStateProperty> s14 = lhs.addState(true);
-        State<AutomatonStateProperty> s15 = lhs.addState(true);
-        State<AutomatonStateProperty> s16 = lhs.addState(true);
+        State<AutomatonStateProperty> s4 = lhs.addState(new AutomatonStateProperty(true, true));
+        State<AutomatonStateProperty> s5 = lhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> s6 = lhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> s7 = lhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> s8 = lhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> s9 = lhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> s10 = lhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> s11 = lhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> s12 = lhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> s13 = lhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> s14 = lhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> s15 = lhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> s16 = lhs.addState(new AutomatonStateProperty(false, true));
 
         lhs.addTransition(s4, "e19", s5);
         lhs.addTransition(s5, "e8", s6);
@@ -205,22 +205,22 @@ public class TestAutomata {
         lhs.addTransition(s16, "e11", s8);
 
         // Create the RHS automaton.
-        SimpleAutomaton<String> rhs = new SimpleAutomaton<>();
+        Automaton<String> rhs = new Automaton<>();
 
-        State<AutomatonStateProperty> t1 = rhs.addState(true);
-        State<AutomatonStateProperty> t2 = rhs.addState(true);
-        State<AutomatonStateProperty> t3 = rhs.addState(true);
-        State<AutomatonStateProperty> t4 = rhs.addInitialState(true);
-        State<AutomatonStateProperty> t5 = rhs.addState(true);
-        State<AutomatonStateProperty> t6 = rhs.addState(true);
-        State<AutomatonStateProperty> t8 = rhs.addState(true);
-        State<AutomatonStateProperty> t9 = rhs.addState(true);
-        State<AutomatonStateProperty> t10 = rhs.addState(true);
-        State<AutomatonStateProperty> t11 = rhs.addState(true);
-        State<AutomatonStateProperty> t12 = rhs.addState(true);
-        State<AutomatonStateProperty> t13 = rhs.addState(true);
-        State<AutomatonStateProperty> t14 = rhs.addState(true);
-        State<AutomatonStateProperty> t15 = rhs.addState(true);
+        State<AutomatonStateProperty> t1 = rhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> t2 = rhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> t3 = rhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> t4 = rhs.addState(new AutomatonStateProperty(true, true));
+        State<AutomatonStateProperty> t5 = rhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> t6 = rhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> t8 = rhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> t9 = rhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> t10 = rhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> t11 = rhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> t12 = rhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> t13 = rhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> t14 = rhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> t15 = rhs.addState(new AutomatonStateProperty(false, true));
 
         rhs.addTransition(t1, "e13", t9);
         rhs.addTransition(t2, "e15", t3);
@@ -248,24 +248,24 @@ public class TestAutomata {
      *
      * @return The test automata pair.
      */
-    public static Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> smallThreeStateLoopWithSwappedEvents() {
+    public static Pair<Automaton<String>, Automaton<String>> smallThreeStateLoopWithSwappedEvents() {
         // Create the LHS automaton.
-        SimpleAutomaton<String> lhs = new SimpleAutomaton<>();
+        Automaton<String> lhs = new Automaton<>();
 
-        State<AutomatonStateProperty> s1 = lhs.addInitialState(true);
-        State<AutomatonStateProperty> s2 = lhs.addState(true);
-        State<AutomatonStateProperty> s3 = lhs.addState(true);
+        State<AutomatonStateProperty> s1 = lhs.addState(new AutomatonStateProperty(true, true));
+        State<AutomatonStateProperty> s2 = lhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> s3 = lhs.addState(new AutomatonStateProperty(false, true));
 
         lhs.addTransition(s1, "b", s2);
         lhs.addTransition(s2, "d", s3);
         lhs.addTransition(s3, "c", s1);
 
         // Create the RHS automaton.
-        SimpleAutomaton<String> rhs = new SimpleAutomaton<>();
+        Automaton<String> rhs = new Automaton<>();
 
-        State<AutomatonStateProperty> t1 = rhs.addInitialState(true);
-        State<AutomatonStateProperty> t2 = rhs.addState(true);
-        State<AutomatonStateProperty> t3 = rhs.addState(true);
+        State<AutomatonStateProperty> t1 = rhs.addState(new AutomatonStateProperty(true, true));
+        State<AutomatonStateProperty> t2 = rhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> t3 = rhs.addState(new AutomatonStateProperty(false, true));
 
         rhs.addTransition(t1, "b", t2);
         rhs.addTransition(t2, "c", t3);
@@ -280,25 +280,25 @@ public class TestAutomata {
      *
      * @return The test automata pair.
      */
-    public static Pair<SimpleAutomaton<String>, SimpleAutomaton<String>> smallAutomataForBruteForceTesting() {
+    public static Pair<Automaton<String>, Automaton<String>> smallAutomataForBruteForceTesting() {
         // Create the LHS automaton.
-        SimpleAutomaton<String> lhs = new SimpleAutomaton<>();
+        Automaton<String> lhs = new Automaton<>();
 
-        State<AutomatonStateProperty> s1 = lhs.addInitialState(true);
-        State<AutomatonStateProperty> s2 = lhs.addState(true);
-        State<AutomatonStateProperty> s3 = lhs.addState(true);
+        State<AutomatonStateProperty> s1 = lhs.addState(new AutomatonStateProperty(true, true));
+        State<AutomatonStateProperty> s2 = lhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> s3 = lhs.addState(new AutomatonStateProperty(false, true));
 
         lhs.addTransition(s1, "b", s2);
         lhs.addTransition(s2, "c", s3);
         lhs.addTransition(s3, "d", s1);
 
         // Create the RHS automaton.
-        SimpleAutomaton<String> rhs = new SimpleAutomaton<>();
+        Automaton<String> rhs = new Automaton<>();
 
-        State<AutomatonStateProperty> t1 = rhs.addInitialState(true);
-        State<AutomatonStateProperty> t2 = rhs.addState(true);
-        State<AutomatonStateProperty> t3 = rhs.addState(true);
-        State<AutomatonStateProperty> t4 = rhs.addState(true);
+        State<AutomatonStateProperty> t1 = rhs.addState(new AutomatonStateProperty(true, true));
+        State<AutomatonStateProperty> t2 = rhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> t3 = rhs.addState(new AutomatonStateProperty(false, true));
+        State<AutomatonStateProperty> t4 = rhs.addState(new AutomatonStateProperty(false, true));
 
         rhs.addTransition(t1, "b", t2);
         rhs.addTransition(t2, "c", t3);

@@ -19,16 +19,16 @@ import java.util.stream.Collectors;
 
 import com.github.tno.gltsdiff.glts.State;
 import com.github.tno.gltsdiff.glts.Transition;
-import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomaton;
+import com.github.tno.gltsdiff.glts.lts.automaton.diff.BaseDiffAutomaton;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffAutomatonStateProperty;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffKind;
 import com.github.tno.gltsdiff.glts.lts.automaton.diff.DiffProperty;
-import com.github.tno.gltsdiff.rewriters.Rewriter;
+import com.github.tno.gltsdiff.utils.TriFunction;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 
 /**
- * A rewriter that rewrites tangles in {@link DiffAutomaton difference automata}.
+ * A rewriter that rewrites tangles in {@link BaseDiffAutomaton difference automata}.
  *
  * <p>
  * A <i>tangle</i> is defined to be an {@link DiffKind#UNCHANGED unchanged} state that has no unchanged incoming or
@@ -37,21 +37,35 @@ import com.google.common.collect.Sets;
  * states, an added and a removed one, and relocates all transitions accordingly to these two states.
  * </p>
  *
+ * @param <S> The type of difference automaton state properties.
  * @param <T> The type of transition properties.
+ * @param <U> The type of difference automata to rewrite.
  */
-public class EntanglementRewriter<T>
-        implements Rewriter<DiffAutomatonStateProperty, DiffProperty<T>, DiffAutomaton<T>>
+public class EntanglementRewriter<S extends DiffAutomatonStateProperty, T, U extends BaseDiffAutomaton<S, T>>
+        extends DiffAutomatonRewriter<S, T, U>
 {
+    /**
+     * Instantiates a new entanglement rewriter.
+     *
+     * @param statePropertyTransformer Function to transform a difference automaton state property. Given an existing
+     *     difference automaton state property, a new state difference kind, and a new initial state difference kind
+     *     (present if state is an initial state, absent otherwise), returns a difference automaton state property that
+     *     has the new (initial) state difference kinds. The function should not modify the existing state property.
+     */
+    public EntanglementRewriter(TriFunction<S, DiffKind, Optional<DiffKind>, S> statePropertyTransformer) {
+        super(statePropertyTransformer);
+    }
+
     @Override
-    public boolean rewrite(DiffAutomaton<T> automaton) {
+    public boolean rewrite(U automaton) {
         boolean updated = false;
 
         // Iterate over all unchanged states of 'automaton'.
-        Set<State<DiffAutomatonStateProperty>> unchangedStates = automaton.getStates().stream()
+        Set<State<S>> unchangedStates = automaton.getStates().stream()
                 .filter(state -> state.getProperty().getStateDiffKind() == DiffKind.UNCHANGED)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        for (State<DiffAutomatonStateProperty> state: unchangedStates) {
+        for (State<S> state: unchangedStates) {
             // Collect the properties of all incoming and outgoing transitions of 'state'.
             Set<DiffProperty<T>> connectedTransitionProperties = Sets.union(
                     automaton.getIncomingTransitionProperties(state), automaton.getOutgoingTransitionProperties(state));
@@ -93,32 +107,31 @@ public class EntanglementRewriter<T>
      * @param state The state to split.
      * @param diffKind The difference kind of the new state, and of the transitions to relocate.
      */
-    private void split(DiffAutomaton<T> automaton, State<DiffAutomatonStateProperty> state, DiffKind diffKind) {
-        DiffAutomatonStateProperty stateProperty = state.getProperty();
+    private void split(U automaton, State<S> state, DiffKind diffKind) {
+        S stateProperty = state.getProperty();
 
         // Define the new state.
         boolean isInitial = stateProperty.isInitial() && (stateProperty.getInitDiffKind() == DiffKind.UNCHANGED
                 || stateProperty.getInitDiffKind() == diffKind);
 
-        State<DiffAutomatonStateProperty> newState = automaton.addState(new DiffAutomatonStateProperty(
-                stateProperty.isAccepting(), diffKind, isInitial ? Optional.of(diffKind) : Optional.empty()));
+        S newStateProperty = statePropertyTransformer.apply(stateProperty, diffKind,
+                isInitial ? Optional.of(diffKind) : Optional.empty());
+        State<S> newState = automaton.addState(newStateProperty);
 
         // Relocate all incoming transitions of 'state'.
-        List<Transition<DiffAutomatonStateProperty, DiffProperty<T>>> incomingTransitions = automaton
-                .getIncomingTransitions(state).stream()
+        List<Transition<S, DiffProperty<T>>> incomingTransitions = automaton.getIncomingTransitions(state).stream()
                 .filter(transition -> transition.getProperty().getDiffKind() == diffKind).collect(Collectors.toList());
 
-        for (Transition<DiffAutomatonStateProperty, DiffProperty<T>> transition: incomingTransitions) {
+        for (Transition<S, DiffProperty<T>> transition: incomingTransitions) {
             automaton.removeTransition(transition);
             automaton.addTransition(transition.getSource(), transition.getProperty(), newState);
         }
 
         // Relocate all outgoing transitions of 'state'.
-        List<Transition<DiffAutomatonStateProperty, DiffProperty<T>>> outgoingTransitions = automaton
-                .getOutgoingTransitions(state).stream()
+        List<Transition<S, DiffProperty<T>>> outgoingTransitions = automaton.getOutgoingTransitions(state).stream()
                 .filter(transition -> transition.getProperty().getDiffKind() == diffKind).collect(Collectors.toList());
 
-        for (Transition<DiffAutomatonStateProperty, DiffProperty<T>> transition: outgoingTransitions) {
+        for (Transition<S, DiffProperty<T>> transition: outgoingTransitions) {
             automaton.removeTransition(transition);
             automaton.addTransition(newState, transition.getProperty(), transition.getTarget());
         }

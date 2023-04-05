@@ -27,7 +27,7 @@ import com.github.tno.gltsdiff.operators.projectors.Projector;
 import com.google.common.base.Preconditions;
 
 /**
- * A generalized labeled transition system with associated properties.
+ * A generalized labeled transition system, with configurable state and transition properties.
  *
  * @param <S> The type of state properties.
  * @param <T> The type of transition properties.
@@ -102,6 +102,16 @@ public class GLTS<S, T> {
     }
 
     /**
+     * Returns the states of this GLTS that satisfy a given predicate.
+     *
+     * @param predicate The predicate.
+     * @return The set of non-{@code null} states of this GLTS that satisfy the given predicate.
+     */
+    public Set<State<S>> getStates(Predicate<State<S>> predicate) {
+        return statesSet.stream().filter(predicate).collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
+    }
+
+    /**
      * Returns the state with the specified identifier.
      *
      * @param id The state identifier, which must be between {@code 0} and {@code size() - 1}.
@@ -120,7 +130,17 @@ public class GLTS<S, T> {
      * @return The set of all transitions of this GLTS, all of which are non-{@code null}.
      */
     public Set<Transition<S, T>> getTransitions() {
-        return outgoingTransitions.values().stream().flatMap(ts -> ts.stream())
+        return getTransitions(t -> true);
+    }
+
+    /**
+     * Returns the transitions of this GLTS that satisfy a given predicate.
+     *
+     * @param predicate The predicate.
+     * @return The set of non-{@code null} transitions of this GLTS that satisfy the given predicate.
+     */
+    public Set<Transition<S, T>> getTransitions(Predicate<Transition<S, T>> predicate) {
+        return outgoingTransitions.values().stream().flatMap(ts -> ts.stream()).filter(predicate)
                 .collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
     }
 
@@ -223,9 +243,8 @@ public class GLTS<S, T> {
      * @param predicate The predicate.
      * @return The number of transitions with a property that satisfies the predicate.
      */
-    public long countTransitions(Predicate<T> predicate) {
-        return getStates().stream().flatMap(state -> getOutgoingTransitions(state).stream())
-                .map(Transition::getProperty).filter(predicate).count();
+    public long countTransitions(Predicate<Transition<S, T>> predicate) {
+        return getStates().stream().flatMap(state -> getOutgoingTransitions(state).stream()).filter(predicate).count();
     }
 
     /**
@@ -441,16 +460,16 @@ public class GLTS<S, T> {
     /**
      * Projects this GLTS by projecting all state and transition properties along a given element {@code along}.
      *
-     * @param <L> The target type of GLTSs to project to.
-     * @param <U> The type of elements to project along.
+     * @param <U> The target type of GLTSs to project to.
+     * @param <A> The type of elements to project along.
      * @param instantiator A supplier that instantiates new GLTSs of the appropriate type.
      * @param statePropertyProjector A projector for projecting state properties.
      * @param transitionPropertyProjector A projector for projecting transition properties.
      * @param along The non-{@code null} element to project along.
      * @return The projected GLTS.
      */
-    public <L extends GLTS<S, T>, U> L project(Supplier<L> instantiator, Projector<S, U> statePropertyProjector,
-            Projector<T, U> transitionPropertyProjector, U along)
+    public <U extends GLTS<S, T>, A> U project(Supplier<U> instantiator, Projector<S, A> statePropertyProjector,
+            Projector<T, A> transitionPropertyProjector, A along)
     {
         Preconditions.checkNotNull(along, "Expected a non-null element to project along.");
 
