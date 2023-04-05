@@ -10,7 +10,7 @@
 
 package com.github.tno.gltsdiff.glts.lts.automaton.diff;
 
-import com.github.tno.gltsdiff.glts.lts.automaton.Automaton;
+import com.github.tno.gltsdiff.glts.lts.automaton.BaseAutomaton;
 
 /**
  * A difference automaton, a {@link BaseAutomaton automaton} with difference information for states, initial states and

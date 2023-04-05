@@ -10,7 +10,7 @@
 
 package com.github.tno.gltsdiff.glts.lts.automaton;
 
-import com.github.tno.gltsdiff.glts.lts.LTS;
+import com.github.tno.gltsdiff.glts.lts.BaseLTS;
 
 /**
  * An automaton, an {@link BaseLTS LTS} with accepting state information for states.
