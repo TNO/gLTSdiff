@@ -21,7 +21,7 @@ import com.github.tno.gltsdiff.operators.projectors.lts.automaton.diff.DiffKindP
 import com.github.tno.gltsdiff.operators.projectors.lts.automaton.diff.DiffPropertyProjector;
 import com.google.common.base.Preconditions;
 
-/** Utilities for working with {@link BaseDiffAutomaton difference automata}. */
+/** Utilities for working with {@link DiffAutomaton difference automata}. */
 public class DiffAutomata {
     /** Constructor for the {@link DiffAutomata} class. */
     private DiffAutomata() {

@@ -13,7 +13,7 @@ package com.github.tno.gltsdiff.glts.lts.automaton.diff;
 import com.github.tno.gltsdiff.glts.lts.automaton.Automaton;
 
 /**
- * A difference automaton, a {@link Automaton automaton} with difference information for states, initial states and
+ * A difference automaton, a {@link BaseAutomaton automaton} with difference information for states, initial states and
  * transitions.
  *
  * @param <T> The type of transition properties.

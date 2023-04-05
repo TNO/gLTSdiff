@@ -89,7 +89,7 @@ public abstract class BaseDiffAutomatonStructureComparatorBuilder<S extends Diff
     /**
      * Set the difference automaton state property transformer.
      *
-     * @param statePropertyTransformer The difference automaton state property transformer .
+     * @param statePropertyTransformer The difference automaton state property transformer.
      * @return This builder, for chaining.
      */
     public BaseStructureComparatorBuilder<S, DiffProperty<T>, U> setDiffAutomatonStatePropertyTransformer(

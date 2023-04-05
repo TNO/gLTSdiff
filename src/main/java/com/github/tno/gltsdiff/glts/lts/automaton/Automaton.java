@@ -13,7 +13,7 @@ package com.github.tno.gltsdiff.glts.lts.automaton;
 import com.github.tno.gltsdiff.glts.lts.LTS;
 
 /**
- * An automaton, an {@link LTS LTS} with accepting state information for states.
+ * An automaton, an {@link BaseLTS LTS} with accepting state information for states.
  *
  * @param <T> The type of transition properties.
  */
