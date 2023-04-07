@@ -71,7 +71,7 @@ public abstract class BaseLTSStructureComparatorBuilder<S extends LTSStateProper
 
     @Override
     public BaseStructureComparatorBuilder<S, T, U> setDynamicMatcher() {
-        return setMatcher((s, t, sc) -> new DynamicLTSMatcher<>(s, t));
+        return setMatcher((s, t, sc) -> new DynamicLTSMatcher<>(s, t, sc));
     }
 
     @Override

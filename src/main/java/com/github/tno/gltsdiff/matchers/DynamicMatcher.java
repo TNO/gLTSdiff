@@ -37,13 +37,32 @@ public class DynamicMatcher<S, T, U extends GLTS<S, T>> implements Matcher<S, T,
     private final Matcher<S, T, U> matcher;
 
     /**
-     * Instantiates a new dynamic matcher for GLTSs, that uses a default configuration of matching algorithms.
+     * Instantiates a new dynamic matcher for GLTSs, that uses a default configuration of matching algorithms, with a
+     * {@link DynamicScorer dynamic scorer}.
      *
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
     public DynamicMatcher(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner) {
-        this(statePropertyCombiner, transitionPropertyCombiner, (s, t) -> defaultMatchingAlgorithmCreator(s, t));
+        this(statePropertyCombiner, transitionPropertyCombiner,
+                new DynamicScorer<>(statePropertyCombiner, transitionPropertyCombiner));
+    }
+
+    /**
+     * Instantiates a new dynamic matcher for GLTSs, that uses a default configuration of matching algorithms, with a
+     * given scorer.
+     *
+     * @param statePropertyCombiner The combiner for state properties.
+     * @param transitionPropertyCombiner The combiner for transition properties.
+     * @param scorer The scorer, which must have been constructed with the same state and transition property combiners
+     *     as provided to this dynamic matcher.
+     */
+    public DynamicMatcher(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner,
+            SimilarityScorer<S, T, U> scorer)
+    {
+        this(statePropertyCombiner, transitionPropertyCombiner,
+                (BiFunction<Combiner<S>, Combiner<T>, Matcher<S, T, U>>)(s, t) -> defaultMatchingAlgorithmCreator(s, t,
+                        scorer));
     }
 
     /**
@@ -68,12 +87,12 @@ public class DynamicMatcher<S, T, U extends GLTS<S, T>> implements Matcher<S, T,
      * @param <U> The type of GLTSs.
      * @param statePropertyCombiner The state property combiner.
      * @param transitionPropertyCombiner The transition property combiner.
+     * @param scorer The scorer.
      * @return The matcher.
      */
-    private static final <S, T, U extends GLTS<S, T>> Matcher<S, T, U>
-            defaultMatchingAlgorithmCreator(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner)
+    private static final <S, T, U extends GLTS<S, T>> Matcher<S, T, U> defaultMatchingAlgorithmCreator(
+            Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner, SimilarityScorer<S, T, U> scorer)
     {
-        SimilarityScorer<S, T, U> scorer = new DynamicScorer<>(statePropertyCombiner, transitionPropertyCombiner);
         Matcher<S, T, U> walkinshawMatcher = new WalkinshawMatcher<>(scorer, statePropertyCombiner,
                 transitionPropertyCombiner);
         Matcher<S, T, U> kuhnMunkresMatcher = new KuhnMunkresMatcher<>(scorer, statePropertyCombiner);

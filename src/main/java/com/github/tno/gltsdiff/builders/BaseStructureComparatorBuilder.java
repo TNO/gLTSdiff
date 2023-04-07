@@ -305,7 +305,7 @@ public abstract class BaseStructureComparatorBuilder<S, T, U extends GLTS<S, T>>
      * @return This builder, for chaining.
      */
     public BaseStructureComparatorBuilder<S, T, U> setDynamicMatcher() {
-        return setMatcher((s, t, sc) -> new DynamicMatcher<>(s, t));
+        return setMatcher((s, t, sc) -> new DynamicMatcher<>(s, t, sc));
     }
 
     /**
