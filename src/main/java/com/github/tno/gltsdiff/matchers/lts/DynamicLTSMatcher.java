@@ -18,6 +18,7 @@ import com.github.tno.gltsdiff.matchers.DynamicMatcher;
 import com.github.tno.gltsdiff.matchers.KuhnMunkresMatcher;
 import com.github.tno.gltsdiff.matchers.Matcher;
 import com.github.tno.gltsdiff.operators.combiners.Combiner;
+import com.github.tno.gltsdiff.scorers.DynamicScorer;
 import com.github.tno.gltsdiff.scorers.SimilarityScorer;
 import com.github.tno.gltsdiff.scorers.lts.DynamicLTSScorer;
 
@@ -31,13 +32,32 @@ import com.github.tno.gltsdiff.scorers.lts.DynamicLTSScorer;
  */
 public class DynamicLTSMatcher<S extends LTSStateProperty, T, U extends BaseLTS<S, T>> extends DynamicMatcher<S, T, U> {
     /**
-     * Instantiates a new dynamic matcher for LTSs, that uses a default configuration of matching algorithms.
+     * Instantiates a new dynamic matcher for LTSs, that uses a default configuration of matching algorithms, with a
+     * {@link DynamicScorer dynamic scorer}.
      *
      * @param statePropertyCombiner The combiner for state properties.
      * @param transitionPropertyCombiner The combiner for transition properties.
      */
     public DynamicLTSMatcher(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner) {
-        this(statePropertyCombiner, transitionPropertyCombiner, (s, t) -> defaultMatchingAlgorithmCreator(s, t));
+        this(statePropertyCombiner, transitionPropertyCombiner,
+                new DynamicLTSScorer<>(statePropertyCombiner, transitionPropertyCombiner));
+    }
+
+    /**
+     * Instantiates a new dynamic matcher for LTSs, that uses a default configuration of matching algorithms, with a
+     * given scorer.
+     *
+     * @param statePropertyCombiner The combiner for state properties.
+     * @param transitionPropertyCombiner The combiner for transition properties.
+     * @param scorer The scorer, which must have been constructed with the same state and transition property combiners
+     *     as provided to this dynamic matcher.
+     */
+    public DynamicLTSMatcher(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner,
+            SimilarityScorer<S, T, U> scorer)
+    {
+        this(statePropertyCombiner, transitionPropertyCombiner,
+                (BiFunction<Combiner<S>, Combiner<T>, Matcher<S, T, U>>)(s, t) -> defaultMatchingAlgorithmCreator(s, t,
+                        scorer));
     }
 
     /**
@@ -62,12 +82,13 @@ public class DynamicLTSMatcher<S extends LTSStateProperty, T, U extends BaseLTS<
      * @param <U> The type of LTSs.
      * @param statePropertyCombiner The state property combiner.
      * @param transitionPropertyCombiner The transition property combiner.
+     * @param scorer The scorer.
      * @return The matcher.
      */
     private static final <S extends LTSStateProperty, T, U extends BaseLTS<S, T>> Matcher<S, T, U>
-            defaultMatchingAlgorithmCreator(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner)
+            defaultMatchingAlgorithmCreator(Combiner<S> statePropertyCombiner, Combiner<T> transitionPropertyCombiner,
+                    SimilarityScorer<S, T, U> scorer)
     {
-        SimilarityScorer<S, T, U> scorer = new DynamicLTSScorer<>(statePropertyCombiner, transitionPropertyCombiner);
         Matcher<S, T, U> walkinshawMatcher = new WalkinshawLTSMatcher<>(scorer, statePropertyCombiner,
                 transitionPropertyCombiner);
         Matcher<S, T, U> kuhnMunkresMatcher = new KuhnMunkresMatcher<>(scorer, statePropertyCombiner);
