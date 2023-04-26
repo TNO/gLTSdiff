@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.math3.linear.BlockRealMatrix;
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.util.Pair;
 
@@ -123,7 +123,7 @@ public abstract class WalkinshawScorer<S, T, U extends GLTS<S, T>> implements Si
 
         // Calculate average similarity scores out of the forward and backward scores.
         // Note: here 'BlockRealMatrix' is used since 'OpenMapRealMatrix' does not deal well with infinite doubles.
-        RealMatrix averageScores = new BlockRealMatrix(lhs.size(), rhs.size());
+        RealMatrix averageScores = new Array2DRowRealMatrix(lhs.size(), rhs.size());
 
         for (int leftIndex = 0; leftIndex < lhs.size(); leftIndex++) {
             for (int rightIndex = 0; rightIndex < rhs.size(); rightIndex++) {

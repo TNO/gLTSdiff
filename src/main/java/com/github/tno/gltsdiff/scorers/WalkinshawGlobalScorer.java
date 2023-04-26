@@ -21,10 +21,10 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.DecompositionSolver;
 import org.apache.commons.math3.linear.LUDecomposition;
-import org.apache.commons.math3.linear.OpenMapRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.util.Pair;
@@ -155,7 +155,7 @@ public class WalkinshawGlobalScorer<S, T, U extends GLTS<S, T>> extends Walkinsh
 
         // If we already know the similarity scores of all state pairs, then we can terminate early.
         if (statePairsWithUnknownScores.isEmpty()) {
-            RealMatrix scores = new OpenMapRealMatrix(lhs.size(), rhs.size());
+            RealMatrix scores = new Array2DRowRealMatrix(lhs.size(), rhs.size());
 
             for (Entry<Pair<State<S>, State<S>>, Double> entry: staticallyKnownScores.entrySet()) {
                 int row = entry.getKey().getFirst().getId();
@@ -175,7 +175,7 @@ public class WalkinshawGlobalScorer<S, T, U extends GLTS<S, T>> extends Walkinsh
         BiMap<Pair<State<S>, State<S>>, Integer> statePairsToEncode = indexate(statePairsWithUnknownScores);
 
         // Set up the matrix and vector that together shall encode the system of linear equations.
-        RealMatrix coefficients = new OpenMapRealMatrix(statePairsToEncode.size(), statePairsToEncode.size());
+        RealMatrix coefficients = new Array2DRowRealMatrix(statePairsToEncode.size(), statePairsToEncode.size());
         RealVector constants = new ArrayRealVector(statePairsToEncode.size());
 
         // We iterate over all state pairs with unknown scores to encode their corresponding rows in the linear system.
@@ -233,7 +233,7 @@ public class WalkinshawGlobalScorer<S, T, U extends GLTS<S, T>> extends Walkinsh
         RealVector solution = createSolver(coefficients).solve(constants);
 
         // Finally, convert 'solution' to a scores matrix.
-        RealMatrix scores = new OpenMapRealMatrix(lhs.size(), rhs.size());
+        RealMatrix scores = new Array2DRowRealMatrix(lhs.size(), rhs.size());
 
         for (Entry<Pair<State<S>, State<S>>, Double> entry: staticallyKnownScores.entrySet()) {
             State<S> leftState = entry.getKey().getFirst();
