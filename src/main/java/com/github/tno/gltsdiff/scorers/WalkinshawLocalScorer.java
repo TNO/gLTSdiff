@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import org.apache.commons.math3.linear.OpenMapRealMatrix;
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.util.Pair;
 
@@ -138,11 +138,11 @@ public class WalkinshawLocalScorer<S, T, U extends GLTS<S, T>> extends Walkinsha
             Function<Transition<S, T>, State<S>> stateSelector, boolean isForward)
     {
         // Define an initial similarity score matrix with score 0 for every (LHS, RHS)-state pair.
-        RealMatrix scores = new OpenMapRealMatrix(lhs.size(), rhs.size());
+        RealMatrix scores = new Array2DRowRealMatrix(lhs.size(), rhs.size());
 
         // Refine the scores a number of times. At least one refinement will always be performed.
         for (int i = 0; i < nrOfRefinements; i++) {
-            RealMatrix refinedScores = new OpenMapRealMatrix(lhs.size(), rhs.size());
+            RealMatrix refinedScores = new Array2DRowRealMatrix(lhs.size(), rhs.size());
 
             // Iterate over all pairs of (LHS, RHS)-states.
             for (State<S> leftState: lhs.getStates()) {

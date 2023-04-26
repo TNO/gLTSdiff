@@ -12,7 +12,7 @@ package com.github.tno.gltsdiff.matchers;
 
 import java.util.Map;
 
-import org.apache.commons.math3.linear.BlockRealMatrix;
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 
 import com.github.tno.gltsdiff.glts.GLTS;
@@ -95,7 +95,7 @@ public abstract class ScoringMatcher<S, T, U extends GLTS<S, T>> implements Matc
         }
 
         // If not, then new scores will have to be calculated.
-        RealMatrix normalizedScores = new BlockRealMatrix(scores.getRowDimension(), scores.getColumnDimension());
+        RealMatrix normalizedScores = new Array2DRowRealMatrix(scores.getRowDimension(), scores.getColumnDimension());
 
         // Calculate all normalized scores and store them in 'normalizedScores'.
         for (int row = 0; row < scores.getRowDimension(); row++) {
