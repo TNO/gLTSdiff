@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -108,7 +109,7 @@ public class DotWriter<S, T, U extends GLTS<S, T>> {
      * @throws IOException In case of an I/O error.
      */
     public void write(U glts, OutputStream stream) throws IOException {
-        try (Writer writer = new BufferedWriter(new OutputStreamWriter(stream))) {
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(stream, StandardCharsets.UTF_8))) {
             // Open graph scope.
             writer.write("digraph " + getDigraphName() + " {");
             writer.write(System.lineSeparator());
