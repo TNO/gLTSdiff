@@ -1,4 +1,6 @@
-## Setting up a development environment
+# Setting up a gLTSdiff development environment
+
+Use the following steps to set up an Eclipse development environment for gLTSdiff development:
 
 * Download the Eclipse Installer, from https://eclipse.org/downloads.
 * Run the Eclipse Installer.
