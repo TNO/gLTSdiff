@@ -168,6 +168,10 @@
   <setupTask
       xsi:type="setup.p2:P2Task">
     <requirement
+        name="markdown.editor.feature.feature.group"/>
+    <requirement
+        name="net.sf.eclipsecs.feature.group"/>
+    <requirement
         name="org.eclipse.sdk.feature.group"/>
     <requirement
         name="org.eclipse.egit.feature.group"/>
@@ -175,10 +179,10 @@
         name="org.eclipse.m2e.feature.feature.group"/>
     <requirement
         name="org.eclipse.oomph.setup.sdk.feature.group"/>
-    <requirement
-        name="net.sf.eclipsecs.feature.group"/>
     <repository
         url="https://checkstyle.org/eclipse-cs-update-site/updates/${eclipse-checkstyle.version.major}.x/${eclipse-checkstyle.version.major}.${eclipse-checkstyle.version.minor}.x"/>
+    <repository
+        url="https://nodeclipse.github.io/updates/markdown/"/>
     <description>Install the tools needed in the IDE to work with the source code for ${scope.project.label}.</description>
   </setupTask>
   <setupTask
