@@ -1,7 +1,7 @@
 digraph diffautomaton {
 	1 [label=<s1> shape="doublecircle" fillcolor="#ff4040" fontcolor="#ffffff" style="filled"];
 	2 [label=<s2> shape="circle" fillcolor="#ff4040" fontcolor="#ffffff" style="filled"];
-	__init1 [label=<> shape="none"];
+	__init1 [label=<> shape="none" width="0" height="0"];
 	__init1 -> 1 [color="#ff4040"];
 	1 -> 2 [label=<<font color="#ff4040">a</font>> color="#ff4040" id="1-0-2"];
 	2 -> 1 [label=<<font color="#ff4040">d</font>> color="#ff4040" id="2-0-1"];

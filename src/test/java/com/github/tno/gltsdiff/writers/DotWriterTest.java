@@ -44,7 +44,7 @@ public class DotWriterTest {
         String expected = "digraph automaton {\r\n"
                 + "\t1 [label=<s1> shape=\"doublecircle\"];\r\n"
                 + "\t2 [label=<s2> shape=\"circle\"];\r\n"
-                + "\t__init1 [label=<> shape=\"none\"];\r\n"
+                + "\t__init1 [label=<> shape=\"none\" width=\"0\" height=\"0\"];\r\n"
                 + "\t__init1 -> 1;\r\n"
                 + "\t1 -> 2 [label=<true → x := x + 1> id=\"1-0-2\"];\r\n"
                 + "}\r\n"

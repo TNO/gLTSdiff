@@ -245,17 +245,6 @@ public class DotWriter<S, T, U extends GLTS<S, T>> {
     }
 
     /**
-     * Returns the color of the given initial state.
-     *
-     * @param glts The GLTS.
-     * @param state The state of the GLTS.
-     * @return The initial state color.
-     */
-    protected String initialStateColor(U glts, State<S> state) {
-        return DEFAULT_COLOR;
-    }
-
-    /**
      * Writes transition information of a GLTS in DOT format to the provided writer.
      *
      * @param glts The GLTS.
