@@ -72,12 +72,10 @@ Examples:
 * [Post-processing difference automata](docs/example-post-process-diff-automata.md)
 * [Merging three version-annotated automata](docs/example-merge-three-version-annotated-automata.md)
 
-Usage:
+Using and extending gLTSdiff:
 
 * [GraphViz dependency](docs/dependency-graphviz.md)
 * [gLTSdiff library overview](docs/library-overview.md)
-
-Development:
 * [Setting up a gLTSdiff development environment](docs/setup-development-environment.md)
 
 ## License
