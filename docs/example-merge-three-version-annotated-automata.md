@@ -145,4 +145,4 @@ The resulting `result.svg` then looks like this:
 
 You can for instance see that the `e` transition is only present in version 3 of the model, while the `a` transition is present in all three versions.
 
-The code for this example is also available in the gLTSdiff [source code](../src/main/java/com/github/tno/gltsdiff/examples/SimpleDiffExample.java).
+The code for this example is also available in the gLTSdiff [source code](../src/main/java/com/github/tno/gltsdiff/examples/MoreThanTwoInputsExample.java).
