@@ -92,4 +92,15 @@ public class LTSDotWriter<S extends LTSStateProperty, T, U extends BaseLTS<S, T>
         writer.write(";");
         writer.write(System.lineSeparator());
     }
+
+    /**
+     * Returns the color of the given initial state.
+     *
+     * @param glts The GLTS.
+     * @param state The state of the GLTS.
+     * @return The initial state color.
+     */
+    protected String initialStateColor(U glts, State<S> state) {
+        return DEFAULT_COLOR;
+    }
 }
