@@ -67,14 +67,15 @@ Any number of version-annotated automata could be combined as follows:
 
 ## Documentation
 
-Usage:
-
-* [GraphViz dependency](docs/dependency-graphviz.md)
-
 Examples:
 * [Comparing two difference automata](docs/example-compare-two-diff-automata.md)
 * [Post-processing difference automata](docs/example-post-process-diff-automata.md)
 * [Merging three version-annotated automata](docs/example-merge-three-version-annotated-automata.md)
+
+Usage:
+
+* [GraphViz dependency](docs/dependency-graphviz.md)
+* [gLTSdiff library overview](docs/library-overview.md)
 
 Development:
 * [Setting up a gLTSdiff development environment](docs/setup-development-environment.md)
