@@ -67,6 +67,7 @@ Any number of version-annotated automata could be combined as follows:
 
 ## Documentation
 
+* [Example: comparing two difference automata](docs/example-compare-two-diff-automata.md)
 * [Setting up a gLTSdiff development environment](docs/setup-development-environment.md)
 
 ## License
