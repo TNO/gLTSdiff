@@ -7,6 +7,8 @@ In this case, we create two difference automata, one entirely red, and the other
 We then compare and merge them.
 In the merge result, the common parts of the structures of the inputs are marked as unchanged (displayed in black), while their differences will remain (displayed in red and green).
 
+## Inputs
+
 First, we create the two difference automata to compare, which are the inputs to gLTSdiff.
 A difference automaton is represented by the `DiffAutomaton` class.
 It is parameterized with the type of the transition labels.
@@ -56,6 +58,8 @@ It looks like this:
 
 ![Second difference automaton](../examples/SimpleDiff/input2.svg)
 
+## Configuration
+
 Next, we configure gLTSdiff to compare, merge, and write difference automata with `String`-typed labels.
 While we can directly use the `StructureComparator` class, it is typically easier to use a builder.
 Builders hide many low-level details and provide default configuration, allowing to perform comparisons using less code.
@@ -69,6 +73,8 @@ var comparator = builder.createComparator();
 var writer = builder.createWriter();
 ```
 
+## Comparison
+
 We then use the `comparator` to perform the comparison and merging:
 
 ```java
@@ -76,8 +82,11 @@ We then use the `comparator` to perform the comparison and merging:
 DiffAutomaton<String> result = comparator.compare(first, second);
 ```
 
-Finally, write to the resulting merged difference automaton to a DOT file (`result.dot`) using the `writer`.
-And we render the DOT file to an SVG image (`result.svg`) using the `DotRenderer` utility class:
+## View the result
+
+Finally, we write the resulting merged difference automaton to a DOT file (`result.dot`) using the `writer`.
+And we render the DOT file to an SVG image (`result.svg`) using the `DotRenderer` utility class.
+Note that the latter requires [GraphViz](dependency-graphviz.md).
 
 ```java
 // Write the result to a file in DOT format, and render it to SVG.
@@ -89,5 +98,7 @@ Path resultSvgPath = DotRenderer.renderDot(resultDotPath);
 The resulting `result.svg` then looks like this:
 
 ![Resulting difference automaton](../examples/SimpleDiff/result.svg)
+
+You can see that the inputs are largely identical, but that the second/green input has two additional transitions, with an intermediate state.
 
 The code for this example is also available in the gLTSdiff [source code](../src/main/java/com/github/tno/gltsdiff/examples/SimpleDiffExample.java).
