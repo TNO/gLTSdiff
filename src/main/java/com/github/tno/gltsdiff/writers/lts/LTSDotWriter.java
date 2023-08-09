@@ -83,7 +83,8 @@ public class LTSDotWriter<S extends LTSStateProperty, T, U extends BaseLTS<S, T>
      */
     private void writeInitialTransition(U lts, Writer writer, State<S> initialTransition) throws IOException {
         String initialTransitionId = stateId(initialTransition);
-        writer.write(String.format("\t__init%s [label=<> shape=\"none\"];", initialTransitionId));
+        writer.write(
+                String.format("\t__init%s [label=<> shape=\"none\" width=\"0\" height=\"0\"];", initialTransitionId));
         writer.write(System.lineSeparator());
 
         writer.write(String.format("\t__init%s -> %s", initialTransitionId, initialTransitionId));
