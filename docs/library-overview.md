@@ -1,6 +1,6 @@
 # gLTSdiff library overview
 
-The gLTSdiff library is designed with extensibility in mind, both for adding different model representations and algorithms to compare them.
+The gLTSdiff library is designed with extensibility in mind, both for adding different model representations and for adding algorithms to compare them.
 The following concepts are discussed in more detail on this page:
 
 * **Representations**:
@@ -42,7 +42,7 @@ The following concepts are discussed in more detail on this page:
   Printers are used by writers to print state and transition properties to HTML text, for inclusion in DOT files.
 
 * **Builders**:
-  Builders hide many low-level details and provide default configuration, allowing to perform comparisons using less code.
+  Builders hide many low-level details and provide a default configuration, allowing to perform comparisons using less code.
   Different builders are available for different representations.
 
 * **Projectors**:
@@ -61,7 +61,7 @@ It also has various methods to query GLTS, such as getting all its states, query
 
 States are represented by the `State` class.
 Transitions are represented by the `Transition` class.
-The `GLTSs` class has some methods to work with multiple GLTSs, such as computing computing common outgoing transitions for states from different GLTSs.
+The `GLTSs` class has some methods to work with multiple GLTSs, such as computing common outgoing transitions for states from different GLTSs.
 
 gLTSdiff by default includes a few specialized GLTS representations:
 
@@ -70,7 +70,7 @@ gLTSdiff by default includes a few specialized GLTS representations:
   The `BaseLTS` class allows also derived classes of `LTSStateProperty`, allowing other representations to extend upon it.
   To work with concrete LTSs, use the `LTS` class, which is fixed to using `LTSStateProperty` for state properties.
 
-* Automata add accepting state information to accepting state information to LTS state properties.
+* Automata add accepting state information to LTS state properties.
   The `BaseAutomaton` class extends the `BaseLTS` class and requires the use of `AutomatonStateProperty` instances as state properties.
   The `BaseAutomaton` class allows also derived classes of `AutomatonStateProperty`, allowing other representations to extend upon it.
   To work with concrete automata, use the `Automaton` class, which is fixed to using `AutomatonStateProperty` for state properties.
@@ -84,7 +84,7 @@ gLTSdiff by default includes a few specialized GLTS representations:
   The `DiffAutomata` class contains some utility functionality, such as functionality to convert a regular automaton to a diff automaton, or vice versa.
 
 Additional representations can be added, either by extending `GLTS`, or by extending one of the built-in extensions, such as `BaseLTS`, `BaseAutomaton`, or `BaseDiffAutomaton`.
-These built-in extensions serve as good examples how to add additional representations.
+These built-in extensions serve as good examples of how to add additional representations.
 
 ## Combiners
 
@@ -92,11 +92,11 @@ Combiners form the basis for comparison of various types of model representation
 GLTSs are parameterized with a type of state properties and a type of transition properties.
 Hence, two combiners are needed, one for the state properties and one for the transition properties.
 
-A combiner for a certain type of properties indicates which property values may be combined, and if they may be combined, what their combination is.
+A combiner for a certain type of property indicates which property values may be combined, and if they may be combined, what their combination is.
 Different combiners may then be used to customize comparison, and compare the same representation in different ways.
 For instance, one could configure a combiner that allows state acceptance information to match only if the information is the same for both states (they are either both accepting or both non-accepting).
 Their combination would then simply be one of the properties, as only identical properties can then be merged.
-Alternatively, one could configure a combiner that allow states to always be merged, and their merger to be an accepting state if either of the states being merged was accepting.
+Alternatively, one could configure a combiner that allow states to always be merged, and their merge to be an accepting state if either of the states being merged was accepting.
 What is a good combiner for certain properties may depend on the particular use case.
 
 All combiners extend the abstract `Combiner` base class.
@@ -125,8 +125,7 @@ gLTSdiff also comes with several composite combiners:
   Sets can always be combined.
   Combining any two sets results in the union of these sets in which all combinable
   properties are combined.
-* `SubtypeCombiner` combines for `U`-typed properties based on a combiner for `T`-typed properties, where `U` is a
-  subtype of `T`.
+* `SubtypeCombiner` combines `U`-typed properties based on a combiner for `T`-typed properties, where `U` is a subtype of `T`.
 * `TransitionCombiner` combines `Transition`s.
   Any two transitions are combinable if their source and target states are equal and their properties are combinable.
   Combining two transitions results in a transition with a combined transition property.
@@ -158,16 +157,16 @@ See for instance the [merging of version-annotated automata example](example-mer
 
 Matchers compute a matching between two input models.
 A matching indicates which states of the first input model map to which states in the second input model.
-All states that are in the matching are consider unchanged between the models, while states that are not in the mapping are considered removed (if they are only in the first input) or added (if they are only in the second input).
+All states that are in the matching are considered unchanged between the models, while states that are not in the mapping are considered removed (if they are only in the first input) or added (if they are only in the second input).
 Matchers make use of the state and transition property combiners, to determine which states can be matched.
 Matchers will only match states where the state property combiner indicates the state properties are combinable.
-The JavaDoc the `Matcher` interface lists some additional constraints to which matchings must adhere.
+The JavaDoc of the `Matcher` interface lists some additional constraints to which matchings must adhere.
 
 Many possible implementations of matchers exist that produce valid matchings.
 This includes heuristic-based matchers as well as optimization-based matchers.
 gLTSdiff comes with various built-in matchers:
 
-* `WalkinshawMatcher` is a heuristic-based matcher that uses landmarks, 'obviously' matching state pairs, as [proposed](https://doi.org/10.1145/2430545.2430549) in the LTSdiff algorithm by Walkinshaw and Bogdanov.
+* `WalkinshawMatcher` is a heuristic-based matcher that uses landmarks, 'obviously' matching state pairs, as [proposed](https://doi.org/10.1145/2430545.2430549) for the LTSdiff algorithm by Walkinshaw and Bogdanov.
   The gLTSdiff implementation has been generalized to work with combiners.
   This matcher relies on scores, and works well in practice.
 * `KuhnMunkresMatcher` is an optimization-based matcher that implements the well-known Kuhn–Munkres algorithm (also called the Hungarian method).
@@ -179,7 +178,7 @@ gLTSdiff comes with various built-in matchers:
   Since the algorithm explores all the possible choices of relevant state matchings (it is brute force), it is quite computation-intensive.
   It is therefore generally only a good choice for smaller models.
 * `DynamicMatcher` allows to use different matchers for different comparisons, based on the sizes of the models being compared.
-  By default, it uses a `WalkinshawMatcher` if both inputs have 45 states or less, and a `KuhnMunkresMatcher` otherwise, but this may be configured.
+  By default, it uses a `KuhnMunkresMatcher` if both inputs have 45 states or less, and a `WalkinshawMatcher` otherwise, but this may be configured.
   The dynamic matcher allows for a trade-off between computation complexity (running time and memory) and the number of differences in the result.
 
 Specific matchers are also present for certain representations, that take into account the additional information in state and transition properties of those representations:
@@ -193,18 +192,18 @@ Different matchers may be added by implementing the `Matcher` interface, or by e
 Some matchers use similarity scorers.
 Such scorers compute scores of how good two states from different GLTs match.
 Matchers may then give preference to matching state pairs with higher scores.
-Scores take into account not only state properties, but also how similar the surrounding structures of the states are.
+Scores may take into account not only state properties, but also how similar the surrounding structures of the states are.
 
 All similarity scorers implement the `SimilarityScorer` interface.
-gLTSdiff comes with multiple bulit-in scorers:
+gLTSdiff comes with multiple built-in scorers:
 
-* `WalkinshawGlobalScorer` computes global similarity scores between states, by transforming the problem of finding global similarity scores to a problem of solving a system of linear equations, as [proposed](https://doi.org/10.1145/2430545.2430549) in the LTSdiff algorithm by Walkinshaw and Bogdanov.
+* `WalkinshawGlobalScorer` computes global similarity scores between states, by transforming the problem of finding global similarity scores to a problem of solving a system of linear equations, as [proposed](https://doi.org/10.1145/2430545.2430549) for the LTSdiff algorithm by Walkinshaw and Bogdanov.
   The gLTSdiff implementation has been generalized to work with combiners.
   Computing global scores can be quite computation-intensive, especially for large and dense models, but generally produces good scores.
 * `WalkinshawLocalScorer` computes local similarity scores between states.
   These scores are local in the sense that they are determined by the amount of overlap in incoming and outgoing transitions.
-  By performing more than one refinement, this method does allow to take further away neighbors into account, for better quality scoring, at higher computation costs.
-  As more and more context is taken into account, it comes closer to the global scorer.
+  By performing more than one refinement, this method allows taking further away neighbors into account, for better quality scoring, at higher computation costs.
+  As more and more context is taken into account by increasing the number of refinements, it comes closer to the global scorer.
 * `DynamicScorer` allows to use different scorers for different comparisons, based on the sizes of the models being compared.
   By default, if both inputs have at most 45 states, the global scorer is used.
   Otherwise, if both inputs have at most 500 states, the local scorer is used, with five refinements.
@@ -248,7 +247,7 @@ gLTSdiff comes with several built-in rewriters:
   This rewriter 'untangles' them, by splitting the tangle state into two new states, one with the added incoming/outgoing transitions, and one with the removed incoming/outgoing transitions.
 * `SkipForkPatternRewriter` and `SkipJoinPatternRewriter` rewrite skip patterns in difference automata.
   Skip patterns are patterns where one input skips a part of a sequence that the other input does allow.
-  Comparing such models leads to difference automata either the transition before the skipped behavior is duplicated (fork pattern), or the one after it (join pattern).
+  Comparing such models leads to difference automata where either the transition before the skipped behavior is duplicated (fork pattern), or the one after it (join pattern).
   This rewriter rewrites such patterns, combining the common transitions, and adding a new 'skip' transition that indicates that a part of the sequence is only possible in one of the models.
   The [post-processing example](example-post-process-diff-automata.md) shows this in more detail.
 * `SequenceRewriter` is a rewriter that applies multiple rewriters in sequence.
@@ -265,7 +264,7 @@ All hiders implement the `Hider` interface.
 gLTSdiff ships with several built-in hiders:
 
 * `SubstitutionHider` hides properties simply by replacing them by a specified non-`null` substitute.
-* `DiffPropertyHider` hides `DiffProperty<T>`-typed properties by hiding their inner `T`-typed properties and leaving the associated {@link DiffKind} unchanged.
+* `DiffPropertyHider` hides `DiffProperty<T>`-typed properties by hiding their inner `T`-typed properties and leaving the associated `DiffKind` unchanged.
 
 Additional hiders may be added by implementing the `Hider` interface.
 
@@ -303,7 +302,7 @@ gLTSdiff ships with various built-in printers:
   It allows to customize the prefix text, separator/delimiter text, and suffix text.
   It also allows to customize the printer to use for the elements of the set.
 * `StateHtmlPrinter` prints states, based on state IDs, and a custom prefix.
-* `StringHtmlPrinter` prints properties by converting them strings using `Object.toString()` and applying HTML escaping.
+* `StringHtmlPrinter` prints properties by converting them to strings using `Object.toString()` and applying HTML escaping.
 * `SubtypeHtmlPrinter` prints `U`-typed properties based on a printer for `T`-typed properties, where `U` is a
   subtype of `T`.
 * `TransitionHtmlPrinter` prints transitions based on a printer for transition properties.
@@ -315,10 +314,10 @@ See for instance the [merging of version-annotated automata example](example-mer
 
 ## Builders
 
-Structural comparison and merging can be perform using the `StructureComparator` class.
+Structural comparison and merging can be performed using the `StructureComparator` class.
 However, using that class directly can be quite cumbersome, as it requires quite some configuration.
 Also, direct usage of this class often leads to quite some complex use of Java generics.
-Builders hide many of the low-level details and provide default configuration, allowing to perform comparisons using less code.
+Builders hide many of the low-level details and provide a default configuration, allowing to perform comparisons using less code.
 Different builders are available for different representations:
 
 * `BaseStructureComparatorBuilder` is a builder for comparing `GLTS`s and derived classes.
@@ -338,7 +337,7 @@ A builder is typically used as follows:
 * Invoke `createWriter` to get a `DotWriter` (or an instance of a derived class) to write models to DOT format.
   It can typically be used to write both the input models and the resulting output models.
 
-Builders often a lot of configuration via their `set*` methods.
+Builders offer a lot of configuration via their `set*` methods.
 See the JavaDoc of the builders for details.
 Here we list only some examples:
 
@@ -353,7 +352,7 @@ The existing builders serve as good examples.
 ## Projectors
 
 Projectors allow to project state and transition properties along a certain value.
-For instance, a difference automaton may be projected along a difference kind to produce a regular automaton with only the added states and transitions.
+For instance, a difference automaton may be projected along a difference kind to produce a regular automaton containing only the states and transitions of that difference kind.
 The use of projectors is currently mostly limited to testing.
 
 gLTSdiff ships with various built-in projectors:
@@ -363,4 +362,4 @@ gLTSdiff ships with various built-in projectors:
 * `SetProjector` projects sets, by projecting each of the elements of the set.
 * `SubtypeProjector` projects `U`-typed properties based on a projector for `T`-typed properties, where `U` a subtype of `T`.
 
-Additional projects may be added by implementing the `Projector` interface.
+Additional projectors may be added by implementing the `Projector` interface.

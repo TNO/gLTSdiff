@@ -69,7 +69,7 @@ It looks like this:
 
 Next, we configure gLTSdiff to compare, merge, and write version-annotated automata.
 While we can directly use the `StructureComparator` class, it is typically easier to use a builder.
-Builders hide many low-level details and provide default configuration, allowing to perform comparisons using less code.
+Builders hide many low-level details and provide a default configuration, allowing to perform comparisons using less code.
 We configure gLTSdiff using the builder that is tailored specifically for comparison of automata, as follows:
 
 ## Configuration
@@ -92,7 +92,7 @@ We create an `AutomatonStructureComparatorBuilder`.
 It is parameterized with the type of the transition properties, in this case `Pair<String, Set<Integer>>`, indicating our pairs of labels and version sets.
 
 We then configure how such transition properties can be compared and merged, by invoking `setTransitionPropertyCombiner`.
-gLTSdiff relies on `Combiner`s for this, which are used the comparison and merging algorithms.
+gLTSdiff relies on `Combiner`s for this, which are used by the comparison and merging algorithms.
 We use a `PairCombiner` for the `Pair` type.
 The `PairCombiner` has two arguments, one for each of the elements of the `Pair`s.
 For the `String`-typed labels, we use a simple `EqualityCombiner`.

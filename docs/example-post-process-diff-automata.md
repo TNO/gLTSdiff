@@ -34,7 +34,7 @@ second.addTransition(s3, new DiffProperty<>("c", DiffKind.ADDED), s4);
 second.addTransition(s4, new DiffProperty<>("d", DiffKind.ADDED), s1);
 ```
 
-This input automata look like this:
+These input automata look like this:
 
 ![First difference automaton](../examples/PostProcessing/input1.svg)
 

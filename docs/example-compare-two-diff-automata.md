@@ -62,7 +62,7 @@ It looks like this:
 
 Next, we configure gLTSdiff to compare, merge, and write difference automata with `String`-typed labels.
 While we can directly use the `StructureComparator` class, it is typically easier to use a builder.
-Builders hide many low-level details and provide default configuration, allowing to perform comparisons using less code.
+Builders hide many low-level details and provide a default configuration, allowing to perform comparisons using less code.
 We configure gLTSdiff using the builder that is tailored specifically for comparison of difference automata, as follows:
 
 ```java

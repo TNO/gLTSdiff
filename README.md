@@ -11,7 +11,7 @@ You may add your own representations, and customize the comparison, merging, out
 
 gLTSdiff is a generalization of the LTSdiff algorithm [proposed](https://doi.org/10.1145/2430545.2430549) by Neil Walkinshaw and Kirill Bogdanov, and implemented in the [StateChum library](https://github.com/kirilluk/statechum).
 gLTSdiff is however more than only a generalization.
-It also offers significant performance improvements over LTSdiff, and adds additional features like post-processing to improve comparison result.
+It also offers significant performance improvements over LTSdiff, and adds additional features like post-processing to improve comparison results.
 gLTSdiff was first introduced, and formally defined, in the following article: Dennis Hendriks and Wytse Oortwijn, "gLTSdiff: A Generalized Framework for Structural Comparison of Software Behavior", 26th International Conference on Model Driven Engineering Languages and Systems (MODELS), 2023, to appear.
 
 ## Examples

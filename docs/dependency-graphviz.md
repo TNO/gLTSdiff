@@ -1,7 +1,7 @@
 # GraphViz dependency
 
 gLTSdiff uses [GraphViz](https://graphviz.org/) to render DOT files to SVG images.
-GraphViz can be downloaded at https://graphviz.org/download/, but is also available in various package managers.
+GraphViz can be downloaded at https://graphviz.org/download, but is also available in various package managers.
 
 Make sure that GraphViz is installed or extracted on your system.
 And that its `bin` directory is in your `PATH` environment variable.
