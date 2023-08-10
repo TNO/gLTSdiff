@@ -14,7 +14,7 @@ SPDX-License-Identifier: MIT
 
     <groupId>io.github.tno</groupId>
     <artifactId>com.github.tno.gltsdiff</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>gLTSdiff</name>
@@ -280,7 +280,7 @@ SPDX-License-Identifier: MIT
         <connection>scm:git:git://github.com/dexecutor/dependent-tasks-executor.git</connection>
         <developerConnection>scm:git:git@github.com:dexecutor/dexecutor.git</developerConnection>
         <url>https://github.com/TNO/gLTSdiff</url>
-        <tag>1.1.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <profiles>
