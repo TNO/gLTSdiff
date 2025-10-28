@@ -12,7 +12,15 @@ You may add your own representations, and customize the comparison, merging, out
 gLTSdiff is a generalization of the LTSdiff algorithm [proposed](https://doi.org/10.1145/2430545.2430549) by Neil Walkinshaw and Kirill Bogdanov, and implemented in the [StateChum library](https://github.com/kirilluk/statechum).
 gLTSdiff is however more than only a generalization.
 It also offers significant performance improvements over LTSdiff, and adds additional features like post-processing to improve comparison results.
-gLTSdiff was first introduced, and formally defined, in the following article: Dennis Hendriks and Wytse Oortwijn, "gLTSdiff: A Generalized Framework for Structural Comparison of Software Behavior", 26th International Conference on Model Driven Engineering Languages and Systems (MODELS), 2023, to appear.
+
+gLTSdiff was first introduced, and formally defined, in the following article:
+* Dennis Hendriks and Wytse Oortwijn, "gLTSdiff: A Generalized Framework for Structural Comparison of Software Behavior", 26th International Conference on Model Driven Engineering Languages and Systems (MODELS), pages 285-295, 2023, doi:[10.1109/MODELS58315.2023.00025](https://doi.org/10.1109/MODELS58315.2023.00025).
+
+You can read more about it in subsequent publications:
+* Dennis Hendriks and Wytse Oortwijn, "gLTSdiff: a generalized framework for structural comparison of software behavior", Software and Systems Modeling (SoSyM), 2024, doi:[10.1007/s10270-024-01239-0](https://doi.org/10.1007/s10270-024-01239-0).
+* Dennis Hendriks, "Model Inference and Comparison for Software Evolution in Large Component-Based Systems", PhD thesis, 2024, doi:[10.54195/9789493296640](https://doi.org/10.54195/9789493296640).
+
+gLTSdiff is also used in the [Model Inference and Differencing Suite](https://tno.github.io/MIDS) (MIDS).
 
 ## Examples
 
